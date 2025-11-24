@@ -10,8 +10,15 @@ import { ViewConfigurationFormObject } from '../form-objects/ViewConfigurationFo
 // Load schema once at module level
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const schemaPath = join(__dirname, '..', 'penpot.data.json');
-const schemaData = JSON.parse(readFileSync(schemaPath, 'utf-8'));
+const contentSchemaPath = join(__dirname, '..', 'penpot.data.content.json');
+const dsSchemaPath = join(__dirname, '..', 'penpot.data.ds.json');
+const contentData = JSON.parse(readFileSync(contentSchemaPath, 'utf-8'));
+const dsData = JSON.parse(readFileSync(dsSchemaPath, 'utf-8'));
+// Combine content and design system data
+const schemaData = {
+  ...contentData,
+  ...dsData
+};
 
 /**
  * Page Object Model for Pendrop Slicer Plugin

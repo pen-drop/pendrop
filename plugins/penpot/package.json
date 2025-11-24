@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite build --watch & vite preview --port 5176 --outDir dist",
     "build": "tsc && vite build",
-    "test:e2e": "playwright test",
+    "test:e2e": "vite preview --port 5174 & playwright test",
     "test:e2e:ui": "playwright test --ui",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx,.vue",
