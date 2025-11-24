@@ -4,17 +4,17 @@ on:
   push:
     branches: [ 1.x ]
     paths:
-      - 'penpot-plugin/**'
+      - 'plugins/penpot/**'
       - '.github/workflows/penpot-plugin-ci.yml'
   pull_request:
     branches: [ 1.x ]
     paths:
-      - 'penpot-plugin/**'
+      - 'plugins/penpot/**'
       - '.github/workflows/penpot-plugin-ci.yml'
 
 defaults:
   run:
-    working-directory: penpot-plugin
+    working-directory: plugins/penpot
 
 jobs:
   lint-and-type-check:
@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: penpot-plugin/playwright-report/
+          path: plugins/penpot/playwright-report/
           retention-days: 7
 
   build:
@@ -93,6 +93,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: penpot-plugin-dist
-          path: penpot-plugin/dist/
+          path: plugins/penpot/dist/
           retention-days: 7
 
