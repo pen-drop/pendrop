@@ -173,12 +173,11 @@ export function createMockPenpot() {
   };
   
   // Replace global penpot variable
-  // @ts-ignore
   if (typeof window !== 'undefined') {
-    // @ts-ignore
+    // @ts-expect-error - Mock Penpot API for testing
     window.penpot = mockPenpot;
     // Also set on globalThis for better compatibility
-    // @ts-ignore
+    // @ts-expect-error - Mock Penpot API for testing
     globalThis.penpot = mockPenpot;
   }
   

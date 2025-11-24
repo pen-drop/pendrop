@@ -76,7 +76,7 @@ if (isTestMode) {
         try {
           nodeData[formId] = JSON.parse(formData);
           hasPendropData = true;
-        } catch (e) {
+        } catch {
           // Invalid JSON, skip
         }
       }
@@ -198,9 +198,9 @@ if (isTestMode) {
       writable: true,
       configurable: true
     });
-  } catch (e) {
+  } catch {
     // If we can't replace it, try direct assignment as fallback
-    // @ts-ignore
+    // @ts-expect-error - Mock postMessage for testing
     parent.postMessage = mockPostMessage;
   }
 }

@@ -273,7 +273,7 @@ test.describe('EntityFieldMappingForm', () => {
     // Wait for save notification (with longer timeout for parallel test execution)
     try {
       await pendropPage.entityTypeMappingForm.waitForSaveNotification();
-    } catch (e) {
+    } catch {
       // If notification doesn't appear, wait a bit longer
       await pendropPage.page.waitForTimeout(500);
     }

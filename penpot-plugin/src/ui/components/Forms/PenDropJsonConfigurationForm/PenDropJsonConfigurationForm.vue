@@ -42,7 +42,7 @@ const jsonValidation = (node: any) => {
   try {
     JSON.parse(node.value);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -72,7 +72,7 @@ const submitHandler = (data: any) => {
   try {
     const parsed = JSON.parse(data.jsonSchema);
     emit('save', parsed);
-  } catch (e) {
+  } catch {
     console.error('Invalid JSON');
   }
 };

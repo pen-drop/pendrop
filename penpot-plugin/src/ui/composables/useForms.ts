@@ -120,7 +120,8 @@ export function useForms() {
   onMounted(() => {
     window.addEventListener('message', handleFormLoaded);
     window.addEventListener('message', handleFormSaved);
-    window.addEventListener('penpot-selection-change', handleSelectionChange as EventListener);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    window.addEventListener('penpot-selection-change', handleSelectionChange as any);
 
     // Load all forms on mount
     appConfig.forms.forEach(form => loadForm(form.id, form.storageLocation));
@@ -130,7 +131,8 @@ export function useForms() {
   onBeforeUnmount(() => {
     window.removeEventListener('message', handleFormLoaded);
     window.removeEventListener('message', handleFormSaved);
-    window.removeEventListener('penpot-selection-change', handleSelectionChange as EventListener);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    window.removeEventListener('penpot-selection-change', handleSelectionChange as any);
   });
 
   return {

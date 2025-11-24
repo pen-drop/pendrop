@@ -68,11 +68,11 @@ function sendSelectionChangeMessage() {
             try {
               nodeData[formId] = JSON.parse(formData);
               hasPendropData = true;
-            } catch (e) {
+            } catch {
               // Invalid JSON, skip
             }
           }
-        } catch (e) {
+        } catch {
           // Could not read plugin data, skip
         }
       }
@@ -87,7 +87,7 @@ function sendSelectionChangeMessage() {
 
       // Move to next parent
       currentParent = currentParent.parent;
-    } catch (e) {
+    } catch {
       // Error accessing parent, stop traversal
       break;
     }
