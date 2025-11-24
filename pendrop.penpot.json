@@ -1,0 +1,732 @@
+{
+  "features": [
+    "fdata/path-data",
+    "plugins/runtime",
+    "design-tokens/v1",
+    "variants/v1",
+    "layout/grid",
+    "styles/v2",
+    "fdata/objects-map",
+    "components/v2",
+    "fdata/shape-data-type"
+  ],
+  "teamId": "23e39f70-1700-816d-8007-24eaa5aac4d8",
+  "permissions": {
+    "type": "membership",
+    "isOwner": true,
+    "isAdmin": true,
+    "canEdit": true,
+    "canRead": true,
+    "isLogged": true
+  },
+  "hasMediaTrimmed": false,
+  "commentThreadSeqn": 0,
+  "name": "pendrop",
+  "revn": 33,
+  "modifiedAt": "2025-11-23T21:47:36.706881Z",
+  "vern": 0,
+  "id": "23e39f70-1700-816d-8007-24eaa91cb3d5",
+  "isShared": false,
+  "migrations": [
+    "legacy-2",
+    "legacy-3",
+    "legacy-5",
+    "legacy-6",
+    "legacy-7",
+    "legacy-8",
+    "legacy-9",
+    "legacy-10",
+    "legacy-11",
+    "legacy-12",
+    "legacy-13",
+    "legacy-14",
+    "legacy-16",
+    "legacy-17",
+    "legacy-18",
+    "legacy-19",
+    "legacy-25",
+    "legacy-26",
+    "legacy-27",
+    "legacy-28",
+    "legacy-29",
+    "legacy-31",
+    "legacy-32",
+    "legacy-33",
+    "legacy-34",
+    "legacy-36",
+    "legacy-37",
+    "legacy-38",
+    "legacy-39",
+    "legacy-40",
+    "legacy-41",
+    "legacy-42",
+    "legacy-43",
+    "legacy-44",
+    "legacy-45",
+    "legacy-46",
+    "legacy-47",
+    "legacy-48",
+    "legacy-49",
+    "legacy-50",
+    "legacy-51",
+    "legacy-52",
+    "legacy-53",
+    "legacy-54",
+    "legacy-55",
+    "legacy-56",
+    "legacy-57",
+    "legacy-59",
+    "legacy-62",
+    "legacy-65",
+    "legacy-66",
+    "legacy-67",
+    "0001-remove-tokens-from-groups",
+    "0002-normalize-bool-content-v2",
+    "0002-clean-shape-interactions",
+    "0003-fix-root-shape",
+    "0003-convert-path-content-v2",
+    "0005-deprecate-image-type",
+    "0006-fix-old-texts-fills",
+    "0008-fix-library-colors-v4",
+    "0009-clean-library-colors",
+    "0009-add-partial-text-touched-flags",
+    "0010-fix-swap-slots-pointing-non-existent-shapes",
+    "0011-fix-invalid-text-touched-flags",
+    "0012-fix-position-data",
+    "0013-fix-component-path",
+    "0013-clear-invalid-strokes-and-fills",
+    "0014-fix-tokens-lib-duplicate-ids",
+    "0014-clear-components-nil-objects",
+    "0015-clean-shadow-color"
+  ],
+  "version": 67,
+  "projectId": "23e39f70-1700-816d-8007-24eaa5ab329b",
+  "createdAt": "2025-11-21T13:28:38.258396Z",
+  "backend": "legacy-db",
+  "data": {
+    "pages": [
+      "23e39f70-1700-816d-8007-24eaa91cb3d6"
+    ],
+    "pagesIndex": {
+      "23e39f70-1700-816d-8007-24eaa91cb3d6": {
+        "objects": {
+          "00000000-0000-0000-0000-000000000000": {
+            "id": "00000000-0000-0000-0000-000000000000",
+            "name": "Root Frame",
+            "type": "frame",
+            "x": 0,
+            "y": 0,
+            "width": 0.01,
+            "height": 0.01,
+            "rotation": 0,
+            "selrect": {
+              "x": 0,
+              "y": 0,
+              "width": 0.01,
+              "height": 0.01,
+              "x1": 0,
+              "y1": 0,
+              "x2": 0.01,
+              "y2": 0.01
+            },
+            "points": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 0.01,
+                "y": 0
+              },
+              {
+                "x": 0.01,
+                "y": 0.01
+              },
+              {
+                "x": 0,
+                "y": 0.01
+              }
+            ],
+            "transform": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "transformInverse": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "parentId": "00000000-0000-0000-0000-000000000000",
+            "frameId": "00000000-0000-0000-0000-000000000000",
+            "flipX": null,
+            "flipY": null,
+            "hideFillOnExport": false,
+            "r2": 0,
+            "proportionLock": false,
+            "r3": 0,
+            "r1": 0,
+            "strokes": [],
+            "proportion": 1,
+            "r4": 0,
+            "fills": [
+              {
+                "fillColor": "#FFFFFF",
+                "fillOpacity": 1
+              }
+            ],
+            "shapes": [
+              "465a486e-b779-801f-8007-24eb0b025264"
+            ]
+          },
+          "465a486e-b779-801f-8007-24eb0b025264": {
+            "id": "465a486e-b779-801f-8007-24eb0b025264",
+            "name": "Board",
+            "type": "frame",
+            "x": 135,
+            "y": 198.00000000000003,
+            "width": 649.0000000000002,
+            "height": 259.99999999999994,
+            "rotation": 0,
+            "selrect": {
+              "x": 135,
+              "y": 198.00000000000003,
+              "width": 649.0000000000002,
+              "height": 259.99999999999994,
+              "x1": 135,
+              "y1": 198.00000000000003,
+              "x2": 784.0000000000002,
+              "y2": 458
+            },
+            "points": [
+              {
+                "x": 135,
+                "y": 198
+              },
+              {
+                "x": 784.0000000000002,
+                "y": 198
+              },
+              {
+                "x": 784.0000000000002,
+                "y": 457.99999999999994
+              },
+              {
+                "x": 135,
+                "y": 457.99999999999994
+              }
+            ],
+            "transform": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "transformInverse": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "parentId": "00000000-0000-0000-0000-000000000000",
+            "frameId": "00000000-0000-0000-0000-000000000000",
+            "flipX": null,
+            "flipY": null,
+            "hideFillOnExport": false,
+            "layoutGapType": "multiple",
+            "isVariantContainer": true,
+            "layoutPadding": {
+              "p1": 30,
+              "p2": 30,
+              "p3": 30,
+              "p4": 30
+            },
+            "layoutWrapType": "nowrap",
+            "layout": "flex",
+            "hideInViewer": true,
+            "layoutAlignItems": "start",
+            "layoutPaddingType": "simple",
+            "r2": 20,
+            "showContent": true,
+            "layoutItemHSizing": "auto",
+            "proportionLock": false,
+            "layoutGap": {
+              "rowGap": 0,
+              "columnGap": 20
+            },
+            "layoutItemVSizing": "auto",
+            "r3": 20,
+            "layoutJustifyContent": "start",
+            "r1": 20,
+            "layoutFlexDir": "row",
+            "layoutAlignContent": "stretch",
+            "strokes": [
+              {
+                "strokeAlignment": "inner",
+                "strokeStyle": "solid",
+                "strokeColor": "#bb97d8",
+                "strokeOpacity": 1,
+                "strokeWidth": 2
+              }
+            ],
+            "proportion": 1,
+            "r4": 20,
+            "fills": [],
+            "shapes": [
+              "fe175a67-be83-800a-8007-24f11210dcdb",
+              "465a486e-b779-801f-8007-24eb0b063630",
+              "465a486e-b779-801f-8007-24eb006a89e4"
+            ]
+          },
+          "465a486e-b779-801f-8007-24eb006a89e4": {
+            "id": "465a486e-b779-801f-8007-24eb006a89e4",
+            "name": "Board",
+            "type": "frame",
+            "x": 165,
+            "y": 228,
+            "width": 183,
+            "height": 200,
+            "rotation": 0,
+            "selrect": {
+              "x": 165,
+              "y": 228,
+              "width": 183,
+              "height": 200,
+              "x1": 165,
+              "y1": 228,
+              "x2": 348,
+              "y2": 428
+            },
+            "points": [
+              {
+                "x": 165,
+                "y": 228
+              },
+              {
+                "x": 348,
+                "y": 228
+              },
+              {
+                "x": 348,
+                "y": 428
+              },
+              {
+                "x": 165,
+                "y": 428
+              }
+            ],
+            "transform": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "transformInverse": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "parentId": "465a486e-b779-801f-8007-24eb0b025264",
+            "frameId": "465a486e-b779-801f-8007-24eb0b025264",
+            "flipX": null,
+            "flipY": null,
+            "hideFillOnExport": false,
+            "growType": "fixed",
+            "hideInViewer": true,
+            "variantName": "Value 1",
+            "r2": 0,
+            "componentRoot": true,
+            "pluginData": {
+              "5e303b6e3dcf804b800724f0640cb1ac": {
+                "sdc-data": "{\"machineName\":\"test\",\"jsonData\":\"{dump: '' }\"}"
+              }
+            },
+            "proportionLock": false,
+            "r3": 0,
+            "r1": 0,
+            "componentId": "465a486e-b779-801f-8007-24eb0334af43",
+            "strokes": [],
+            "mainInstance": true,
+            "proportion": 1,
+            "r4": 0,
+            "fills": [
+              {
+                "fillColor": "#FFFFFF",
+                "fillOpacity": 1
+              }
+            ],
+            "variantId": "465a486e-b779-801f-8007-24eb0b025264",
+            "componentFile": "23e39f70-1700-816d-8007-24eaa91cb3d5",
+            "shapes": []
+          },
+          "465a486e-b779-801f-8007-24eb0b063630": {
+            "id": "465a486e-b779-801f-8007-24eb0b063630",
+            "name": "Board",
+            "type": "frame",
+            "x": 368,
+            "y": 228,
+            "width": 183,
+            "height": 200,
+            "rotation": 0,
+            "selrect": {
+              "x": 368,
+              "y": 228,
+              "width": 183,
+              "height": 200,
+              "x1": 368,
+              "y1": 228,
+              "x2": 551,
+              "y2": 428
+            },
+            "points": [
+              {
+                "x": 368,
+                "y": 228
+              },
+              {
+                "x": 551,
+                "y": 228
+              },
+              {
+                "x": 551,
+                "y": 428
+              },
+              {
+                "x": 368,
+                "y": 428
+              }
+            ],
+            "transform": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "transformInverse": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "parentId": "465a486e-b779-801f-8007-24eb0b025264",
+            "frameId": "465a486e-b779-801f-8007-24eb0b025264",
+            "flipX": null,
+            "flipY": null,
+            "hideFillOnExport": false,
+            "layoutItemAbsolute": false,
+            "growType": "fixed",
+            "hideInViewer": true,
+            "variantName": "Value 2",
+            "r2": 0,
+            "componentRoot": true,
+            "proportionLock": false,
+            "r3": 0,
+            "r1": 0,
+            "componentId": "465a486e-b779-801f-8007-24eb0b06362f",
+            "strokes": [],
+            "mainInstance": true,
+            "proportion": 1,
+            "r4": 0,
+            "fills": [
+              {
+                "fillColor": "#ffffff",
+                "fillOpacity": 1
+              }
+            ],
+            "variantId": "465a486e-b779-801f-8007-24eb0b025264",
+            "componentFile": "23e39f70-1700-816d-8007-24eaa91cb3d5",
+            "shapes": [
+              "5e303b6e-3dcf-804b-8007-24f061cd0bda"
+            ]
+          },
+          "5e303b6e-3dcf-804b-8007-24f061cd0bda": {
+            "id": "5e303b6e-3dcf-804b-8007-24f061cd0bda",
+            "name": "http://localhost:5173/manifest.json",
+            "type": "text",
+            "x": 459.5,
+            "y": 328,
+            "width": 208,
+            "height": 17,
+            "rotation": 0,
+            "selrect": {
+              "x": 459.5,
+              "y": 328,
+              "width": 208,
+              "height": 17,
+              "x1": 459.5,
+              "y1": 328,
+              "x2": 667.5,
+              "y2": 345
+            },
+            "points": [
+              {
+                "x": 459.5,
+                "y": 328
+              },
+              {
+                "x": 667.5,
+                "y": 328
+              },
+              {
+                "x": 667.5,
+                "y": 345
+              },
+              {
+                "x": 459.5,
+                "y": 345
+              }
+            ],
+            "transform": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "transformInverse": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "parentId": "465a486e-b779-801f-8007-24eb0b063630",
+            "frameId": "465a486e-b779-801f-8007-24eb0b063630",
+            "flipX": null,
+            "flipY": null,
+            "growType": "auto-width",
+            "content": {
+              "type": "root",
+              "children": [
+                {
+                  "type": "paragraph-set",
+                  "children": [
+                    {
+                      "key": "e838m",
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "lineHeight": "1.2",
+                          "fontStyle": "normal",
+                          "textTransform": "none",
+                          "textAlign": "left",
+                          "fontId": "sourcesanspro",
+                          "fontSize": "14",
+                          "fontWeight": "400",
+                          "textDirection": "ltr",
+                          "fontVariantId": "regular",
+                          "textDecoration": "none",
+                          "letterSpacing": "0",
+                          "fills": [
+                            {
+                              "fillColor": "#000000",
+                              "fillOpacity": 1
+                            }
+                          ],
+                          "fontFamily": "sourcesanspro",
+                          "text": "http://localhost:5173/manifest.json"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "positionData": [
+              {
+                "x": 459.5,
+                "y": 345.3333333134651,
+                "width": 208.375,
+                "height": 18,
+                "x1": 0,
+                "y1": -0.6666666865348816,
+                "x2": 208.375,
+                "y2": 17.33333331346512,
+                "fontStyle": "normal",
+                "textTransform": "none",
+                "fontSize": "14px",
+                "fontWeight": "400",
+                "textDecoration": "none",
+                "letterSpacing": "normal",
+                "fills": [
+                  {
+                    "fillColor": "#000000",
+                    "fillOpacity": 1
+                  }
+                ],
+                "direction": "ltr",
+                "fontFamily": "sourcesanspro",
+                "text": "http://localhost:5173/manifest.json"
+              }
+            ]
+          },
+          "fe175a67-be83-800a-8007-24f11210dcdb": {
+            "id": "fe175a67-be83-800a-8007-24f11210dcdb",
+            "name": "Board",
+            "type": "frame",
+            "x": 571,
+            "y": 228,
+            "width": 183,
+            "height": 200,
+            "rotation": 0,
+            "selrect": {
+              "x": 571,
+              "y": 228,
+              "width": 183,
+              "height": 200,
+              "x1": 571,
+              "y1": 228,
+              "x2": 754,
+              "y2": 428
+            },
+            "points": [
+              {
+                "x": 571,
+                "y": 228
+              },
+              {
+                "x": 754,
+                "y": 228
+              },
+              {
+                "x": 754,
+                "y": 428
+              },
+              {
+                "x": 571,
+                "y": 428
+              }
+            ],
+            "transform": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "transformInverse": {
+              "a": 1,
+              "b": 0,
+              "c": 0,
+              "d": 1,
+              "e": 0,
+              "f": 0
+            },
+            "parentId": "465a486e-b779-801f-8007-24eb0b025264",
+            "frameId": "465a486e-b779-801f-8007-24eb0b025264",
+            "flipX": null,
+            "flipY": null,
+            "hideFillOnExport": false,
+            "growType": "fixed",
+            "hideInViewer": true,
+            "variantName": "Value 3",
+            "r2": 0,
+            "componentRoot": true,
+            "proportionLock": false,
+            "r3": 0,
+            "r1": 0,
+            "componentId": "fe175a67-be83-800a-8007-24f11210dcda",
+            "strokes": [],
+            "mainInstance": true,
+            "proportion": 1,
+            "r4": 0,
+            "fills": [
+              {
+                "fillColor": "#FFFFFF",
+                "fillOpacity": 1
+              }
+            ],
+            "variantId": "465a486e-b779-801f-8007-24eb0b025264",
+            "componentFile": "23e39f70-1700-816d-8007-24eaa91cb3d5",
+            "shapes": []
+          }
+        },
+        "id": "23e39f70-1700-816d-8007-24eaa91cb3d6",
+        "name": "Page 1"
+      }
+    },
+    "id": "23e39f70-1700-816d-8007-24eaa91cb3d5",
+    "options": {
+      "componentsV2": true,
+      "baseFontSize": "16px"
+    },
+    "components": {
+      "465a486e-b779-801f-8007-24eb0334af43": {
+        "path": "",
+        "mainInstanceId": "465a486e-b779-801f-8007-24eb006a89e4",
+        "name": "Board",
+        "variantProperties": [
+          {
+            "name": "Property 1",
+            "value": "Value 1"
+          }
+        ],
+        "modifiedAt": "2025-11-21T13:30:10.515Z",
+        "mainInstancePage": "23e39f70-1700-816d-8007-24eaa91cb3d6",
+        "id": "465a486e-b779-801f-8007-24eb0334af43",
+        "variantId": "465a486e-b779-801f-8007-24eb0b025264"
+      },
+      "465a486e-b779-801f-8007-24eb0b06362f": {
+        "path": "",
+        "mainInstanceId": "465a486e-b779-801f-8007-24eb0b063630",
+        "name": "Board",
+        "variantProperties": [
+          {
+            "name": "Property 1",
+            "value": "Value 2"
+          }
+        ],
+        "modifiedAt": "2025-11-22T11:24:15.096Z",
+        "mainInstancePage": "23e39f70-1700-816d-8007-24eaa91cb3d6",
+        "id": "465a486e-b779-801f-8007-24eb0b06362f",
+        "variantId": "465a486e-b779-801f-8007-24eb0b025264"
+      },
+      "fe175a67-be83-800a-8007-24f11210dcda": {
+        "path": "",
+        "mainInstanceId": "fe175a67-be83-800a-8007-24f11210dcdb",
+        "name": "Board",
+        "variantProperties": [
+          {
+            "name": "Property 1",
+            "value": "Value 3"
+          }
+        ],
+        "modifiedAt": "2025-11-22T09:55:57.718Z",
+        "mainInstancePage": "23e39f70-1700-816d-8007-24eaa91cb3d6",
+        "id": "fe175a67-be83-800a-8007-24f11210dcda",
+        "variantId": "465a486e-b779-801f-8007-24eb0b025264"
+      }
+    },
+    "pluginData": {
+      "5e303b6e3dcf804b800724f0640cb1ac": {
+        "json-schema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Daisy CMS Content Schema\",\"description\":\"JSON Schema for all content types in Daisy CMS (Drupal)\",\"type\":\"object\",\"properties\":{\"nodes\":{\"type\":\"object\",\"title\":\"Content Types (Nodes)\",\"properties\":{\"landing_page\":{\"type\":\"object\",\"title\":\"Landingpage\",\"description\":\"Landingpage content type\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"landing_page\",\"description\":\"Bundle type\"},\"title\":{\"type\":\"string\",\"description\":\"Title\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_description\":{\"type\":\"string\",\"title\":\"Description\"},\"field_featured_image\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"target_uuid\":{\"type\":\"string\",\"format\":\"uuid\"}},\"title\":\"Media\",\"description\":\". References: image\"},\"layout_builder__layout\":{\"type\":\"string\",\"title\":\"Layout\"},\"field_tags\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"target_uuid\":{\"type\":\"string\",\"format\":\"uuid\"}},\"title\":\"Media\",\"description\":\". References: image\"},\"title\":\"Tags\",\"description\":\". References: tags\"}},\"required\":[\"type\",\"uuid\"]}}},\"block_content\":{\"type\":\"object\",\"title\":\"Custom Block Types\",\"properties\":{\"text\":{\"type\":\"object\",\"title\":\"Text\",\"description\":\"Text content type\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"text\",\"description\":\"Bundle type\"},\"info\":{\"type\":\"string\",\"description\":\"Block description\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_content\":{\"type\":\"string\",\"title\":\"Content\"}},\"required\":[\"type\",\"uuid\",\"field_content\"]},\"stat_item\":{\"type\":\"object\",\"title\":\"Stat Item\",\"description\":\"Stat Item content type\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"stat_item\",\"description\":\"Bundle type\"},\"info\":{\"type\":\"string\",\"description\":\"Block description\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_short_description\":{\"type\":\"string\",\"title\":\"Title\"},\"field_title\":{\"type\":\"string\",\"title\":\"Title\"},\"field_value\":{\"type\":\"string\",\"title\":\"Title\"},\"field_component\":{\"type\":\"object\",\"description\":\"UI Patterns component configuration\",\"title\":\"Component\"},\"field_action\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"uri\":{\"type\":\"string\",\"format\":\"uri\"},\"title\":{\"type\":\"string\"},\"options\":{\"type\":\"object\"}}},\"title\":\"Actions\"},\"field_media\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"target_uuid\":{\"type\":\"string\",\"format\":\"uuid\"}},\"title\":\"Media\",\"description\":\". References: image\"}},\"required\":[\"type\",\"uuid\",\"field_title\",\"field_value\"]},\"buttons\":{\"type\":\"object\",\"title\":\"Buttons\",\"description\":\"Buttons content type\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"buttons\",\"description\":\"Bundle type\"},\"info\":{\"type\":\"string\",\"description\":\"Block description\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_action\":{\"type\":\"link\",\"items\":{\"type\":\"object\",\"properties\":{\"uri\":{\"type\":\"string\",\"format\":\"uri\"},\"title\":{\"type\":\"string\"},\"options\":{\"type\":\"object\"}}},\"title\":\"Buttons\"},\"field_component\":{\"type\":\"object\",\"description\":\"UI Patterns component configuration\",\"title\":\"Component\"}},\"required\":[\"type\",\"uuid\",\"field_action\"]},\"collapse\":{\"type\":\"object\",\"title\":\"Collapse\",\"description\":\"Collapse content type\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"collapse\",\"description\":\"Bundle type\"},\"info\":{\"type\":\"string\",\"description\":\"Block description\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_component\":{\"type\":\"object\",\"description\":\"UI Patterns component configuration\",\"title\":\"Component\"},\"field_title\":{\"type\":\"string\",\"title\":\"Title\"},\"field_content\":{\"type\":\"string\",\"title\":\"Content\"}},\"required\":[\"type\",\"uuid\",\"field_title\",\"field_content\"]},\"hero\":{\"type\":\"object\",\"title\":\"Hero\",\"description\":\"Hero content type\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"hero\",\"description\":\"Bundle type\"},\"info\":{\"type\":\"string\",\"description\":\"Block description\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_action\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"uri\":{\"type\":\"string\",\"format\":\"uri\"},\"title\":{\"type\":\"string\"},\"options\":{\"type\":\"object\"}}},\"title\":\"Action\"},\"field_content\":{\"type\":\"string\",\"title\":\"Content\"},\"field_title\":{\"type\":\"string\",\"title\":\"Title\"},\"field_component\":{\"type\":\"object\",\"description\":\"UI Patterns component configuration\",\"title\":\"Component\"},\"field_media\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"target_uuid\":{\"type\":\"string\",\"format\":\"uuid\"}},\"title\":\"Media\",\"description\":\". References: image\"}},\"required\":[\"type\",\"uuid\",\"field_title\"]},\"card\":{\"type\":\"object\",\"title\":\"Card\",\"description\":\"Card content type\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"card\",\"description\":\"Bundle type\"},\"info\":{\"type\":\"string\",\"description\":\"Block description\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_title\":{\"type\":\"string\",\"title\":\"Title\"},\"field_action\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"uri\":{\"type\":\"string\",\"format\":\"uri\"},\"title\":{\"type\":\"string\"},\"options\":{\"type\":\"object\"}}},\"title\":\"Action\"},\"field_content\":{\"type\":\"string\",\"title\":\"Content\"},\"field_media\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"target_uuid\":{\"type\":\"string\",\"format\":\"uuid\"}},\"title\":\"Media\",\"description\":\". References: image\"},\"field_component\":{\"type\":\"object\",\"description\":\"UI Patterns component configuration\",\"title\":\"Component\"}},\"required\":[\"type\",\"uuid\",\"field_title\",\"field_media\"]}}},\"media\":{\"type\":\"object\",\"title\":\"Media Types\",\"properties\":{\"image\":{\"type\":\"object\",\"title\":\"Image\",\"description\":\"Use local images for reusable media.\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"image\",\"description\":\"Bundle type\"},\"name\":{\"type\":\"string\",\"description\":\"Name\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_media_image\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"alt\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"width\":{\"type\":\"integer\"},\"height\":{\"type\":\"integer\"}},\"title\":\"Image\"}},\"required\":[\"type\",\"uuid\",\"field_media_image\"]},\"document\":{\"type\":\"object\",\"title\":\"Document\",\"description\":\"An uploaded file or document, such as a PDF.\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"document\",\"description\":\"Bundle type\"},\"name\":{\"type\":\"string\",\"description\":\"Name\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_media_document\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"display\":{\"type\":\"boolean\"},\"description\":{\"type\":\"string\"}},\"title\":\"Document\"}},\"required\":[\"type\",\"uuid\",\"field_media_document\"]},\"svg_image\":{\"type\":\"object\",\"title\":\"SVG Image\",\"description\":\"A locally hosted SVG file that can be displayed as an image.\",\"properties\":{\"id\":{\"type\":\"integer\",\"description\":\"Entity ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"type\":{\"type\":\"string\",\"const\":\"svg_image\",\"description\":\"Bundle type\"},\"name\":{\"type\":\"string\",\"description\":\"Name\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"created\":{\"type\":\"integer\",\"description\":\"Created timestamp\"},\"changed\":{\"type\":\"integer\",\"description\":\"Changed timestamp\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\",\"description\":\"Language code\"},\"field_media_svg_image\":{\"type\":\"object\",\"properties\":{\"target_id\":{\"type\":\"integer\"},\"alt\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"width\":{\"type\":\"integer\"},\"height\":{\"type\":\"integer\"}},\"title\":\"Image\"}},\"required\":[\"type\",\"uuid\",\"field_media_svg_image\"]}}},\"taxonomy\":{\"type\":\"object\",\"title\":\"Taxonomy Vocabularies\",\"properties\":{\"tags\":{\"type\":\"object\",\"title\":\"Tags\",\"description\":\"Use tags to group articles on similar topics into categories.\",\"properties\":{\"tid\":{\"type\":\"integer\",\"description\":\"Term ID\"},\"uuid\":{\"type\":\"string\",\"format\":\"uuid\",\"description\":\"Unique identifier\"},\"vid\":{\"type\":\"string\",\"const\":\"tags\",\"description\":\"Vocabulary ID\"},\"name\":{\"type\":\"string\",\"description\":\"Term name\"},\"description\":{\"type\":\"object\",\"properties\":{\"value\":{\"type\":\"string\"},\"format\":{\"type\":\"string\"}}},\"weight\":{\"type\":\"integer\",\"description\":\"Term weight\"},\"parent\":{\"type\":\"array\",\"items\":{\"type\":\"integer\"},\"description\":\"Parent term IDs\"},\"status\":{\"type\":\"boolean\",\"description\":\"Published status\"},\"langcode\":{\"type\":\"string\",\"default\":\"en\"}},\"required\":[\"vid\",\"name\",\"uuid\"]}}}}",
+        "pend-drop:json-configuration": "{\"$schema\":\"./pendrop.schema.json\",\"content\":{\"node\":{\"landing_page\":{\"fields\":{\"uuid\":{\"type\":\"string\",\"title\":\"UUID\",\"description\":\"Unique identifier\",\"required\":true},\"type\":{\"type\":\"string\",\"title\":\"Type\",\"description\":\"Bundle type\",\"required\":true,\"default\":\"landing_page\"},\"title\":{\"type\":\"string\",\"title\":\"Title\",\"description\":\"Page title\"},\"status\":{\"type\":\"boolean\",\"title\":\"Status\",\"description\":\"Published status\",\"default\":true},\"field_description\":{\"type\":\"text\",\"title\":\"Description\",\"description\":\"Page description\"},\"field_featured_image\":{\"type\":\"reference\",\"title\":\"Featured Image\",\"description\":\"Reference to image media\",\"settings\":{\"target_type\":\"media\",\"target_bundle\":\"image\"}},\"layout_builder__layout\":{\"type\":\"layout\",\"title\":\"Layout\",\"description\":\"Layout builder configuration\"},\"field_tags\":{\"type\":\"reference\",\"title\":\"Tags\",\"description\":\"Reference to taxonomy terms\",\"multiple\":true,\"settings\":{\"target_type\":\"taxonomy_term\",\"target_bundle\":\"tags\"}}}}},\"block_content\":{\"text\":{\"fields\":{\"uuid\":{\"type\":\"string\",\"title\":\"UUID\",\"required\":true},\"type\":{\"type\":\"string\",\"title\":\"Type\",\"required\":true,\"default\":\"text\"},\"info\":{\"type\":\"string\",\"title\":\"Info\",\"description\":\"Block description\"},\"field_content\":{\"type\":\"text\",\"title\":\"Content\",\"description\":\"Text content\",\"required\":true}}},\"hero\":{\"fields\":{\"uuid\":{\"type\":\"string\",\"title\":\"UUID\",\"required\":true},\"type\":{\"type\":\"string\",\"title\":\"Type\",\"required\":true,\"default\":\"hero\"},\"field_title\":{\"type\":\"string\",\"title\":\"Title\",\"required\":true},\"field_content\":{\"type\":\"text\",\"title\":\"Content\",\"description\":\"Hero content\"},\"field_action\":{\"type\":\"link\",\"title\":\"Action\",\"description\":\"Call-to-action link\",\"multiple\":true},\"field_media\":{\"type\":\"reference\",\"title\":\"Media\",\"description\":\"Reference to media\",\"settings\":{\"target_type\":\"media\",\"target_bundle\":\"image\"}},\"field_component\":{\"type\":\"component\",\"title\":\"Component\",\"description\":\"UI Patterns component configuration\"}}},\"card\":{\"fields\":{\"uuid\":{\"type\":\"string\",\"title\":\"UUID\",\"required\":true},\"type\":{\"type\":\"string\",\"title\":\"Type\",\"required\":true,\"default\":\"card\"},\"field_title\":{\"type\":\"string\",\"title\":\"Title\",\"required\":true},\"field_content\":{\"type\":\"text\",\"title\":\"Content\"},\"field_action\":{\"type\":\"link\",\"title\":\"Action\",\"multiple\":true},\"field_media\":{\"type\":\"reference\",\"title\":\"Media\",\"required\":true,\"settings\":{\"target_type\":\"media\",\"target_bundle\":\"image\"}},\"field_component\":{\"type\":\"component\",\"title\":\"Component\"}}}},\"media\":{\"image\":{\"fields\":{\"uuid\":{\"type\":\"string\",\"title\":\"UUID\",\"required\":true},\"type\":{\"type\":\"string\",\"title\":\"Type\",\"required\":true,\"default\":\"image\"},\"name\":{\"type\":\"string\",\"title\":\"Name\",\"description\":\"Media name\"},\"field_media_image\":{\"type\":\"reference\",\"title\":\"Image\",\"description\":\"Reference to file entity\",\"required\":true,\"settings\":{\"target_type\":\"file\"}}}},\"document\":{\"fields\":{\"uuid\":{\"type\":\"string\",\"title\":\"UUID\",\"required\":true},\"type\":{\"type\":\"string\",\"title\":\"Type\",\"required\":true,\"default\":\"document\"},\"name\":{\"type\":\"string\",\"title\":\"Name\"},\"field_media_document\":{\"type\":\"reference\",\"title\":\"Document\",\"description\":\"Reference to file entity\",\"required\":true,\"settings\":{\"target_type\":\"file\"}}}}},\"taxonomy\":{\"tags\":{\"fields\":{\"uuid\":{\"type\":\"string\",\"title\":\"UUID\",\"required\":true},\"vid\":{\"type\":\"string\",\"title\":\"Vocabulary ID\",\"required\":true,\"default\":\"tags\"},\"name\":{\"type\":\"string\",\"title\":\"Name\",\"description\":\"Term name\",\"required\":true},\"description\":{\"type\":\"text\",\"title\":\"Description\",\"description\":\"Term description\"},\"weight\":{\"type\":\"integer\",\"title\":\"Weight\",\"description\":\"Term weight for sorting\"},\"parent\":{\"type\":\"reference\",\"title\":\"Parent\",\"description\":\"Parent term reference\",\"multiple\":true,\"settings\":{\"target_type\":\"taxonomy_term\",\"target_bundle\":\"tags\"}}}}}},\"config\":{\"views\":{\"article_view\":{\"base_entity\":\"node\",\"bundle\":\"article\",\"sorting\":\"date\",\"limit\":10,\"hasPager\":true,\"hint\":\"Display articles sorted by date\"}}},\"design_system\":{\"default\":{\"tokens\":{\"color--primary\":{\"title\":\"Primary Color\",\"value\":\"#007bff\",\"type\":\"color\"},\"color--secondary\":{\"title\":\"Secondary Color\",\"value\":\"#6c757d\",\"type\":\"color\"},\"color--success\":{\"title\":\"Success Color\",\"value\":\"#28a745\",\"type\":\"color\"},\"spacing--unit\":{\"title\":\"Base Spacing Unit\",\"value\":\"8px\",\"type\":\"spacing\"},\"typography--font-family\":{\"title\":\"Font Family\",\"value\":\"system-ui, -apple-system, sans-serif\",\"type\":\"typography\"}}}}}",
+        "pend-drop:entity-mapping": "{\"contentType\":\"node\",\"bundle\":\"landing_page\",\"field\":\"field_description\",\"mappingType\":\"entity\",\"entity\":\"user\",\"viewName\":\"\"}",
+        "pend-drop:view-configuration": "{\"viewName\":\"article_view\",\"displayName\":\"main\",\"baseEntity\":\"node\",\"bundle\":\"article\",\"sorting\":\"date\",\"limit\":\"10\",\"hasPager\":true,\"hint\":\"\"}"
+      }
+    }
+  }
+}
+

@@ -1,0 +1,324 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pendrop Data Schema",
+  "description": "JSON Schema for Pendrop structure data from Penpot",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "object",
+      "title": "Content",
+      "description": "Content structure: content -> entity_type -> bundle -> field",
+      "additionalProperties": {
+        "$ref": "#/definitions/entity_type"
+      }
+    },
+    "config": {
+      "type": "object",
+      "title": "Configuration",
+      "description": "Configuration structure: config -> config_type -> config_item",
+      "properties": {
+        "views": {
+          "type": "object",
+          "title": "Views",
+          "description": "Drupal Views configurations",
+          "additionalProperties": {
+            "$ref": "#/definitions/view"
+          }
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "description": "Additional configuration types can be added here"
+      }
+    },
+    "design_system": {
+      "type": "object",
+      "title": "Design System",
+      "description": "Design system structure: design_system -> token_sets -> tokens and design_system -> components -> component_name",
+      "properties": {
+        "components": {
+          "type": "object",
+          "title": "Components",
+          "description": "Component definitions with variants, slots, props, and stories",
+          "additionalProperties": {
+            "$ref": "#/definitions/component"
+          }
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/token_set"
+      }
+    }
+  },
+  "required": [
+    "content"
+  ],
+  "definitions": {
+    "entity_type": {
+      "type": "object",
+      "title": "Entity Type",
+      "description": "Entity type definition (e.g., node, block_content, media, taxonomy)",
+      "additionalProperties": {
+        "$ref": "#/definitions/bundle"
+      }
+    },
+    "bundle": {
+      "type": "object",
+      "title": "Bundle",
+      "description": "Bundle definition with its fields",
+      "properties": {
+        "fields": {
+          "type": "object",
+          "title": "Fields",
+          "description": "Field definitions for this bundle",
+          "additionalProperties": {
+            "$ref": "#/definitions/field"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "field": {
+      "type": "object",
+      "title": "Field",
+      "description": "Field definition",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Field type (string, text, integer, boolean, reference, link, component, layout, etc.)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Field title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Field description"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this field is required"
+        },
+        "multiple": {
+          "type": "boolean",
+          "description": "Whether this field can have multiple values"
+        },
+        "default": {
+          "description": "Default value for this field"
+        },
+        "settings": {
+          "type": "object",
+          "description": "Field-specific settings",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": true
+    },
+    "view": {
+      "type": "object",
+      "title": "View",
+      "description": "View configuration",
+      "properties": {
+        "base_entity": {
+          "type": "string",
+          "description": "Base entity type"
+        },
+        "bundle": {
+          "type": "string",
+          "description": "Content type bundle"
+        },
+        "sorting": {
+          "type": "string",
+          "description": "Default sorting field"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Items per page"
+        },
+        "hasPager": {
+          "type": "boolean",
+          "description": "Enable pager"
+        },
+        "hint": {
+          "type": "string",
+          "description": "View configuration hint"
+        }
+      },
+      "required": [
+        "base_entity",
+        "bundle"
+      ],
+      "additionalProperties": true
+    },
+    "token_set": {
+      "type": "object",
+      "title": "Token Set",
+      "description": "Design system token set",
+      "properties": {
+        "tokens": {
+          "type": "object",
+          "title": "Tokens",
+          "description": "Design tokens within this token set",
+          "additionalProperties": {
+            "$ref": "#/definitions/token"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "token": {
+      "type": "object",
+      "title": "Token",
+      "description": "Design system token",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Token title"
+        },
+        "value": {
+          "type": "string",
+          "description": "Token value"
+        },
+        "type": {
+          "type": "string",
+          "description": "Token type (color, spacing, typography, etc.)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "component": {
+      "type": "object",
+      "title": "Component",
+      "description": "Component definition with variants, slots, props, and stories",
+      "properties": {
+        "variants": {
+          "type": "array",
+          "title": "Variants",
+          "description": "Component variants",
+          "items": {
+            "$ref": "#/definitions/variant"
+          }
+        },
+        "slots": {
+          "type": "object",
+          "title": "Slots",
+          "description": "Component slots for content insertion",
+          "additionalProperties": {
+            "$ref": "#/definitions/slot"
+          }
+        },
+        "props": {
+          "type": "object",
+          "title": "Props",
+          "description": "Component properties",
+          "additionalProperties": {
+            "$ref": "#/definitions/prop"
+          }
+        },
+        "stories": {
+          "type": "array",
+          "title": "Stories",
+          "description": "Storybook stories for this component",
+          "items": {
+            "$ref": "#/definitions/story"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "variant": {
+      "type": "object",
+      "title": "Variant",
+      "description": "Component variant definition",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Variant name"
+        },
+        "props": {
+          "type": "object",
+          "description": "Prop overrides for this variant",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": true
+    },
+    "slot": {
+      "type": "object",
+      "title": "Slot",
+      "description": "Component slot definition",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Slot type"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this slot is required"
+        },
+        "description": {
+          "type": "string",
+          "description": "Slot description"
+        }
+      },
+      "additionalProperties": true
+    },
+    "prop": {
+      "type": "object",
+      "title": "Prop",
+      "description": "Component property definition",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Prop type (string, number, boolean, object, array, etc.)"
+        },
+        "default": {
+          "description": "Default value for this prop"
+        },
+        "description": {
+          "type": "string",
+          "description": "Prop description"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this prop is required"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": true
+    },
+    "story": {
+      "type": "object",
+      "title": "Story",
+      "description": "Storybook story definition",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Story name"
+        },
+        "args": {
+          "type": "object",
+          "description": "Story arguments/props",
+          "additionalProperties": true
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Storybook parameters",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

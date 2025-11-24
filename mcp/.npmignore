@@ -1,0 +1,37 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Tests
+**/*.test.ts
+**/*.spec.ts
+__tests__/
+
+# Config files
+tsconfig.json
+jest.config.js
+.eslintrc.json
+
+# Development
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Other
+node_modules/
+penpot-mcp/
+

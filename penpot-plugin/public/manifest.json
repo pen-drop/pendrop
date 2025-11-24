@@ -1,0 +1,9 @@
+{
+  "name": "Pendrop Slicer",
+  "description": "Store Drupal SDC metadata on component variants.",
+  "code": "plugin.js",
+  "permissions": [
+    "content:read",
+    "content:write"
+  ]
+}

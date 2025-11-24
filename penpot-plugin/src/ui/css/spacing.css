@@ -1,0 +1,36 @@
+/* Simple spacing utilities */
+.spacing-mb-1 {
+    margin-bottom: 1rem;
+}
+
+.spacing-mb-2 {
+    margin-bottom: 2rem;
+}
+
+.spacing-mb-3 {
+    margin-bottom: 3rem;
+}
+
+.spacing-mt-1 {
+    margin-top: 1rem;
+}
+
+.spacing-mt-2 {
+    margin-top: 2rem;
+}
+
+/* FormKit field spacing - adds spacing between form fields */
+.formkit-outer {
+    margin-bottom: 1rem;
+}
+
+.formkit-outer:last-child {
+    margin-bottom: 0;
+}
+
+/* Label spacing - 8px margin bottom */
+.label-spacing,
+.formkit-label {
+    margin-bottom: 8px;
+    display: block;
+}

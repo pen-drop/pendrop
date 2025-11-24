@@ -1,0 +1,324 @@
+{
+  "$schema": "./pendrop.schema.json",
+  "content": {
+    "node": {
+      "landing_page": {
+        "fields": {
+          "uuid": {
+            "type": "string",
+            "title": "UUID",
+            "description": "Unique identifier",
+            "required": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Bundle type",
+            "required": true,
+            "default": "landing_page"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Page title"
+          },
+          "status": {
+            "type": "boolean",
+            "title": "Status",
+            "description": "Published status",
+            "default": true
+          },
+          "field_description": {
+            "type": "text",
+            "title": "Description",
+            "description": "Page description"
+          },
+          "field_featured_image": {
+            "type": "reference",
+            "title": "Featured Image",
+            "description": "Reference to image media",
+            "settings": {
+              "target_type": "media",
+              "target_bundle": "image"
+            }
+          },
+          "layout_builder__layout": {
+            "type": "layout",
+            "title": "Layout",
+            "description": "Layout builder configuration"
+          },
+          "field_tags": {
+            "type": "reference",
+            "title": "Tags",
+            "description": "Reference to taxonomy terms",
+            "multiple": true,
+            "settings": {
+              "target_type": "taxonomy_term",
+              "target_bundle": "tags"
+            }
+          }
+        }
+      }
+    },
+    "block_content": {
+      "text": {
+        "fields": {
+          "uuid": {
+            "type": "string",
+            "title": "UUID",
+            "required": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "required": true,
+            "default": "text"
+          },
+          "info": {
+            "type": "string",
+            "title": "Info",
+            "description": "Block description"
+          },
+          "field_content": {
+            "type": "text",
+            "title": "Content",
+            "description": "Text content",
+            "required": true
+          }
+        }
+      },
+      "hero": {
+        "fields": {
+          "uuid": {
+            "type": "string",
+            "title": "UUID",
+            "required": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "required": true,
+            "default": "hero"
+          },
+          "field_title": {
+            "type": "string",
+            "title": "Title",
+            "required": true
+          },
+          "field_content": {
+            "type": "text",
+            "title": "Content",
+            "description": "Hero content"
+          },
+          "field_action": {
+            "type": "link",
+            "title": "Action",
+            "description": "Call-to-action link",
+            "multiple": true
+          },
+          "field_media": {
+            "type": "reference",
+            "title": "Media",
+            "description": "Reference to media",
+            "settings": {
+              "target_type": "media",
+              "target_bundle": "image"
+            }
+          },
+          "field_component": {
+            "type": "component",
+            "title": "Component",
+            "description": "UI Patterns component configuration"
+          }
+        }
+      },
+      "card": {
+        "fields": {
+          "uuid": {
+            "type": "string",
+            "title": "UUID",
+            "required": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "required": true,
+            "default": "card"
+          },
+          "field_title": {
+            "type": "string",
+            "title": "Title",
+            "required": true
+          },
+          "field_content": {
+            "type": "text",
+            "title": "Content"
+          },
+          "field_action": {
+            "type": "link",
+            "title": "Action",
+            "multiple": true
+          },
+          "field_media": {
+            "type": "reference",
+            "title": "Media",
+            "required": true,
+            "settings": {
+              "target_type": "media",
+              "target_bundle": "image"
+            }
+          },
+          "field_component": {
+            "type": "component",
+            "title": "Component"
+          }
+        }
+      }
+    },
+    "media": {
+      "image": {
+        "fields": {
+          "uuid": {
+            "type": "string",
+            "title": "UUID",
+            "required": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "required": true,
+            "default": "image"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Media name"
+          },
+          "field_media_image": {
+            "type": "reference",
+            "title": "Image",
+            "description": "Reference to file entity",
+            "required": true,
+            "settings": {
+              "target_type": "file"
+            }
+          }
+        }
+      },
+      "document": {
+        "fields": {
+          "uuid": {
+            "type": "string",
+            "title": "UUID",
+            "required": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "required": true,
+            "default": "document"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "field_media_document": {
+            "type": "reference",
+            "title": "Document",
+            "description": "Reference to file entity",
+            "required": true,
+            "settings": {
+              "target_type": "file"
+            }
+          }
+        }
+      }
+    },
+    "taxonomy": {
+      "tags": {
+        "fields": {
+          "uuid": {
+            "type": "string",
+            "title": "UUID",
+            "required": true
+          },
+          "vid": {
+            "type": "string",
+            "title": "Vocabulary ID",
+            "required": true,
+            "default": "tags"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Term name",
+            "required": true
+          },
+          "description": {
+            "type": "text",
+            "title": "Description",
+            "description": "Term description"
+          },
+          "weight": {
+            "type": "integer",
+            "title": "Weight",
+            "description": "Term weight for sorting"
+          },
+          "parent": {
+            "type": "reference",
+            "title": "Parent",
+            "description": "Parent term reference",
+            "multiple": true,
+            "settings": {
+              "target_type": "taxonomy_term",
+              "target_bundle": "tags"
+            }
+          }
+        }
+      }
+    }
+  },
+  "config": {
+    "views": {
+      "article_view": {
+        "base_entity": "node",
+        "bundle": "article",
+        "sorting": "date",
+        "limit": 10,
+        "hasPager": true,
+        "hint": "Display articles sorted by date"
+      }
+    }
+  },
+  "design_system": {
+    "default": {
+      "tokens": {
+        "color--primary": {
+          "title": "Primary Color",
+          "value": "#007bff",
+          "type": "color"
+        },
+        "color--secondary": {
+          "title": "Secondary Color",
+          "value": "#6c757d",
+          "type": "color"
+        },
+        "color--success": {
+          "title": "Success Color",
+          "value": "#28a745",
+          "type": "color"
+        },
+        "spacing--unit": {
+          "title": "Base Spacing Unit",
+          "value": "8px",
+          "type": "spacing"
+        },
+        "typography--font-family": {
+          "title": "Font Family",
+          "value": "system-ui, -apple-system, sans-serif",
+          "type": "typography"
+        }
+      }
+    }
+  }
+}
