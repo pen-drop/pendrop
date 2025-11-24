@@ -4,17 +4,22 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:watch": "vite build --watch",
-    "dev:plugin": "vite build --watch & vite preview --port 5176 --outDir dist",
+    "dev": "vite build --watch & vite preview --port 5176 --outDir dist",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx,.vue --max-warnings 0",
+    "lint:fix": "eslint . --ext .ts,.tsx,.vue --fix",
+    "check": "npm run type-check && npm run lint && npm run test:e2e"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@vitejs/plugin-vue": "^6.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-vue": "^9.0.0",
     "typescript": "~5.9.3",
     "vite": "^7.2.4"
   },

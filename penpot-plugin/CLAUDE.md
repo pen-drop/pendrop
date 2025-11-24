@@ -1,5 +1,20 @@
 # Claude AI Rules for Pendrop Penpot Plugin
 
+## Language Rule
+
+**All project documentation, code comments, commit messages, and communication must be in English.**
+
+This includes:
+- README files
+- Documentation
+- Code comments
+- Commit messages
+- Variable names (use English)
+- Function names (use English)
+- API documentation
+- Error messages
+- User-facing text
+
 ## FormKit Schema Forms
 
 **All forms must be implemented using FormKit Schema instead of Vue template syntax.**
@@ -117,17 +132,40 @@ formComponents.value[form.id] = markRaw(defineAsyncComponent(() =>
 ));
 ```
 
-## Language Rule
+## Testing Guidelines (DRY Principle)
 
-**All project documentation, code comments, commit messages, and communication must be in English.**
+**All tests must follow the DRY (Don't Repeat Yourself) principle:**
 
-This includes:
-- README files
-- Documentation
-- Code comments
-- Commit messages
-- Variable names (use English)
-- Function names (use English)
-- API documentation
-- Error messages
-- User-facing text
+- **Verify actual behavior**: Tests should verify that the expected behavior actually occurred, not just that no errors were thrown
+- **Check saved data**: After saving, tests should verify that the data was actually saved to storage (e.g., using `getDataFromStorage()` or similar methods)
+- **Use helper methods**: Create reusable helper methods in Page Objects for common verification patterns
+- **Avoid redundant assertions**: If a helper method already verifies something, don't repeat the same assertion in the test
+
+Example of good test practice:
+```typescript
+// Good: Verify data was actually saved
+await form.fill(testData);
+await form.save();
+await form.waitForSaveNotification();
+
+const savedData = await form.getDataFromStorage();
+expect(savedData).toEqual(testData);
+
+// Bad: Only check that save completed without errors
+await form.fill(testData);
+await form.save();
+await form.waitForSaveNotification();
+// Missing verification that data was actually saved!
+```
+
+## Validation Commands
+
+**Before committing code, run these validation commands:**
+
+- `npm run type-check` - TypeScript type checking
+- `npm run lint` - ESLint code quality checks
+- `npm run test:e2e` - End-to-end tests with Playwright
+- `npm run check` - Run all validations (type-check + lint + test:e2e)
+
+**Fix issues automatically:**
+- `npm run lint:fix` - Auto-fix ESLint issues where possible
