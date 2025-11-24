@@ -4,7 +4,7 @@ Penpot plugin for mapping component data to Drupal entities. Enables configurati
 
 ## Overview
 
-The plugin provides a user interface within Penpot to map design components to Drupal content types, configure views, and define component properties.
+The plugin provides a user interface within Penpot to map design components to Drupal content types, configure views, and define component properties. It works with the Pendrop schemas to generate valid configuration data.
 
 ## Features
 
@@ -12,6 +12,15 @@ The plugin provides a user interface within Penpot to map design components to D
 - **Entity Field Mapping**: Map component properties to Drupal fields
 - **View Configuration**: Configure Drupal views for content display
 - **JSON Configuration**: Define schema for content structure and views
+- **Design System Integration**: Works with W3C DTCG design tokens
+
+## Schemas
+
+This plugin uses the Pendrop schemas located at `../../schemas/`:
+- `pendrop.schema.content.json` - Content and configuration schema
+- `pendrop.schema.ds.json` - Design system schema (W3C DTCG format)
+
+Test data files are located in `tests/` and reference these schemas.
 
 ## Development
 

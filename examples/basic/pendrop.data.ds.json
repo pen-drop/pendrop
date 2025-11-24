@@ -1,5 +1,5 @@
 {
-  "$schema": "../../pendrop.schema.ds.json",
+  "$schema": "../../schemas/pendrop.schema.ds.json",
   "tokens": {
     "color": {
       "$type": "color",
