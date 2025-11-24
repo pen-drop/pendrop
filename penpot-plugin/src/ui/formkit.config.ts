@@ -26,6 +26,7 @@ export const formkitConfig: DefaultConfigOptions = {
                 '$reset': true,
                 'label-spacing': true
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             input: (node: any) => {
                 const type = node.props.type as string;
                 const classes: Record<string, boolean> = { '$reset': true };

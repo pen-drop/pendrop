@@ -1,0 +1,259 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pendrop Design System Schema",
+  "description": "JSON Schema for Pendrop design system based on W3C Design Tokens Community Group (DTCG) format specification",
+  "type": "object",
+  "properties": {
+    "tokens": {
+      "type": "object",
+      "title": "Design Tokens",
+      "description": "Design tokens following W3C DTCG format specification. Supports nested groups and token inheritance.",
+      "additionalProperties": {
+        "$ref": "#/definitions/token_or_group"
+      }
+    },
+    "components": {
+      "type": "object",
+      "title": "Components",
+      "description": "Component definitions with variants, slots, and props",
+      "additionalProperties": {
+        "$ref": "#/definitions/component"
+      }
+    },
+    "stories": {
+      "type": "object",
+      "title": "Stories",
+      "description": "Storybook stories for components and design system documentation",
+      "additionalProperties": {
+        "$ref": "#/definitions/story"
+      }
+    }
+  },
+  "definitions": {
+    "token_or_group": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/token"
+        },
+        {
+          "$ref": "#/definitions/token_group"
+        }
+      ]
+    },
+    "token": {
+      "type": "object",
+      "title": "Token",
+      "description": "Design system token following W3C Design Tokens Community Group (DTCG) format specification",
+      "properties": {
+        "$value": {
+          "description": "The actual value of the token (required by W3C DTCG)"
+        },
+        "$type": {
+          "type": "string",
+          "description": "Token type: color, dimension, fontFamily, fontWeight, duration, cubicBezier, number, etc. (required by W3C DTCG)",
+          "enum": [
+            "color",
+            "dimension",
+            "fontFamily",
+            "fontWeight",
+            "fontSize",
+            "lineHeight",
+            "letterSpacing",
+            "duration",
+            "cubicBezier",
+            "number",
+            "string",
+            "shadow",
+            "border",
+            "gradient",
+            "transition",
+            "strokeStyle",
+            "fontStyle"
+          ]
+        },
+        "$description": {
+          "type": "string",
+          "description": "Token description (optional by W3C DTCG)"
+        },
+        "$extensions": {
+          "type": "object",
+          "description": "Additional metadata for tool-specific extensions (optional by W3C DTCG)",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "$value"
+      ],
+      "additionalProperties": false
+    },
+    "token_group": {
+      "type": "object",
+      "title": "Token Group",
+      "description": "A group of tokens or nested groups. Groups can define $type that is inherited by child tokens.",
+      "properties": {
+        "$type": {
+          "type": "string",
+          "description": "Default token type for all tokens in this group (inherited by children)",
+          "enum": [
+            "color",
+            "dimension",
+            "fontFamily",
+            "fontWeight",
+            "fontSize",
+            "lineHeight",
+            "letterSpacing",
+            "duration",
+            "cubicBezier",
+            "number",
+            "string",
+            "shadow",
+            "border",
+            "gradient",
+            "transition",
+            "strokeStyle",
+            "fontStyle"
+          ]
+        },
+        "$description": {
+          "type": "string",
+          "description": "Description of this token group"
+        },
+        "$extensions": {
+          "type": "object",
+          "description": "Additional metadata for tool-specific extensions",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/token_or_group"
+      }
+    },
+    "component": {
+      "type": "object",
+      "title": "Component",
+      "description": "Component definition with variants, slots, and props",
+      "properties": {
+        "variants": {
+          "type": "array",
+          "title": "Variants",
+          "description": "Component variants",
+          "items": {
+            "$ref": "#/definitions/variant"
+          }
+        },
+        "slots": {
+          "type": "object",
+          "title": "Slots",
+          "description": "Component slots for content insertion",
+          "additionalProperties": {
+            "$ref": "#/definitions/slot"
+          }
+        },
+        "props": {
+          "type": "object",
+          "title": "Props",
+          "description": "Component properties",
+          "additionalProperties": {
+            "$ref": "#/definitions/prop"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "variant": {
+      "type": "object",
+      "title": "Variant",
+      "description": "Component variant definition",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Variant name"
+        },
+        "props": {
+          "type": "object",
+          "description": "Prop overrides for this variant",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": true
+    },
+    "slot": {
+      "type": "object",
+      "title": "Slot",
+      "description": "Component slot definition",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Slot type"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this slot is required"
+        },
+        "description": {
+          "type": "string",
+          "description": "Slot description"
+        }
+      },
+      "additionalProperties": true
+    },
+    "prop": {
+      "type": "object",
+      "title": "Prop",
+      "description": "Component property definition",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Prop type (string, number, boolean, object, array, etc.)"
+        },
+        "default": {
+          "description": "Default value for this prop"
+        },
+        "description": {
+          "type": "string",
+          "description": "Prop description"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this prop is required"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": true
+    },
+    "story": {
+      "type": "object",
+      "title": "Story",
+      "description": "Storybook story definition",
+      "properties": {
+        "component": {
+          "type": "string",
+          "description": "Component this story belongs to"
+        },
+        "name": {
+          "type": "string",
+          "description": "Story name"
+        },
+        "args": {
+          "type": "object",
+          "description": "Story arguments/props",
+          "additionalProperties": true
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Storybook parameters",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

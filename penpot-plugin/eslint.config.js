@@ -85,6 +85,8 @@ export default [
       'test-results/**',
       '*.config.js',
       '*.config.ts',
+      '**/*.mock.ts',
+      '**/mock/**',
     ],
   },
 ];

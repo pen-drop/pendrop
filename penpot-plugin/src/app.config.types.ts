@@ -1,4 +1,5 @@
-import type { ParentNode } from './ui/types/ParentNode.types';
+import type { ParentNode } from './ui/types/Context.types';
+import type { PendropData } from './ui/types/PendropData.types';
 import type { EntityTypeMappingFormData } from './ui/components/Forms/EntityTypeMappingForm/EntityTypeMappingForm.types';
 import type { EntityFieldMappingFormData } from './ui/components/Forms/EntityFieldMappingForm/EntityFieldMappingForm.types';
 import type { ViewConfigurationFormData } from './ui/components/Forms/ViewConfigurationForm/ViewConfigurationForm.types';
@@ -23,14 +24,14 @@ export interface FormConfig {
   tabLabel: string; // Human-readable tab label
   props: {
     schemaData?: boolean; // Whether form needs schemaData prop
-    [key: string]: any; // Allow additional prop configurations
+    [key: string]: unknown; // Allow additional prop configurations
   };
   enabled: (formData: FormDataMap[FormId] | null, parentNodesContext: ParentNode[]) => boolean;
   buildProps: (
     formData: FormDataMap[FormId] | null,
     parentNodesContext: ParentNode[],
-    schemaData?: any
-  ) => Record<string, any>;
+    schemaData?: PendropData | null
+  ) => Record<string, unknown>;
 }
 
 export interface AppConfig {

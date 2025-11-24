@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { inject, computed } from 'vue';
+import { inject, computed, type Ref } from 'vue';
 
 const props = defineProps<{
   name: string;
 }>();
 
-const activeTab = inject<any>('activeTab');
+const activeTab = inject<Ref<string>>('activeTab');
 
 const isActive = computed(() => activeTab?.value === props.name);
 </script>

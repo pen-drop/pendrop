@@ -26,19 +26,19 @@ const formData = computed({
       : '';
     return { jsonSchema: strVal };
   },
-  set: (values: any) => {
-    const strVal = values.jsonSchema;
+  set: (values: Record<string, unknown>) => {
+    const strVal = values.jsonSchema as string;
     try {
       const parsed = JSON.parse(strVal);
       emit('update:modelValue', parsed);
     } catch {
-      emit('update:modelValue', strVal as any);
+      emit('update:modelValue', strVal);
     }
   }
 });
 
 // Custom validation rule for JSON
-const jsonValidation = (node: any) => {
+const jsonValidation = (node: { value: string }) => {
   try {
     JSON.parse(node.value);
     return true;
@@ -68,9 +68,9 @@ const formSchema = computed<PenDropJsonConfigurationFormSchema>(() => [
   }
 ]);
 
-const submitHandler = (data: any) => {
+const submitHandler = (data: Record<string, unknown>) => {
   try {
-    const parsed = JSON.parse(data.jsonSchema);
+    const parsed = JSON.parse(data.jsonSchema as string);
     emit('save', parsed);
   } catch {
     console.error('Invalid JSON');

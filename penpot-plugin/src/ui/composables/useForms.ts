@@ -1,7 +1,8 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { appConfig } from '../../app.config';
 import type { FormDataMap, FormId, StorageLocation } from '../../app.config.types';
-import type { ParentNode } from '../types/ParentNode.types';
+import type { ParentNode } from '../types/Context.types';
+import type { PendropData } from '../types/PendropData.types';
 
 /**
  * Central composable for managing all forms
@@ -80,7 +81,7 @@ export function useForms() {
   /**
    * Get props for a form using its configuration
    */
-  const getFormProps = (formId: FormId, parentNodesContext: ParentNode[], schemaData?: any) => {
+  const getFormProps = (formId: FormId, parentNodesContext: ParentNode[], schemaData?: PendropData | null) => {
     const config = appConfig.forms.find(f => f.id === formId);
     if (!config) {
       return { modelValue: null, enabled: false };
@@ -112,8 +113,9 @@ export function useForms() {
   /**
    * Update local form data directly (e.g. from user input)
    */
-  const updateFormData = (formId: FormId, data: any) => {
-    formDataMap.value[formId] = data;
+  const updateFormData = (formId: FormId, data: FormDataMap[FormId] | null) => {
+    // TypeScript can't narrow the union type properly, so we use a type assertion
+    (formDataMap.value as Record<FormId, FormDataMap[FormId] | null>)[formId] = data;
   };
 
   // Set up event listeners

@@ -2,11 +2,12 @@
 import { computed, ref, watch, nextTick } from 'vue';
 import { FormKitSchema } from '@formkit/vue';
 import type { EntityTypeMappingFormData, EntityTypeMappingFormSchema } from './EntityTypeMappingForm.types';
+import type { PendropData } from '../../../types/PendropData.types';
 
 // Props
 interface Props {
   modelValue: EntityTypeMappingFormData | null;
-  schemaData?: any; // JSON schema data for options
+  schemaData?: PendropData | null;
 }
 
 const props = defineProps<Props>();
@@ -23,8 +24,8 @@ const showForm = ref(true);
 
 // Computed form data that syncs directly with modelValue
 const formData = computed({
-  get: () => (props.modelValue || { contentType: '', bundle: '' }) as Record<string, any>,
-  set: (value: Record<string, any>) => {
+  get: () => (props.modelValue || { contentType: '', bundle: '' }) as Record<string, unknown>,
+  set: (value: Record<string, unknown>) => {
     emit('update:modelValue', value as EntityTypeMappingFormData);
   }
 });
@@ -113,7 +114,7 @@ const formSchema = computed<EntityTypeMappingFormSchema>(() => [
   }
 ]);
 
-const submitHandler = (data: Record<string, any>) => {
+const submitHandler = (data: Record<string, unknown>) => {
   emit('save', data as EntityTypeMappingFormData);
 };
 </script>

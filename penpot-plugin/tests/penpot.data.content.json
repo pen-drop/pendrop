@@ -1,5 +1,5 @@
 {
-  "$schema": "./pendrop.schema.json",
+  "$schema": "../../pendrop.schema.content.json",
   "content": {
     "node": {
       "landing_page": {
@@ -289,36 +289,6 @@
         "hint": "Display articles sorted by date"
       }
     }
-  },
-  "design_system": {
-    "default": {
-      "tokens": {
-        "color--primary": {
-          "title": "Primary Color",
-          "value": "#007bff",
-          "type": "color"
-        },
-        "color--secondary": {
-          "title": "Secondary Color",
-          "value": "#6c757d",
-          "type": "color"
-        },
-        "color--success": {
-          "title": "Success Color",
-          "value": "#28a745",
-          "type": "color"
-        },
-        "spacing--unit": {
-          "title": "Base Spacing Unit",
-          "value": "8px",
-          "type": "spacing"
-        },
-        "typography--font-family": {
-          "title": "Font Family",
-          "value": "system-ui, -apple-system, sans-serif",
-          "type": "typography"
-        }
-      }
-    }
   }
 }
+

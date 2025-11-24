@@ -34,7 +34,7 @@ export class JsonConfigurationFormObject extends BaseFormObject {
   /**
    * Verify that textarea is populated with expected JSON data
    */
-  async verifyLoaded(expectedData: any): Promise<void> {
+  async verifyLoaded(expectedData: unknown): Promise<void> {
     const textareaValue = await this.jsonSchemaTextarea.inputValue();
     const loadedData = JSON.parse(textareaValue);
     expect(loadedData).toEqual(expectedData);

@@ -33,7 +33,7 @@ export abstract class BaseFormObject {
   /**
    * Get form data from localStorage
    */
-  async getDataFromStorage(): Promise<any> {
+  async getDataFromStorage(): Promise<unknown> {
     return await this.page.evaluate((formId) => {
       const mockData = localStorage.getItem('penpot-mock-data');
       if (mockData) {

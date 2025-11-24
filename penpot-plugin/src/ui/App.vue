@@ -5,8 +5,8 @@ import NotificationToast from './components/Notification';
 import { useNotification } from './composables/useNotification';
 import { useForms } from './composables/useForms';
 import { appConfig } from '../app.config';
-import type { FormId } from '../app.config.types';
-import type { ParentNode } from './types/ParentNode.types';
+import type { FormId, FormDataMap } from '../app.config.types';
+import type { ParentNode } from './types/Context.types';
 
 const tabsRef = ref<InstanceType<typeof Tabs>>();
 const theme = ref('dark'); // Default to dark
@@ -109,7 +109,7 @@ onMounted(() => {
 });
 
 // Handle save events from forms
-const handleSave = (formId: FormId, data: any) => {
+const handleSave = (formId: FormId, data: FormDataMap[FormId]) => {
   save(formId, data);
 };
 
@@ -119,7 +119,7 @@ const handleClear = (formId: FormId) => {
 };
 
 // Handle update events from forms
-const handleUpdate = (formId: FormId, data: any) => {
+const handleUpdate = (formId: FormId, data: FormDataMap[FormId]) => {
   updateFormData(formId, data);
 };
 

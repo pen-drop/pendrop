@@ -2,11 +2,12 @@
 import { computed } from 'vue';
 import { FormKitSchema } from '@formkit/vue';
 import type { ViewConfigurationFormData, ViewConfigurationFormSchema } from './ViewConfigurationForm.types';
+import type { PendropData } from '../../../types/PendropData.types';
 
 // Props
 interface Props {
   modelValue: ViewConfigurationFormData | null;
-  schemaData?: any; // JSON schema data for view options
+  schemaData?: PendropData | null;
 }
 
 const props = defineProps<Props>();
@@ -27,7 +28,7 @@ const defaultFormData = (): ViewConfigurationFormData => ({
 // Computed form data that syncs directly with modelValue
 const formData = computed({
   get: () => props.modelValue || defaultFormData(),
-  set: (value: ViewConfigurationFormData | Record<string, any>) => {
+  set: (value: ViewConfigurationFormData | Record<string, unknown>) => {
     emit('update:modelValue', value as ViewConfigurationFormData);
   }
 });
@@ -89,7 +90,7 @@ const formSchema = computed<ViewConfigurationFormSchema>(() => [
   }
 ]);
 
-const submitHandler = (data: Record<string, any>) => {
+const submitHandler = (data: Record<string, unknown>) => {
   emit('save', data as ViewConfigurationFormData);
 };
 </script>

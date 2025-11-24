@@ -169,3 +169,13 @@ await form.waitForSaveNotification();
 
 **Fix issues automatically:**
 - `npm run lint:fix` - Auto-fix ESLint issues where possible
+
+## ESLint Configuration
+
+**Mock and test files are excluded from strict type checking:**
+
+- Files matching `**/*.mock.ts`
+- Files in `**/mock/**` directories
+- The `penpotMock.ts` file
+
+These files interact with external APIs where `any` types are acceptable.

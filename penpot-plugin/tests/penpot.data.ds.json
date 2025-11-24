@@ -1,0 +1,39 @@
+{
+  "$schema": "../../pendrop.schema.ds.json",
+  "tokens": {
+    "color": {
+      "$type": "color",
+      "$description": "Color tokens",
+      "primary": {
+        "$value": "#007bff",
+        "$description": "Primary Color"
+      },
+      "secondary": {
+        "$value": "#6c757d",
+        "$description": "Secondary Color"
+      },
+      "success": {
+        "$value": "#28a745",
+        "$description": "Success Color"
+      }
+    },
+    "spacing": {
+      "$type": "dimension",
+      "$description": "Spacing tokens",
+      "unit": {
+        "$value": "8px",
+        "$description": "Base Spacing Unit"
+      }
+    },
+    "typography": {
+      "$description": "Typography tokens",
+      "font-family": {
+        "$value": "system-ui, -apple-system, sans-serif",
+        "$type": "fontFamily",
+        "$description": "Font Family"
+      }
+    }
+  },
+  "components": {},
+  "stories": {}
+}
