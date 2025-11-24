@@ -33,12 +33,6 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer is commented out because dev server should be started manually
-  // webServer: {
-  //   command: 'npm run dev',
-  //   url: 'http://localhost:5173',
-  //   reuseExistingServer: true,
-  //   timeout: 120 * 1000,
-  // },
+  // No webServer configured - start server manually before running tests
 });
 

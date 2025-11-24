@@ -1,5 +1,5 @@
 {
-  "$schema": "../../pendrop.schema.content.json",
+  "$schema": "../../schemas/pendrop.schema.content.json",
   "content": {
     "node": {
       "landing_page": {

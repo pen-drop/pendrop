@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite build --watch & vite preview --port 5176 --outDir dist",
     "build": "tsc && vite build",
-    "test:e2e": "playwright test",
+    "preview:test": "vite preview --port 5174 --outDir dist",
+    "test:e2e": "npm run build && vite preview --host 0.0.0.0 --port 5174 --outDir dist & sleep 5 && playwright test ; kill $(lsof -ti:5174) 2>/dev/null || true",
     "test:e2e:ui": "playwright test --ui",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx,.vue",

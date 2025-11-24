@@ -132,6 +132,15 @@ formComponents.value[form.id] = markRaw(defineAsyncComponent(() =>
 ));
 ```
 
+## Playwright Configuration
+
+**Do NOT use webServer configuration in playwright.config.ts:**
+
+- The webServer option should remain commented out or not configured
+- Tests require manual server start before running
+- The test:e2e script handles server startup and shutdown automatically
+- This approach provides better control over the server lifecycle
+
 ## Testing Guidelines (DRY Principle)
 
 **All tests must follow the DRY (Don't Repeat Yourself) principle:**

@@ -1,36 +1,34 @@
 # Pendrop
 
-Pendrop automates the creation of Drupal applications based on structure data and layout data from Penpot. Based on a uniform structure file, everything else is generated, tested, and updated via rule sets.
+Automates the creation of Drupal applications from Penpot designs through structure data and layout data.
 
-## Overview
+## Concept
 
-Pendrop generates Drupal applications from Penpot designs. It combines structure definitions, layout information, and component mappings to create complete Drupal implementations with automated test data and Storybook integration.
+Pendrop bridges design and development by generating Drupal applications from Penpot designs. It uses a uniform structure file as the foundation, from which everything else is generated, tested, and updated via rule sets.
 
-## How It Works
+### Workflow
 
-1. **Structure Definition**: Defines Drupal requirements including content types, views, and configuration
-2. **Layout Enhancement**: Penpot adds layout information including components, variants, slots, props, and Storybook stories
-3. **Mapping**: Penpot plugin maps Penpot components to Drupal entities
-4. **Test Data**: Auto-generated test data in separate JSON files following Drupal Default Content Import format for review
-5. **Final Document**: MCP server exports combined structure, layout, and mapping data matching the schema
-6. **Storybook Integration**: Component stories map to Storybook stories for component documentation
+1. Define Drupal content structure using JSON schemas
+2. Design components and layouts in Penpot
+3. Map Penpot components to Drupal entities via plugin
+4. Export combined data through MCP server
+5. Generate Drupal application with test data and Storybook integration
 
-## Architecture
+### Components
 
-**Penpot Plugin**: Penpot plugin for mapping component data to Drupal entities. Enables configuration of entity mappings, view configurations, and component definitions.
+- **Schemas**: Define content structure and design system (W3C DTCG tokens)
+- **Penpot Plugin**: Map design components to Drupal entities
+- **MCP Server**: Process Penpot files and export combined data
 
-**MCP Server**: Exports final combined document with structure, layout, and mapping data. Provides tools and resources to analyze and process Penpot files.
+## Project Structure
 
-## Installation
-
-- Node.js (version 18 or higher)
-- Python 3.10 or higher (for MCP Server)
-- Penpot instance for plugin integration
+```
+schemas/     # JSON schemas for content and design system
+examples/    # Example data files
+plugins/     # Penpot plugin for entity mapping
+servers/     # MCP server for Penpot processing
+```
 
 ## License
 
-[Add license information here]
-
-## Contributing
-
-Contributions are welcome! Please create an issue or pull request for improvements.
+MIT
