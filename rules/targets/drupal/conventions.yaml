@@ -1,0 +1,50 @@
+# Drupal Target Conventions
+# These conventions guide code generation for Drupal projects
+
+naming:
+  # Use snake_case for all Drupal machine names
+  style: snake_case
+  # No prefix for components (use clean names)
+  component_prefix: ""
+  # Reserved prefixes that should not be used
+  forbidden_prefixes:
+    - node_
+    - field_base_
+    - field_instance_
+
+paths:
+  # Single Directory Components (SDC) location
+  components: /components
+  # Drupal configuration sync directory
+  config: /config/sync
+  # Views configuration
+  views: /config/sync/views.view.*.yml
+
+structure:
+  # Required files for SDC components
+  component_files:
+    - component.yml
+    - template.twig
+  # Optional component files
+  optional_files:
+    - README.md
+    - screenshot.png
+  # Configuration file format
+  config_format: yaml
+  # Field storage and instance naming
+  field_naming:
+    storage: field.storage.{entity_type}.{field_name}.yml
+    instance: field.field.{entity_type}.{bundle}.{field_name}.yml
+
+# Drupal-specific conventions
+drupal:
+  # Schema version for components
+  schema_version: 1.0
+  # Component namespace (can be overridden per project)
+  component_namespace: custom
+  # Entity type conventions
+  entity_types:
+    content: node
+    taxonomy: taxonomy_term
+    media: media
+

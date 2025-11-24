@@ -1,19 +1,31 @@
-# Pendrop MCP Server
+# Penpot MCP Server
 
-Model Context Protocol server for Pendrop. Exports final combined document with structure, layout, and mapping data. Provides tools and resources to analyze and process Penpot files.
+Model Context Protocol server for extracting design data from Penpot. This is a **tool-specific extraction server** that outputs data in `pendrop.data.ds.json` format.
 
 ## Overview
 
-The MCP server integrates with Penpot to extract design data and combine it with structure definitions and component mappings. It exports the final document that matches the Pendrop schemas for Drupal application generation.
+The Penpot MCP server integrates with Penpot to extract design system data including components, tokens, and layout information. It transforms Penpot's native format into the standardized `pendrop.schema.ds.json` format.
+
+## Role in Pendrop Architecture
+
+This server is part of the **extraction layer** in Pendrop's AI-based workflow:
+
+```
+Penpot Design → penpot-mcp → pendrop.data.ds.json → theme-mcp → Generated Components
+```
+
+- **Input**: Penpot file URL or exported data
+- **Output**: `pendrop.data.ds.json` (W3C DTCG compliant tokens + components)
+- **Used by**: `theme-mcp` server for component and story generation
 
 ## Features
 
 - Penpot file analysis and processing
-- Component data extraction
-- Design token extraction (W3C DTCG format)
-- Final document export combining structure, layout, and mapping data
-- Integration with Pendrop workflow
-- AI-powered design workflow automation via Model Context Protocol
+- Component data extraction from Penpot designs
+- Design token extraction in W3C DTCG format
+- Automatic transformation to `pendrop.schema.ds.json` format
+- Integration with Pendrop workflow via MCP
+- Used by theme-mcp as extraction bridge
 
 ## Configuration
 

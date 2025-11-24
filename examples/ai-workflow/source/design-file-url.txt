@@ -1,0 +1,5 @@
+https://design.penpot.app/#/view/project-id/file-id
+
+This URL would be passed to theme-mcp's extract_design() tool.
+The bridge will detect it's a Penpot URL and route to penpot-mcp.
+

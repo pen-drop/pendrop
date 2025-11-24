@@ -1,0 +1,119 @@
+# AI Prompt Templates for Drupal Code Generation
+# These prompts guide AI in generating Drupal-specific code
+
+generate_component: |
+  Generate a Drupal Single Directory Component (SDC) following these requirements:
+  
+  1. Create a component.yml file with:
+     - Proper schema definition
+     - Component metadata (name, description, group)
+     - Props definition matching the design system tokens
+     - Slots if needed for content areas
+  
+  2. Create a template.twig file with:
+     - Proper Twig syntax
+     - BEM-style CSS classes
+     - Accessibility attributes (ARIA labels, roles)
+     - Responsive design considerations
+     - Use design tokens for styling
+  
+  3. Follow Drupal coding standards:
+     - Use snake_case for machine names
+     - Proper indentation (2 spaces)
+     - Include helpful comments
+  
+  Component data: {component_data}
+  Target: Drupal SDC
+  Conventions: {conventions}
+
+generate_story: |
+  Generate a Storybook story for a Drupal SDC component using storybook-addon-sdc.
+  
+  The story should:
+  1. Import the SDC component properly
+  2. Define multiple variants showcasing different states and configurations
+  3. Use Storybook's CSF3 (Component Story Format 3.0)
+  4. Include controls for interactive testing
+  5. Add documentation describing the component usage
+  6. Reference design tokens used in the component
+  
+  Story structure:
+  - Default story showing the base component
+  - Variant stories for different states (hover, active, disabled, etc.)
+  - Responsive stories for different screen sizes
+  - Dark mode variant if applicable
+  
+  Component data: {component_data}
+  Storybook addon: storybook-addon-sdc
+  Conventions: {conventions}
+
+generate_content_type: |
+  Generate Drupal content type configuration following these requirements:
+  
+  1. Create node.type.{type}.yml with:
+     - Machine name (snake_case)
+     - Human-readable name
+     - Description
+     - Display settings
+  
+  2. Create field configurations:
+     - field.storage.node.{field_name}.yml for field storage
+     - field.field.node.{type}.{field_name}.yml for field instances
+  
+  3. Create form display: core.entity_form_display.node.{type}.default.yml
+  
+  4. Create view display: core.entity_view_display.node.{type}.default.yml
+  
+  5. Follow best practices:
+     - Use appropriate field types (text, entity_reference, image, etc.)
+     - Set proper cardinality
+     - Add field descriptions
+     - Configure form widget and formatter settings
+  
+  Content structure: {content_data}
+  Target: Drupal
+  Conventions: {conventions}
+
+generate_view: |
+  Generate Drupal Views configuration following these requirements:
+  
+  1. Create views.view.{view_id}.yml with:
+     - Proper view ID and label
+     - Display configuration (page, block, REST export, etc.)
+     - Fields to display
+     - Filters and contextual filters
+     - Sort criteria
+     - Pager settings
+  
+  2. Follow best practices:
+     - Use meaningful view IDs
+     - Add proper access controls
+     - Include caching configuration
+     - Set responsive display settings
+  
+  View structure: {view_data}
+  Target: Drupal Views
+  Conventions: {conventions}
+
+transform_design_to_drupal: |
+  Transform design system data (pendrop.data.ds.json) to Drupal-compatible structure.
+  
+  Tasks:
+  1. Map design tokens to Drupal configuration:
+     - Colors → CSS custom properties or theme settings
+     - Typography → font definitions
+     - Spacing → layout configuration
+  
+  2. Convert components to SDC structure:
+     - Extract component props from design
+     - Generate prop schema for component.yml
+     - Create Twig template structure
+  
+  3. Preserve design system hierarchy:
+     - Token sets → CSS variable groups
+     - Component categories → component groups
+  
+  Design system data: {ds_data}
+  Target: Drupal
+  Conventions: {conventions}
+

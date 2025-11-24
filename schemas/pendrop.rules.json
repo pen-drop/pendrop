@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pendrop.io/schemas/pendrop.rules.json",
+  "title": "Pendrop Rules Schema",
+  "description": "Schema for Pendrop convention and prompt files",
+  "type": "object",
+  "properties": {
+    "naming": {
+      "type": "object",
+      "description": "Naming conventions for code generation",
+      "properties": {
+        "style": {
+          "type": "string",
+          "enum": ["snake_case", "camelCase", "PascalCase", "kebab-case"],
+          "description": "Primary naming style"
+        },
+        "component_prefix": {
+          "type": "string",
+          "description": "Prefix for component names"
+        },
+        "forbidden_prefixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Prefixes that should not be used"
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "description": "File system paths for generated code",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "structure": {
+      "type": "object",
+      "description": "File structure conventions",
+      "properties": {
+        "component_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Required files for components"
+        },
+        "optional_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional component files"
+        },
+        "config_format": {
+          "type": "string",
+          "enum": ["yaml", "json", "toml", "xml"],
+          "description": "Configuration file format"
+        }
+      },
+      "additionalProperties": true
+    },
+    "format": {
+      "type": "string",
+      "description": "Story format (for story.yaml files)",
+      "enum": ["storybook", "custom"]
+    },
+    "addon": {
+      "type": "string",
+      "description": "Storybook addon to use"
+    },
+    "file_suffix": {
+      "type": "string",
+      "description": "File suffix for generated files"
+    },
+    "file_naming": {
+      "type": "string",
+      "description": "File naming pattern with placeholders"
+    },
+    "path": {
+      "type": "string",
+      "description": "Output path for generated files"
+    },
+    "csf_version": {
+      "type": "string",
+      "description": "Component Story Format version"
+    },
+    "default_variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      },
+      "description": "Default story variants"
+    },
+    "conditional_variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "type": "string"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Conditional story variants"
+    },
+    "storybook": {
+      "type": "object",
+      "description": "Storybook-specific configuration",
+      "additionalProperties": true
+    },
+    "sdc_integration": {
+      "type": "object",
+      "description": "SDC integration configuration",
+      "additionalProperties": true
+    },
+    "preview": {
+      "type": "object",
+      "description": "Preview configuration",
+      "properties": {
+        "backgrounds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "default": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "viewports": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "patternProperties": {
+    "^generate_": {
+      "type": "string",
+      "description": "AI prompt template for code generation"
+    },
+    "^transform_": {
+      "type": "string",
+      "description": "AI prompt template for data transformation"
+    }
+  },
+  "additionalProperties": true
+}
+
