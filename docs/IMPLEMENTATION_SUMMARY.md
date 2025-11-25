@@ -1,4 +1,4 @@
-# Implementation Summary: AI-Orchestrated Design System Transformation
+# Implementation Summary: AI-Orchestrated Design System Extraction
 
 ## What Was Implemented
 
@@ -8,19 +8,19 @@ Implemented an **AI orchestration paradigm** where MCPs return prompts/instructi
 
 ### Components Created
 
-#### 1. Transformation Packages
+#### 1. Extraction Packages
 
-Created configurable transformation packages for design tools:
+Created configurable extraction packages for design tools:
 
 ```
-rules/transformations/
+rules/theme/extraction/
 ├── pendrop-penpot/
-│   ├── prompts.yaml              # Penpot transformation instructions
+│   ├── prompts.yaml              # Penpot extraction instructions
 │   └── examples/
 │       ├── simple-input.json     # Example Penpot data
 │       └── simple-output.json    # Example pendrop.data.ds.json
 └── pendrop-figma/
-    ├── prompts.yaml              # Figma transformation instructions
+    ├── prompts.yaml              # Figma extraction instructions
     └── examples/
 ```
 
@@ -29,15 +29,15 @@ rules/transformations/
 - Component extraction guidance
 - Story generation rules
 - Naming conventions
-- Transformation hints and examples
+- Extraction hints and examples
 
 #### 2. Theme MCP Tools
 
 Implemented three main orchestration tools:
 
-**a) `transform_design_system(design_url, source_tool, project_path)`**
-- Returns comprehensive AI instructions for transformation
-- Loads transformation package (prompts + examples)
+**a) `extract_design_system(design_url, source_tool, project_path)`**
+- Returns comprehensive AI instructions for extraction
+- Loads extraction package (prompts + examples)
 - Includes schema, rules, and auth configuration
 - Guides AI through extract → transform → validate → save workflow
 
@@ -54,7 +54,7 @@ Implemented three main orchestration tools:
 #### 3. Utility Functions
 
 **Transform Rules Loader** (`utils/transformRules.ts`):
-- Loads transformation packages
+- Loads extraction packages
 - Supports custom packages via `pendrop.yml`
 - Priority: custom → built-in
 - Future: npm package support
@@ -69,8 +69,8 @@ Implemented three main orchestration tools:
 - Detailed error formatting
 
 **Project Config** (`utils/projectConfig.ts`):
-- Extended with `transformations` configuration
-- Loads transformation package mappings
+- Extended with `extractions` configuration
+- Loads extraction package mappings
 
 #### 4. Configuration Schema
 
@@ -78,8 +78,8 @@ Extended `pendrop.yml` configuration:
 
 ```yaml
 rules:
-  # Transformation package mapping
-  transformations:
+  # Extraction package mapping
+  extraction:
     penpot: pendrop-penpot              # Built-in (default)
     penpot: ./design/my-penpot-rules    # Custom local
     penpot: @company/penpot-transform   # NPM (future)
@@ -92,14 +92,14 @@ Created comprehensive documentation:
 - **README.md**: Updated with AI orchestration paradigm
 - **servers/theme-mcp/README.md**: Detailed tool documentation with examples
 - **docs/ARCHITECTURE.md**: Complete architecture overview with data flows
-- **examples/drupal-demo/pendrop.yml**: Updated with transformation config
+- **examples/drupal-demo/pendrop.yml**: Updated with extraction config
 
 ## Workflow Example
 
 ```
 1. USER: "Transform my Penpot design system"
 
-2. AI calls: theme-mcp.transform_design_system({
+2. AI calls: theme-mcp.extract_design_system({
      design_url: "https://design.penpot.app/#/...",
      source_tool: "penpot",
      project_path: "/path/to/project"
@@ -107,13 +107,13 @@ Created comprehensive documentation:
 
 3. THEME-MCP returns:
    {
-     instructions: "# Design System Transformation Instructions
+     instructions: "# Design System Extraction Instructions
        Step 1: Call penpot-mcp.extract_file(url, auth)
        Step 2: Transform using these rules: [W3C DTCG tokens, ...]
        Step 3: Validate with theme-mcp.validate_design_data()
        Step 4: Save with theme-mcp.save_design_data()",
-     rules: { /* transformation rules */ },
-     examples: "/* example transformations */"
+     rules: { /* extraction rules */ },
+     examples: "/* example extractions */"
    }
 
 4. AI executes instructions:
@@ -127,22 +127,22 @@ Created comprehensive documentation:
 
 ## Key Benefits
 
-✅ **AI-Powered**: AI performs transformations, handles diverse data formats
+✅ **AI-Powered**: AI performs extractions, handles diverse data formats
 ✅ **Flexible**: Change workflow by changing prompts
 ✅ **Transparent**: AI can explain what it's doing
 ✅ **Error-Resilient**: AI can retry and fix errors
-✅ **Extensible**: Add new tools by creating transformation packages
-✅ **Customizable**: Override any transformation package per project
+✅ **Extensible**: Add new tools by creating extraction packages
+✅ **Customizable**: Override any extraction package per project
 ✅ **Simple**: No complex MCP-to-MCP communication code
-✅ **Configurable**: Full control over transformation logic via YAML
+✅ **Configurable**: Full control over extraction logic via YAML
 
 ## Files Modified/Created
 
 ### Created
-- `rules/transformations/pendrop-penpot/prompts.yaml`
-- `rules/transformations/pendrop-penpot/examples/simple-input.json`
-- `rules/transformations/pendrop-penpot/examples/simple-output.json`
-- `rules/transformations/pendrop-figma/prompts.yaml`
+- `rules/theme/extraction/pendrop-penpot/prompts.yaml`
+- `rules/theme/extraction/pendrop-penpot/examples/simple-input.json`
+- `rules/theme/extraction/pendrop-penpot/examples/simple-output.json`
+- `rules/theme/extraction/pendrop-figma/prompts.yaml`
 - `servers/theme-mcp/src/tools/transformInstructions.ts`
 - `servers/theme-mcp/src/tools/validate.ts`
 - `servers/theme-mcp/src/tools/save.ts`
@@ -152,11 +152,11 @@ Created comprehensive documentation:
 - `docs/ARCHITECTURE.md`
 
 ### Modified
-- `servers/theme-mcp/src/utils/projectConfig.ts` - Added transformations config
+- `servers/theme-mcp/src/utils/projectConfig.ts` - Added extractions config
 - `servers/theme-mcp/src/server/mcpServer.ts` - Registered new tools
 - `servers/theme-mcp/README.md` - Complete rewrite for AI orchestration
 - `README.md` - Updated key principles
-- `examples/drupal-demo/pendrop.yml` - Added transformations example
+- `examples/drupal-demo/pendrop.yml` - Added extractions example
 
 ### Built
 - `servers/theme-mcp/dist/` - Compiled TypeScript (successful build)
@@ -176,7 +176,7 @@ Created comprehensive documentation:
    - Write integration test for full workflow
 
 2. **NPM Package Support**
-   - Implement npm package resolution for transformation packages
+   - Implement npm package resolution for extraction packages
    - Allow publishing/sharing custom packages
 
 3. **Additional Tools**
@@ -189,7 +189,7 @@ Created comprehensive documentation:
    - Commands: `pendrop extract`, `pendrop generate`, etc.
 
 5. **Visual Tools**
-   - Web UI for editing transformation rules
+   - Web UI for editing extraction rules
    - Visual diff for design changes
    - Real-time preview
 
@@ -198,9 +198,9 @@ Created comprehensive documentation:
 For existing projects, update `pendrop.yml`:
 
 ```yaml
-# Add transformation configuration
+# Add extraction configuration
 rules:
-  transformations:
+  extraction:
     penpot: pendrop-penpot  # Use built-in (default behavior)
     # OR customize:
     # penpot: ./my-custom-rules/penpot-transform
@@ -210,9 +210,9 @@ No other changes needed - the workflow remains backward compatible.
 
 ## Conclusion
 
-Successfully implemented a flexible, AI-orchestrated design system transformation architecture that:
+Successfully implemented a flexible, AI-orchestrated design system extraction architecture that:
 - Puts AI in control of the workflow
-- Makes transformation logic easily customizable
+- Makes extraction logic easily customizable
 - Works with any design tool via extraction MCPs
 - Handles diverse source data formats intelligently
 - Requires no complex inter-MCP communication

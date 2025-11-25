@@ -47,14 +47,14 @@ paths:
 
 Platform-specific conventions.
 
-**Location**: `rules/targets/{platform}/`
+**Location**: `rules/theme/targets/{platform}/`
 
 **Files**:
 - `conventions.yaml` - Naming, paths, structure
 - `prompts.yaml` - AI generation prompts
 - `story.yaml` - Story format configuration
 
-**Example** (`rules/targets/drupal/conventions.yaml`):
+**Example** (`rules/theme/targets/drupal/conventions.yaml`):
 ```yaml
 naming:
   style: snake_case

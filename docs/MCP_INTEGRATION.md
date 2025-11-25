@@ -262,15 +262,15 @@ cp config.example.json config.json
 
 Ensure `THEME_MCP_CONFIG` in `mcp.json` points to the correct config file.
 
-## Advanced: Custom Transformation Rules
+## Advanced: Custom Extraction Rules
 
-You can override transformation rules per project:
+You can override extraction rules per project:
 
 **In `pendrop.yml`:**
 
 ```yaml
 rules:
-  transformations:
+  extraction:
     penpot: ./design/my-custom-rules
 ```
 
@@ -280,7 +280,7 @@ rules:
 my-drupal-project/
 └── design/
     └── my-custom-rules/
-        ├── prompts.yaml      # Custom transformation instructions
+        ├── prompts.yaml      # Custom extraction instructions
         └── examples/         # Optional examples
             ├── input.json
             └── output.json
@@ -295,7 +295,7 @@ target_schema: "pendrop.theme.json"
 target_schema_url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
 
 instructions: |
-  Your custom transformation instructions here...
+  Your custom extraction instructions here...
   
   Override token extraction, component mapping, etc.
 

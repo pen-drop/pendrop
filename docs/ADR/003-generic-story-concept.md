@@ -34,7 +34,7 @@ A **story** is:
 ### Implementation
 
 1. **Tool naming**: `generate_story` (not `generate_storybook`)
-2. **Configuration**: Story format defined in `rules/targets/{platform}/story.yaml`
+2. **Configuration**: Story format defined in `rules/theme/targets/{platform}/story.yaml`
 3. **Format flexibility**: Can generate Storybook stories, MDX docs, HTML demos, etc.
 4. **Convention-based**: Target conventions determine story structure
 
@@ -43,7 +43,7 @@ A **story** is:
 Story format: **Storybook with storybook-addon-sdc**
 
 ```yaml
-# rules/targets/drupal/story.yaml
+# rules/theme/targets/drupal/story.yaml
 format: storybook
 addon: storybook-addon-sdc
 file_suffix: .stories.js

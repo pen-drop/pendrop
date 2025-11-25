@@ -1,5 +1,5 @@
 # Project-specific convention overrides
-# These override the base Drupal conventions from rules/targets/drupal/
+# These override the base Drupal conventions from rules/theme/targets/drupal/
 
 naming:
   # Add custom prefix for all components (optional)
@@ -7,7 +7,7 @@ naming:
   
 paths:
   # Custom paths can override defaults here if needed
-  # But usually paths come from rules/targets/drupal/conventions.yaml
+  # But usually paths come from rules/theme/targets/drupal/conventions.yaml
   
 drupal:
   # Custom component namespace (overrides "custom")

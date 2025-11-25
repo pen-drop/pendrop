@@ -26,10 +26,10 @@ import {
   type GenerateStoryParams,
 } from '../tools/generate.js';
 import {
-  getTransformInstructions,
-  transformDesignSystemTool,
-  type TransformDesignSystemParams,
-} from '../tools/transformInstructions.js';
+  getExtractionInstructions,
+  extractDesignSystemTool,
+  type ExtractDesignSystemParams,
+} from '../tools/extractionInstructions.js';
 import {
   validateDesignData,
   validateDesignDataTool,
@@ -94,7 +94,7 @@ export async function startServer(): Promise<void> {
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
       tools: [
-        transformDesignSystemTool,
+        extractDesignSystemTool,
         validateDesignDataTool,
         saveDesignDataTool,
         extractDesignTool,
@@ -110,9 +110,9 @@ export async function startServer(): Promise<void> {
 
     try {
       switch (name) {
-        case 'transform_design_system': {
-          const result = await getTransformInstructions(
-            args as unknown as TransformDesignSystemParams
+        case 'extract_design_system': {
+          const result = await getExtractionInstructions(
+            args as unknown as ExtractDesignSystemParams
           );
           return {
             content: [

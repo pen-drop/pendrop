@@ -30,7 +30,7 @@ export async function saveDesignData(
   // Resolve output path
   const conventions = await loadConventions({
     target: pendropConfig.project.type,
-    rulesPath: '../../rules',
+    rulesPath: '../../rules/theme',
     projectRules: pendropConfig.rules?.custom_rules_path
   });
   const resolvedConventions = resolvePaths(

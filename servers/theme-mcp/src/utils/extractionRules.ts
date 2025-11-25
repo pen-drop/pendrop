@@ -1,6 +1,6 @@
 /**
- * Transformation Rules Loader
- * Loads transformation packages (prompts + rules + examples) for design tools
+ * Extraction Rules Loader
+ * Loads extraction packages (prompts + rules + examples) for design tools
  */
 
 import { readFile } from 'fs/promises';
@@ -26,7 +26,7 @@ function getDirname(): string {
   }
 }
 
-export interface TransformRules {
+export interface ExtractionRules {
   version: string;
   source: string;
   instructions: string;
@@ -42,21 +42,21 @@ export interface TransformRules {
 }
 
 /**
- * Load transformation rules for a specific source tool
+ * Load extraction rules for a specific source tool
  * 
  * Priority:
- * 1. Custom package from pendrop.yml (rules.transformations.{tool})
+ * 1. Custom package from pendrop.yml (rules.extraction.{tool})
  * 2. Built-in package (pendrop-{tool})
  */
-export async function loadTransformRules(
+export async function loadExtractionRules(
   sourceTool: string,
   projectPath: string,
   pendropConfig?: PendropConfig
-): Promise<TransformRules> {
+): Promise<ExtractionRules> {
   let packagePath: string;
 
-  // Check if custom transformation package is configured
-  const customPackage = pendropConfig?.rules?.transformations?.[sourceTool];
+  // Check if custom extraction package is configured
+  const customPackage = pendropConfig?.rules?.extraction?.[sourceTool];
   
   if (customPackage) {
     // Check if it's a local path or npm package
@@ -66,15 +66,15 @@ export async function loadTransformRules(
     } else if (customPackage.startsWith('@') || !customPackage.includes('/')) {
       // NPM package name - try to resolve from node_modules
       // For now, throw an error since npm resolution is complex
-      throw new Error(`NPM package transformation rules not yet supported: ${customPackage}. Use local paths instead.`);
+      throw new Error(`NPM package extraction rules not yet supported: ${customPackage}. Use local paths instead.`);
     } else {
       // Assume it's a relative path
       packagePath = resolve(projectPath, customPackage);
     }
   } else {
     // Use built-in package
-    // Go up from servers/theme-mcp/src/utils to project root, then to rules/transformations
-    const rulesRoot = resolve(getDirname(), '../../../../rules/transformations');
+    // Go up from servers/theme-mcp/src/utils to project root, then to rules/theme/extraction
+    const rulesRoot = resolve(getDirname(), '../../../../rules/theme/extraction');
     packagePath = join(rulesRoot, `pendrop-${sourceTool}`);
   }
 
@@ -83,20 +83,20 @@ export async function loadTransformRules(
   
   try {
     const content = await readFile(promptsPath, 'utf-8');
-    const rules = YAML.parse(content) as TransformRules;
+    const rules = YAML.parse(content) as ExtractionRules;
     
     if (!rules.source || rules.source !== sourceTool) {
-      throw new Error(`Invalid transformation package: source mismatch (expected ${sourceTool}, got ${rules.source})`);
+      throw new Error(`Invalid extraction package: source mismatch (expected ${sourceTool}, got ${rules.source})`);
     }
     
     return rules;
   } catch (error) {
-    throw new Error(`Failed to load transformation rules from ${promptsPath}: ${error}`);
+    throw new Error(`Failed to load extraction rules from ${promptsPath}: ${error}`);
   }
 }
 
 /**
- * Load example files from transformation package
+ * Load example files from extraction package
  */
 export async function loadExamples(
   sourceTool: string,
@@ -105,17 +105,17 @@ export async function loadExamples(
 ): Promise<string> {
   let packagePath: string;
 
-  // Use same logic as loadTransformRules to find package
-  const customPackage = pendropConfig?.rules?.transformations?.[sourceTool];
+  // Use same logic as loadExtractionRules to find package
+  const customPackage = pendropConfig?.rules?.extraction?.[sourceTool];
   
   if (customPackage) {
     if (customPackage.startsWith('./') || customPackage.startsWith('../') || customPackage.startsWith('/')) {
       packagePath = resolve(projectPath || process.cwd(), customPackage);
     } else {
-      throw new Error(`NPM package transformation rules not yet supported: ${customPackage}`);
+      throw new Error(`NPM package extraction rules not yet supported: ${customPackage}`);
     }
   } else {
-    const rulesRoot = resolve(getDirname(), '../../../../rules/transformations');
+    const rulesRoot = resolve(getDirname(), '../../../../rules/theme/extraction');
     packagePath = join(rulesRoot, `pendrop-${sourceTool}`);
   }
 
@@ -135,7 +135,7 @@ export async function loadExamples(
 ${inputContent}
 \`\`\`
 
-**Example Output (pendrop.data.ds.json format):**
+**Example Output (pendrop.theme.json format):**
 \`\`\`json
 ${outputContent}
 \`\`\`

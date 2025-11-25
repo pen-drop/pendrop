@@ -164,7 +164,7 @@ Main configuration file. See comments in the file for all options.
 
 ### Paths
 
-Paths are automatically determined by `rules/targets/drupal/conventions.yaml` based on your `project.type`.
+Paths are automatically determined by `rules/theme/targets/drupal/conventions.yaml` based on your `project.type`.
 
 You can override paths in `design/rules/custom-conventions.yaml` if needed.
 
