@@ -3,12 +3,9 @@
  * Validates data against Pendrop schemas using Ajv
  */
 
-import AjvModule from 'ajv';
+import Ajv from 'ajv';
 import type { Schema } from './schemaLoader.js';
 import { loadSchema } from './schemaLoader.js';
-
-// Get the default export
-const Ajv = AjvModule.default || AjvModule;
 
 export interface ValidationResult {
   valid: boolean;

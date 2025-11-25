@@ -7,12 +7,17 @@ import { readFile } from 'fs/promises';
 import { join, resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 export interface Schema {
   $schema?: string;
   [key: string]: unknown;
+}
+
+function getDirname(): string {
+  if (typeof __dirname !== 'undefined') {
+    return __dirname;
+  }
+  const __filename = fileURLToPath(import.meta.url);
+  return dirname(__filename);
 }
 
 /**
@@ -20,7 +25,7 @@ export interface Schema {
  */
 export async function loadSchema(schemaType: 'ds' | 'content'): Promise<Schema> {
   // Go up from servers/theme-mcp/src/utils to project root, then to schemas
-  const schemasRoot = resolve(__dirname, '../../../../schemas');
+  const schemasRoot = resolve(getDirname(), '../../../../schemas');
   const schemaPath = join(schemasRoot, `pendrop.schema.${schemaType}.json`);
   
   try {

@@ -9,8 +9,13 @@ import { fileURLToPath } from 'url';
 import YAML from 'yaml';
 import type { PendropConfig } from './projectConfig.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+function getDirname(): string {
+  if (typeof __dirname !== 'undefined') {
+    return __dirname;
+  }
+  const __filename = fileURLToPath(import.meta.url);
+  return dirname(__filename);
+}
 
 export interface TransformRules {
   version: string;
@@ -60,7 +65,7 @@ export async function loadTransformRules(
   } else {
     // Use built-in package
     // Go up from servers/theme-mcp/src/utils to project root, then to rules/transformations
-    const rulesRoot = resolve(__dirname, '../../../../rules/transformations');
+    const rulesRoot = resolve(getDirname(), '../../../../rules/transformations');
     packagePath = join(rulesRoot, `pendrop-${sourceTool}`);
   }
 
@@ -101,7 +106,7 @@ export async function loadExamples(
       throw new Error(`NPM package transformation rules not yet supported: ${customPackage}`);
     }
   } else {
-    const rulesRoot = resolve(__dirname, '../../../../rules/transformations');
+    const rulesRoot = resolve(getDirname(), '../../../../rules/transformations');
     packagePath = join(rulesRoot, `pendrop-${sourceTool}`);
   }
 
