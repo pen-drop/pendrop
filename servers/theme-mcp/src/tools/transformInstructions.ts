@@ -4,7 +4,7 @@
  */
 
 import { join } from 'path';
-import { loadPendropConfig, resolvePaths, getAuth } from '../utils/projectConfig.js';
+import { loadPendropConfig, resolvePaths } from '../utils/projectConfig.js';
 import { loadTransformRules, loadExamples } from '../utils/transformRules.js';
 import { loadSchema } from '../utils/schemaLoader.js';
 import { loadConventions } from '../utils/conventions.js';
@@ -44,10 +44,7 @@ export async function getTransformInstructions(
   // 4. Load target schema
   const schema = await loadSchema('ds');
   
-  // 5. Get auth from pendrop.yml
-  const auth = getAuth(pendropConfig, source_tool as 'penpot' | 'figma');
-  
-  // 6. Determine output path
+  // 5. Determine output path
   const conventions = await loadConventions({
     target: pendropConfig.project.type,
     rulesPath: '../../rules',
@@ -71,10 +68,11 @@ Call the ${source_tool}-mcp server to extract the design file:
 
 \`\`\`
 ${source_tool}-mcp.extract_file({
-  file_url: "${design_url}",
-  auth: ${JSON.stringify(auth, null, 2)}
+  file_url: "${design_url}"
 })
 \`\`\`
+
+**Note:** Authentication is handled by the ${source_tool}-mcp server itself (via environment variables or its own configuration).
 
 This will return raw ${source_tool} data.
 
@@ -163,7 +161,7 @@ Execute these steps now.
       {
         mcp: `${source_tool}-mcp`,
         tool: 'extract_file',
-        params: { file_url: design_url, auth }
+        params: { file_url: design_url }
       },
       {
         mcp: 'theme-mcp',
@@ -192,12 +190,11 @@ export const transformDesignSystemTool = {
     properties: {
       design_url: {
         type: 'string',
-        description: 'URL to design file (Penpot, Figma, etc.)'
+        description: 'URL to design file'
       },
       source_tool: {
         type: 'string',
-        enum: ['penpot', 'figma'],
-        description: 'Source design tool'
+        description: 'Source design tool (e.g., penpot, figma, sketch, adobexd)'
       },
       project_path: {
         type: 'string',

@@ -16,16 +16,6 @@ export interface PendropConfig {
   design?: {
     url?: string;
     urls?: string[];
-    auth?: {
-      penpot?: {
-        username?: string;
-        password?: string;
-        token?: string;
-      };
-      figma?: {
-        token?: string;
-      };
-    };
   };
   rules?: {
     custom_rules_path?: string;
@@ -103,30 +93,4 @@ export function getDesignUrls(config: PendropConfig): string[] {
   return [];
 }
 
-/**
- * Get authentication credentials for a design tool
- */
-export function getAuth(
-  config: PendropConfig,
-  tool: 'penpot' | 'figma'
-): Record<string, string> | null {
-  if (!config.design?.auth?.[tool]) {
-    return null;
-  }
-  
-  const auth = config.design.auth[tool];
-  const credentials: Record<string, string> = {};
-  
-  if (tool === 'penpot' && auth) {
-    const penpotAuth = auth as { username?: string; password?: string; token?: string };
-    if (penpotAuth.username) credentials.username = penpotAuth.username;
-    if (penpotAuth.password) credentials.password = penpotAuth.password;
-    if (penpotAuth.token) credentials.token = penpotAuth.token;
-  } else if (tool === 'figma' && auth) {
-    const figmaAuth = auth as { token?: string };
-    if (figmaAuth.token) credentials.token = figmaAuth.token;
-  }
-  
-  return Object.keys(credentials).length > 0 ? credentials : null;
-}
 

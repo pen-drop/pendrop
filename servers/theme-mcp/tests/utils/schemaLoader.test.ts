@@ -2,7 +2,7 @@
  * Unit tests for Schema Loader
  */
 
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { loadSchema } from '../../src/utils/schemaLoader.js';
 
 describe('Schema Loader', () => {

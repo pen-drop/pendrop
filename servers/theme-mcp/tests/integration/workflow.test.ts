@@ -2,11 +2,15 @@
  * Integration tests for complete transformation workflow
  */
 
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { PendropValidator } from '../../src/utils/validator.js';
 import { loadTransformRules } from '../../src/utils/transformRules.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 describe('Transformation Workflow Integration', () => {
   let validator: PendropValidator;

@@ -3,35 +3,57 @@
  * Routes design file URLs to appropriate extraction MCP servers
  */
 
-export type DesignTool = 'penpot' | 'figma' | 'unknown';
+export type DesignTool = string;
+
+export interface ToolPattern {
+  patterns: string[];
+  priority?: number;
+}
 
 export interface RouterConfig {
   extractors: {
     [key: string]: {
       serverUrl: string;
       mcpPath: string;
+      urlPatterns?: string[];
     };
   };
 }
 
 /**
- * Detect design tool from URL or file path
+ * Built-in URL patterns for common design tools
+ * Can be extended via configuration
  */
-export function detectDesignTool(fileUrl: string): DesignTool {
+const DEFAULT_URL_PATTERNS: Record<string, string[]> = {
+  penpot: ['penpot.com', 'design.penpot.app', 'penpot.app'],
+  figma: ['figma.com', 'www.figma.com'],
+  sketch: ['.sketch'],
+  adobexd: ['.xd', 'xd.adobe.com'],
+};
+
+/**
+ * Detect design tool from URL or file path
+ * Uses configurable patterns + built-in defaults
+ */
+export function detectDesignTool(fileUrl: string, config?: RouterConfig): DesignTool {
   const url = fileUrl.toLowerCase();
   
-  // Penpot patterns
-  if (url.includes('penpot.com') || url.includes('design.penpot.app') || url.includes('penpot.app')) {
-    return 'penpot';
+  // Check configured extractors first
+  if (config) {
+    for (const [tool, extractorConfig] of Object.entries(config.extractors)) {
+      const patterns = extractorConfig.urlPatterns || DEFAULT_URL_PATTERNS[tool] || [];
+      if (patterns.some(pattern => url.includes(pattern))) {
+        return tool;
+      }
+    }
   }
   
-  // Figma patterns
-  if (url.includes('figma.com') || url.includes('www.figma.com')) {
-    return 'figma';
+  // Fallback to built-in patterns
+  for (const [tool, patterns] of Object.entries(DEFAULT_URL_PATTERNS)) {
+    if (patterns.some(pattern => url.includes(pattern))) {
+      return tool;
+    }
   }
-  
-  // Local file detection (future)
-  // Could analyze file extension or content
   
   return 'unknown';
 }
@@ -55,7 +77,7 @@ export function routeExtraction(fileUrl: string, config: RouterConfig): {
   tool: DesignTool;
   server: { serverUrl: string; mcpPath: string } | null;
 } {
-  const tool = detectDesignTool(fileUrl);
+  const tool = detectDesignTool(fileUrl, config);
   const server = getMcpServer(tool, config);
   
   return { tool, server };

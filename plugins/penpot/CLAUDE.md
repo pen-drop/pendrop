@@ -1,5 +1,15 @@
 # Claude AI Rules for Pendrop Penpot Plugin
 
+## General Project Rules
+
+**This subproject follows the general Pendrop project rules** defined in `/CLAUDE.md`:
+
+- **ESM only**: Always use ECMAScript Modules (`"type": "module"`)
+- **Vitest for testing**: Never use Jest, always use Vitest for all tests
+- **English only**: All code, comments, and documentation in English
+
+---
+
 ## Language Rule
 
 **All project documentation, code comments, commit messages, and communication must be in English.**

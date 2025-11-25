@@ -2,7 +2,7 @@
  * Unit tests for Transform Rules Loader
  */
 
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { loadTransformRules, loadExamples } from '../../src/utils/transformRules.js';
 import type { PendropConfig } from '../../src/utils/projectConfig.js';
 

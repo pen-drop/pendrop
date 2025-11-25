@@ -33,6 +33,43 @@ Exceptions:
 - **No file/folder references**: Do not include references to specific files or folder structures
 - **English only**: All READMEs must be written in English
 
+## JavaScript/TypeScript Development Rules
+
+**Always use ECMAScript Modules (ESM):**
+
+- All TypeScript/JavaScript projects must use `"type": "module"` in `package.json`
+- Use ESM import/export syntax (not CommonJS `require`/`module.exports`)
+- Use `.js` extensions in import statements for TypeScript files
+- TypeScript config must use `"module": "Node16"` or `"NodeNext"` with `"moduleResolution": "Node16"` or `"NodeNext"`
+
+**Testing Framework:**
+
+- **Always use Vitest** (not Jest) for all test suites
+- Vitest has native ESM and TypeScript support without experimental flags
+- Test files should use `.test.ts` extension
+- Import test functions from `vitest`: `import { describe, it, expect, vi } from 'vitest'`
+- Use `vitest.config.ts` for configuration
+- For mocking, use `vi.mock()` instead of `jest.mock()`
+
+**Package.json Scripts:**
+
+```json
+{
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
+  }
+}
+```
+
+**Required Dependencies for Testing:**
+
+- `vitest` - Test framework
+- `@vitest/ui` - Optional UI for test runner
+- `@vitest/coverage-v8` - Code coverage
+
 ## Project Context
 
 Pendrop automates the creation of Drupal applications based on structure data and layout data from Penpot. Based on a uniform structure file, everything else is generated, tested, and updated via rule sets.

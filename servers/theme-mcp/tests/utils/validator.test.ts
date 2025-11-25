@@ -2,7 +2,7 @@
  * Unit tests for PendropValidator
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { PendropValidator } from '../../src/utils/validator.js';
 
 describe('PendropValidator', () => {

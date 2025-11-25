@@ -32,7 +32,7 @@ npm run test:watch
 npm run test:coverage
 
 # Run specific test file
-npx jest tests/utils/validator.test.ts
+npx vitest run tests/utils/validator.test.ts
 ```
 
 ## Test Coverage
@@ -205,8 +205,8 @@ When adding new features:
 
 ## Resources
 
-- [Jest Documentation](https://jestjs.io/)
-- [ts-jest](https://kulshekhar.github.io/ts-jest/)
+- [Vitest Documentation](https://vitest.dev/)
+- [Vitest API Reference](https://vitest.dev/api/)
 - [W3C DTCG Specification](https://tr.designtokens.org/format/)
 - [Pendrop Schemas](../../../schemas/)
 
