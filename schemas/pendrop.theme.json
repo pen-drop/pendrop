@@ -4,7 +4,7 @@
   "title": "Pendrop Theme Schema",
   "description": "JSON Schema for Pendrop design system based on W3C Design Tokens Community Group (DTCG) format specification",
   "type": "object",
-  "required": ["tokens", "components", "stories"],
+  "required": [],
   "properties": {
     "tokens": {
       "type": "object",

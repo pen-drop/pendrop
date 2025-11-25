@@ -19,12 +19,22 @@ vi.mock('../../src/utils/mcpLogger.js', () => ({
   setLoggerProjectPath: vi.fn(),
 }));
 
+// Mock validator
+const mockValidate = vi.fn();
+vi.mock('../../src/utils/validator.js', () => ({
+  PendropValidator: class {
+    validate = mockValidate;
+  },
+}));
+
 describe('Save Design Data Tool', () => {
   const mockProjectPath = '/mock/project/path';
-  const mockOutputPath = join(mockProjectPath, '.pendrop/pendrop.data.ds.json');
+  const mockOutputPath = join(mockProjectPath, '.pendrop/dist/pendrop.data.ds.json');
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default to successful validation
+    mockValidate.mockResolvedValue({ valid: true });
   });
 
   it('should create file if it does not exist', async () => {
@@ -40,7 +50,14 @@ describe('Save Design Data Tool', () => {
     const result = await saveDesignData(params);
 
     expect(result.success).toBe(true);
+    expect(result.valid).toBe(true);
     expect(fs.mkdir).toHaveBeenCalledWith(expect.stringContaining('.pendrop'), { recursive: true });
+    
+    // Verify validation was called
+    expect(mockValidate).toHaveBeenCalledWith(
+      { components: { "comp1": { variants: [] } } },
+      'ds'
+    );
     
     // Check if written content has the structure { components: { ... } }
     const writeCall = vi.mocked(fs.writeFile).mock.calls[0];
@@ -154,6 +171,121 @@ describe('Save Design Data Tool', () => {
         "story1": {}
       }
     });
+  });
+
+  it('should validate before saving', async () => {
+    vi.mocked(fs.readFile).mockRejectedValue(new Error('File not found'));
+
+    const params = {
+      data: { "comp1": { variants: [] } },
+      project_path: mockProjectPath,
+      type: 'components' as const
+    };
+
+    await saveDesignData(params);
+
+    // Verify validation was called with merged content
+    expect(mockValidate).toHaveBeenCalledWith(
+      { components: { "comp1": { variants: [] } } },
+      'ds'
+    );
+    expect(mockValidate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not save if validation fails', async () => {
+    vi.mocked(fs.readFile).mockRejectedValue(new Error('File not found'));
+    
+    const validationErrors = [
+      { path: '/components/comp1', message: 'Invalid structure', expected: undefined }
+    ];
+    mockValidate.mockResolvedValue({ valid: false, errors: validationErrors });
+
+    const params = {
+      data: { "comp1": { invalid: true } },
+      project_path: mockProjectPath,
+      type: 'components' as const
+    };
+
+    const result = await saveDesignData(params);
+
+    expect(result.success).toBe(false);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toEqual(validationErrors);
+    expect(result.error).toContain('Validation failed');
+    
+    // Verify file was not written
+    expect(fs.writeFile).not.toHaveBeenCalled();
+  });
+
+  it('should validate and return result without saving when dryrun is true', async () => {
+    vi.mocked(fs.readFile).mockRejectedValue(new Error('File not found'));
+
+    const params = {
+      data: { "comp1": { variants: [] } },
+      project_path: mockProjectPath,
+      type: 'components' as const,
+      dryrun: true
+    };
+
+    const result = await saveDesignData(params);
+
+    expect(result.success).toBe(true);
+    expect(result.valid).toBe(true);
+    expect(result.message).toContain('dryrun');
+    
+    // Verify validation was called
+    expect(mockValidate).toHaveBeenCalledWith(
+      { components: { "comp1": { variants: [] } } },
+      'ds'
+    );
+    
+    // Verify file was not written
+    expect(fs.writeFile).not.toHaveBeenCalled();
+    expect(fs.mkdir).not.toHaveBeenCalled();
+  });
+
+  it('should return validation errors in dryrun mode when validation fails', async () => {
+    vi.mocked(fs.readFile).mockRejectedValue(new Error('File not found'));
+    
+    const validationErrors = [
+      { path: '/components/comp1', message: 'Invalid structure', expected: undefined }
+    ];
+    mockValidate.mockResolvedValue({ valid: false, errors: validationErrors });
+
+    const params = {
+      data: { "comp1": { invalid: true } },
+      project_path: mockProjectPath,
+      type: 'components' as const,
+      dryrun: true
+    };
+
+    const result = await saveDesignData(params);
+
+    expect(result.success).toBe(false);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toEqual(validationErrors);
+    expect(result.error).toContain('Validation failed');
+    
+    // Verify file was not written
+    expect(fs.writeFile).not.toHaveBeenCalled();
+    expect(fs.mkdir).not.toHaveBeenCalled();
+  });
+
+  it('should save successfully when validation passes', async () => {
+    vi.mocked(fs.readFile).mockRejectedValue(new Error('File not found'));
+    mockValidate.mockResolvedValue({ valid: true });
+
+    const params = {
+      data: { "comp1": { variants: [] } },
+      project_path: mockProjectPath,
+      type: 'components' as const
+    };
+
+    const result = await saveDesignData(params);
+
+    expect(result.success).toBe(true);
+    expect(result.valid).toBe(true);
+    expect(fs.writeFile).toHaveBeenCalled();
   });
 });
 

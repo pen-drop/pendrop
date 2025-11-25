@@ -33,37 +33,23 @@ instructions: |
   **Your Goal:** Extract and structure design tokens, components, and stories according to the target schema.
 
 # Extraction instructions
-extraction_instructions: |
-  Extract the design data from Penpot using the following steps:
+extraction_instructions: ""
   
-  **Step 1: Load the file into cache**
-  
-  First, extract the `file-id` from the design URL and load the file into cache:
-  
-  ```
-  pendrop:penpot-mcp.get_file({
-    file_id: "<extract_file_id_from_design_url>"
-  })
-  ```
-  
-  **Step 2: Extract the object tree**
-  
-  Extract use always the pendrop:penpot-mcp.get_object_tree to extract data from penpot.
-  
-  Use search_object to find the root objects.
-    
-  **Design URL:** {{design_url}}
-  
-  **Important:** If you receive an access denied error, stop processing immediately and report the error.
-  
-  The `get_object_tree` call will return the Penpot object tree data that you need to transform in the next step.
 
 # Token extraction instructions
 tokens_instructions: |
   Extract design tokens in W3C DTCG format:
 
-  Extract tokens from the the pendrop:penpot-mcp.get_file
-
+  fetch tokens_data from: 
+  ```
+  penpot-mcp.get_tokens({
+    design_url: "{{design_url}}"
+  })
+  ```
+  save tokens_data with type tokens
+  
+  
+  ```
   **Color Tokens:**
   - Source: Objects with `fills[]` or `strokes[]`
   - Extract: `fillColor` or `strokeColor` values

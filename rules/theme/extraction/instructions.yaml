@@ -34,66 +34,29 @@ instructions: |
 
   You must process each type (Tokens, Components, Stories) sequentially and save the results after each step.
 
+  **Use allways:**
+
+  ```
+  theme-mcp.save_design_data({
+    data: <tokens_data>,
+    project_path: "{{project_path}}"
+  })
+  ```
   #### 1. Tokens
 
   {{tokens_instructions}}
 
-  Extract design tokens in **W3C DTCG format**:
-  - Use `$value`, `$type`, `$description` properties
-  - Token types: color, dimension, fontFamily, fontSize, etc.
 
-  **Action:**
-  After extracting and transforming tokens, validate and save the data immediately.
-
-  ```
-  theme-mcp.validate_design_data({
-    data: <tokens_data_only>,
-    schema_type: "ds"
-  })
-
-  theme-mcp.save_design_data({
-    data: <tokens_data_only>,
-    project_path: "{{project_path}}"
-  })
-  ```
 
   #### 2. Components
 
   {{components_instructions}}
 
-  **Action:**
-  After extracting and transforming components, validate and save the data immediately (merging with existing tokens).
-
-  ```
-  theme-mcp.validate_design_data({
-    data: <components_data_merged_with_tokens>,
-    schema_type: "ds"
-  })
-
-  theme-mcp.save_design_data({
-    data: <components_data_merged_with_tokens>,
-    project_path: "{{project_path}}"
-  })
-  ```
 
   #### 3. Stories
 
   {{stories_instructions}}
 
-  **Action:**
-  After generating stories, validate and save the final complete data set.
-
-  ```
-  theme-mcp.validate_design_data({
-    data: <complete_data_with_stories>,
-    schema_type: "ds"
-  })
-
-  theme-mcp.save_design_data({
-    data: <complete_data_with_stories>,
-    project_path: "{{project_path}}"
-  })
-  ```
 
   ### Naming Conventions
 

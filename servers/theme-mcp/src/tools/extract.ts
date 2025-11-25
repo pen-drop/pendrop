@@ -28,11 +28,6 @@ export interface ExtractDesignParams {
 export interface ExtractDesignResult {
   success: boolean;
   instructions: string;
-  mcp_calls: Array<{
-    mcp: string;
-    tool: string;
-    params: unknown;
-  }>;
   rules?: unknown;
   examples?: string;
   error?: string;
@@ -62,7 +57,6 @@ export async function extractDesign(
         success: false,
         error: `extraction_rules is required. Please specify the extraction package name (e.g., 'pendrop-penpot') or configure it in pendrop.yml: rules.extraction`,
         instructions: '',
-        mcp_calls: [],
       };
     }
     
@@ -111,19 +105,6 @@ export async function extractDesign(
     return {
       success: true,
       instructions,
-      mcp_calls: [
-    
-        {
-          mcp: 'theme-mcp',
-          tool: 'validate_design_data',
-          params: { data: '<transformed>', schema_type: 'ds', project_path }
-        },
-        {
-          mcp: 'theme-mcp',
-          tool: 'save_design_data',
-          params: { data: '<validated>', project_path }
-        }
-      ],
       rules,
       examples
     };
@@ -133,7 +114,6 @@ export async function extractDesign(
       success: false,
       error: errorMessage,
       instructions: '',
-      mcp_calls: [],
     };
   }
 }

@@ -26,11 +26,6 @@ import {
   type GenerateStoryParams,
 } from '../tools/generate.js';
 import {
-  validateDesignData,
-  validateDesignDataTool,
-  type ValidateDesignDataParams,
-} from '../tools/validate.js';
-import {
   saveDesignData,
   saveDesignDataTool,
   type SaveDesignDataParams,
@@ -108,7 +103,6 @@ export async function startServer(): Promise<void> {
     return {
       tools: [
         extractDesignTool,
-        validateDesignDataTool,
         saveDesignDataTool,
         generateComponentTool,
         generateStoryTool,
@@ -126,20 +120,6 @@ export async function startServer(): Promise<void> {
           // Map fileUrl to design_url for compatibility with external MCP wrappers
 
           const result = await extractDesign(args as unknown as ExtractDesignParams);
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
-        case 'validate_design_data': {
-          const result = await validateDesignData(
-            args as unknown as ValidateDesignDataParams
-          );
           return {
             content: [
               {
