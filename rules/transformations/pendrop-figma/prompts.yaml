@@ -2,19 +2,19 @@ version: "1.0"
 source: figma
 
 # Target schema reference
-target_schema: "pendrop.schema.ds.json"
-target_schema_url: "https://pendrop.io/schemas/pendrop.schema.ds.json"
+target_schema: "pendrop.design-system.json"
+target_schema_url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.design-system.json"
 
 # General instructions for AI
 instructions: |
   You are transforming Figma design file data to Pendrop's design system format.
   
-  **Target Output Format:** Your output MUST conform to `pendrop.schema.ds.json`
+  **Target Output Format:** Your output MUST conform to `pendrop.design-system.json`
   
   **Required Top-Level Structure:**
   ```json
   {
-    "$schema": "../../schemas/pendrop.schema.ds.json",
+    "$schema": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.design-system.json",
     "tokens": { /* W3C DTCG tokens */ },
     "components": { /* component definitions */ },
     "stories": { /* story variants */ }
@@ -151,7 +151,7 @@ naming:
 
 # Target schema structure
 schema_structure: |
-  Your output must match this exact structure (pendrop.schema.ds.json):
+  Your output must match this exact structure (pendrop.design-system.json):
   
   **Root Object:**
   - `$schema` (string, optional): Schema reference

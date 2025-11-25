@@ -33,7 +33,7 @@ export async function validateDesignData(
     return {
       success: true,
       valid: true,
-      message: `✓ Data is valid ${schema_type === 'ds' ? 'pendrop.schema.ds.json' : 'pendrop.schema.content.json'}`
+      message: `✓ Data is valid ${schema_type === 'ds' ? 'pendrop.design-system.json' : 'pendrop.schema.content.json'}`
     };
   } else {
     return {

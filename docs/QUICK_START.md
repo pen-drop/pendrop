@@ -87,7 +87,7 @@ The AI will:
 4. Validate with `theme-mcp.validate_design_data()`
 5. Save with `theme-mcp.save_design_data()`
 
-Result: `.pendrop/dist/pendrop.data.ds.json` created with tokens, components, and stories.
+Result: `.pendrop/dist/pendrop.data.ds.json` created with tokens, components, and stories (conforming to `pendrop.design-system.json` schema).
 
 ### Generate Components (Future)
 
@@ -217,7 +217,7 @@ rules:
 
 ```json
 {
-  "$schema": "../../schemas/pendrop.schema.ds.json",
+  "$schema": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.design-system.json",
   "tokens": {
     "color": {
       "primary": {

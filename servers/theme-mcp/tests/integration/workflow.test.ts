@@ -175,7 +175,7 @@ describe('Transformation Workflow Integration', () => {
   });
 
   describe('Schema Compliance', () => {
-    it('should validate against pendrop.schema.ds.json', async () => {
+    it('should validate against pendrop.design-system.json', async () => {
       const transformedPath = join(__dirname, '../fixtures/penpot-transformed.json');
       const transformedContent = await readFile(transformedPath, 'utf-8');
       const transformedData = JSON.parse(transformedContent);

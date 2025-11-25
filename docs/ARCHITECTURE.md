@@ -157,11 +157,11 @@ rules/targets/
    })
    ↓
 3. THEME-MCP:
-   - Loads pendrop.yml from project
-   - Resolves transformation package for 'penpot'
-   - Loads prompts.yaml from transformation package
-   - Loads examples (if available)
-   - Loads target schema (pendrop.schema.ds.json)
+  - Loads pendrop.yml from project
+  - Resolves transformation package for 'penpot'
+  - Loads prompts.yaml from transformation package
+  - Loads examples (if available)
+  - Loads target schema (pendrop.design-system.json)
    - Builds comprehensive instructions
    - Returns { instructions, mcp_calls, rules, examples }
    ↓
@@ -174,13 +174,13 @@ rules/targets/
    })
    → Returns raw Penpot JSON
    
-   Step 2: Transform
-   AI applies transformation rules:
-   - Extracts tokens (W3C DTCG format)
-   - Identifies components
-   - Generates story variants
-   - Follows naming conventions
-   → Produces pendrop.data.ds.json
+  Step 2: Transform
+  AI applies transformation rules:
+  - Extracts tokens (W3C DTCG format)
+  - Identifies components
+  - Generates story variants
+  - Follows naming conventions
+  → Produces pendrop.data.ds.json (conforming to pendrop.design-system.json schema)
    
    Step 3: Validate
    AI calls theme-mcp.validate_design_data({

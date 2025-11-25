@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://pendrop.io/schemas/pendrop.transform.json",
+  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.transform.json",
   "title": "Pendrop Transformation Package Schema",
   "description": "Schema for transformation packages that define how to convert design tool data to Pendrop format",
   "type": "object",
@@ -18,7 +18,7 @@
     },
     "target_schema": {
       "type": "string",
-      "description": "Name of the target Pendrop schema (e.g., pendrop.schema.ds.json)"
+      "description": "Name of the target Pendrop schema (e.g., pendrop.design-system.json)"
     },
     "target_schema_url": {
       "type": "string",

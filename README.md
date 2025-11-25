@@ -56,7 +56,7 @@ Pendrop uses **Model Context Protocol (MCP)** servers for AI-powered orchestrati
 pendrop/
 ├── schemas/                    # JSON schemas
 │   ├── pendrop.schema.content.json
-│   ├── pendrop.schema.ds.json
+│   ├── pendrop.design-system.json
 │   └── pendrop.rules.json
 ├── rules/                      # Generation conventions
 │   └── targets/
