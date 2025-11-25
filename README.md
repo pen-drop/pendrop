@@ -65,14 +65,14 @@ pendrop/
 │   └── penpot/
 ├── examples/                   # Example projects
 │   ├── basic/
-│   └── ai-workflow/
+│   └── drupal-demo/            # Full Drupal 11 project
 └── docs/                       # Documentation
     └── ADR/                    # Architecture Decision Records
 ```
 
 ## Getting Started
 
-See [examples/ai-workflow/README.md](examples/ai-workflow/README.md) for a complete workflow example.
+See [examples/drupal-demo/README.md](examples/drupal-demo/README.md) for a complete Drupal 11 example project.
 
 ## Documentation
 

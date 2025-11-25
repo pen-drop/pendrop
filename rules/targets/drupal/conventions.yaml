@@ -12,13 +12,29 @@ naming:
     - field_base_
     - field_instance_
 
+# Paths for Drupal projects (relative to project root)
+# {theme_name} placeholder is replaced with actual theme name from pendrop.yml
 paths:
-  # Single Directory Components (SDC) location
-  components: /components
-  # Drupal configuration sync directory
-  config: /config/sync
+  # Where extracted design data is stored
+  design_data: ./.pendrop/dist/pendrop.data.ds.json
+  
+  # Where generated components go
+  components: ./web/themes/custom/{theme_name}/components
+  
+  # Where generated stories go
+  stories: ./web/themes/custom/{theme_name}/stories
+  
+  # Storybook configuration directory
+  storybook: ./web/themes/custom/{theme_name}/.storybook
+  
+  # Generated Drupal config
+  config: ./config/sync
+  
+  # Drupal theme root
+  theme_root: ./web/themes/custom/{theme_name}
+  
   # Views configuration
-  views: /config/sync/views.view.*.yml
+  views: ./config/sync/views.view.*.yml
 
 structure:
   # Required files for SDC components

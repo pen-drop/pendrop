@@ -1,5 +1,5 @@
 {
-  "$schema": "../../schemas/pendrop.schema.content.json",
+  "$schema": "../../../schemas/pendrop.schema.content.json",
   "$comment": "This file is created manually or by other tools. Defines content structure for CMS generation.",
   "content": {
     "node": {
