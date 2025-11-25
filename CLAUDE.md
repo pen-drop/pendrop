@@ -6,6 +6,15 @@
 
 - **Penpot Plugin**: See `penpot-plugin/CLAUDE.md` for Vue.js, FormKit, and plugin-specific rules
 
+## Git Branching
+
+**Main branch is `1.x`:**
+
+- The primary development branch is `1.x` (not `main` or `master`)
+- All feature branches should be based on `1.x`
+- Pull requests should target `1.x`
+- CI/CD workflows target `1.x` as the main branch
+
 ## Language Rule
 
 **All project documentation, code comments, commit messages, and communication must be in English.**

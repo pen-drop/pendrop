@@ -455,6 +455,35 @@ npm run lint:fix
 npm run type-check
 ```
 
+### CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration:
+
+**Workflow:** `.github/workflows/theme-mcp-ci.yml`
+
+**Jobs:**
+- **Test & Lint** (Node 18.x, 20.x, 22.x)
+  - TypeScript type checking
+  - ESLint code quality
+  - Vitest test suite
+  - Build verification
+  
+- **Coverage**
+  - Test coverage reports
+  - Codecov integration
+  
+- **Lint Schemas**
+  - JSON schema validation
+  - YAML transformation rules validation
+  
+- **Security**
+  - npm audit for vulnerabilities
+
+**Triggers:**
+- Push to `1.x` branch
+- Pull requests to `1.x` branch
+- Changes in `servers/theme-mcp/`, `schemas/`, or `rules/` directories
+
 ## Complete Workflow Example
 
 ### Scenario: Transform Design System to Drupal Components
