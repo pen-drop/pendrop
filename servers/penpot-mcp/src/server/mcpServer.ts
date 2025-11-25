@@ -290,6 +290,20 @@ export class PenpotMCPServer {
           },
         },
         {
+          name: 'get_tokens',
+          description: 'Retrieve tokens and token sets (tokensLib) from a Penpot file.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              file_id: {
+                type: 'string',
+                description: 'The ID of the Penpot file',
+              },
+            },
+            required: ['file_id'],
+          },
+        },
+        {
           name: 'export_object',
           description: 'Export a Penpot design object as an image',
           inputSchema: {
@@ -438,6 +452,9 @@ export class PenpotMCPServer {
           case 'get_file':
             return await this.toolGetFile(args.file_id as string);
 
+          case 'get_tokens':
+            return await this.toolGetTokens(args.file_id as string);
+
           case 'export_object':
             return await this.toolExportObject(
               args.file_id as string,
@@ -554,6 +571,58 @@ export class PenpotMCPServer {
           {
             type: 'text',
             text: JSON.stringify(fileData, null, 2),
+          },
+        ],
+      };
+    } catch (e: any) {
+      const error = this.handleApiError(e);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(error, null, 2),
+          },
+        ],
+      };
+    }
+  }
+
+  /**
+   * Tool: get_tokens
+   */
+  private async toolGetTokens(fileId: string): Promise<any> {
+    try {
+      const fileData = await this.getCachedFile(fileId);
+      if ('error' in fileData) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(fileData, null, 2),
+            },
+          ],
+        };
+      }
+
+      const content = fileData.data || fileData;
+      const tokensLib = content.tokensLib || null;
+
+      if (!tokensLib) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({ error: 'No tokens library found in the file' }, null, 2),
+            },
+          ],
+        };
+      }
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(tokensLib, null, 2),
           },
         ],
       };

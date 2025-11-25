@@ -24,7 +24,7 @@ The AI reads instructions and orchestrates the workflow by calling multiple MCPs
 ```
 User/AI
   ↓
-theme-mcp.extract_design_data(url, project_path)
+theme-mcp.extract_design(design_url, project_path)
   ↓ (analyzes URL and pendrop.yml)
   ↓
 Returns INSTRUCTIONS:
@@ -51,58 +51,77 @@ AI executes instructions:
 
 ## Tools
 
-### `extract_design_data(design_url, project_path)`
+### `extract_design(design_url, extraction_rules?, project_path, options?)`
 
 **Main orchestration tool** - Returns AI instructions for extracting and transforming design data.
 
 **What it does:**
-1. Analyzes design URL and `pendrop.yml` to determine design tool
-2. Selects appropriate extraction MCP:
-   - `penpot-mcp` for `design.penpot.app` URLs
-   - `figma-mcp` for `figma.com` URLs
-   - Custom MCP based on configuration
-3. Loads tool-specific extraction rules (e.g., `pendrop-penpot`, `pendrop-figma`)
-4. Returns detailed AI prompt with:
-   - Step-by-step instructions
-   - Which extraction MCP to call with auth details
+1. Uses `extraction_rules` parameter or `rules.extraction` from `pendrop.yml` to determine which extraction package to load
+2. Loads tool-specific extraction rules from the determined package
+3. Returns detailed AI prompt (`instructions`) with:
+   - Step-by-step instructions for extraction and transformation
+   - **External MCP calls** (e.g., `pendrop:penpot-mcp.get_object_tree`) - described in instructions
    - Tool-specific extraction rules (W3C DTCG format, component structure, etc.)
-   - Validation and save steps
+   - Internal `theme-mcp` calls for validation and saving (also in `mcp_calls` array)
 
 **Parameters:**
-- `design_url` (string): URL to design file
-- `project_path` (string): Path to project root (where `pendrop.yml` is located)
+- `design_url` (string, required): URL to design file
+- `extraction_rules` (string, optional): Extraction package name (e.g., `pendrop-penpot`, `pendrop-figma`). If not provided, reads from `rules.extraction` in `pendrop.yml`
+- `project_path` (string, required): Path to the directory containing `pendrop.yml` (project root)
+- `options` (object, optional): Extraction options
+  - `includeHiddenLayers` (boolean): Include hidden layers in extraction
 
 **Returns:**
 ```json
 {
   "success": true,
-  "prompt": "You are an AI assistant tasked with orchestrating a design system workflow.\n\n1. Extract Raw Design Data:\n   Call penpot-mcp.extract_file with {...}\n\n2. Transform to Pendrop Theme Format:\n   Using these rules: {...}\n\n3. Validate: theme-mcp.validate_design_data\n4. Save: theme-mcp.save_design_data"
+  "instructions": "You are extracting and transforming a penpot design file...\n\n## Step 1: Extract Source Data\n\nUse the pendrop:penpot-mcp mcp server and the get_object_tree method...\n\n## Step 2: Transform Data\n...\n\n## Step 3: Validate Result\n\nCall theme-mcp to validate your transformed data:\n```\ntheme-mcp.validate_design_data({\n  data: <your_transformed_data>,\n  schema_type: \"ds\"\n})\n```\n\n## Step 4: Save Result\n\nOnce validated, save the data:\n```\ntheme-mcp.save_design_data({\n  data: <validated_data>,\n  project_path: \"...\"\n})\n```",
+  "mcp_calls": [
+    {
+      "mcp": "theme-mcp",
+      "tool": "validate_design_data",
+      "params": { "data": "<transformed>", "schema_type": "ds", "project_path": "..." }
+    },
+    {
+      "mcp": "theme-mcp",
+      "tool": "save_design_data",
+      "params": { "data": "<validated>", "project_path": "..." }
+    }
+  ],
+  "rules": {...},
+  "examples": "..."
 }
 ```
+
+**Note:** External MCP calls (e.g., `pendrop:penpot-mcp.get_object_tree`) are described in the `instructions` field, not in `mcp_calls`. The `mcp_calls` array only contains internal `theme-mcp` tool calls for validation and saving.
 
 **Example Call:**
 ```json
 {
-  "design_url": "https://design.penpot.app/#/view/abc123/file-xyz",
+  "design_url": "https://penpot.keytec.de/#/workspace?team-id=...&file-id=...&page-id=...",
   "project_path": "/home/user/my-drupal-project"
 }
 ```
 
-### `extract_design_system(source_data, source_tool, project_path)`
+Or with explicit extraction package:
+```json
+{
+  "design_url": "https://penpot.keytec.de/#/workspace?team-id=...&file-id=...&page-id=...",
+  "extraction_rules": "pendrop-penpot",
+  "project_path": "/home/user/my-drupal-project"
+}
+```
 
-Returns AI instructions for transforming raw design data to `pendrop.theme.json` format.
+**Note:** The `extraction_rules` can be configured in `pendrop.yml`:
+```yaml
+rules:
+  extraction: pendrop-penpot  # Extraction package name
+```
 
-**Parameters:**
-- `source_data` (object): Raw design data from extraction MCP
-- `source_tool` (string): Source design tool (`penpot`, `figma`, `sketch`, etc.)
-- `project_path` (string): Path to project root
-
-**Returns:** AI instructions with tool-specific extraction rules
-
-**Supported Source Tools:**
-- `penpot` - Penpot design files
-- `figma` - Figma design files
-- Custom tools via extraction packages
+**Supported Extraction Packages:**
+- `pendrop-penpot` - Penpot design files
+- `pendrop-figma` - Figma design files
+- Custom packages via local paths or npm packages (future)
 
 ### `validate_design_data(data, schema_type)`
 
@@ -164,7 +183,7 @@ Extraction rules are organized into **packages** that define how to transform a 
 ```
 rules/theme/extraction/
 ├── pendrop-penpot/          # Penpot → Pendrop (built-in)
-│   ├── prompts.yaml         # AI extraction instructions
+│   ├── extractions.yaml     # AI extraction instructions
 │   └── examples/            # Example input/output pairs
 │       ├── simple-input.json
 │       └── simple-output.json
@@ -183,52 +202,47 @@ rules/theme/extraction/
 
 To support a new design tool (e.g., Sketch):
 1. Create an extraction package: `rules/theme/extraction/pendrop-sketch/`
-2. Write `prompts.yaml` with tool-specific extraction instructions
+2. Write `extractions.yaml` with tool-specific extraction instructions
 3. Add extraction MCP (e.g., `sketch-mcp`) or use existing API
-4. Configure in `pendrop.yml`
+4. Configure `rules.extraction: pendrop-sketch` in `pendrop.yml` or pass `extraction_rules: "pendrop-sketch"` to `extract_design`
 
 ### Custom Extraction Packages
 
-Projects can override or add extraction rules by configuring custom packages in `pendrop.yml`:
+Projects can override the default extraction package by configuring `rules.extraction` in `pendrop.yml`:
 
 ```yaml
 rules:
-  extraction:
-    # Built-in packages (default)
-    penpot: pendrop-penpot
-    figma: pendrop-figma
-    
-    # Custom/override packages
-    penpot: ./design/my-penpot-rules    # Override Penpot rules
-    sketch: ./design/sketch-rules       # Add Sketch support
-    
-    # NPM packages (future)
-    figma: @company/figma-transform     # Company-specific Figma rules
-    adobexd: @community/adobexd-pendrop # Community package
+  # Use built-in package (default behavior)
+  # extraction: pendrop-penpot
+  
+  # Use custom local package
+  extraction: ./design/my-penpot-rules
+  
+  # Use npm package (future)
+  # extraction: @company/penpot-transform
 ```
 
-**Example: Adding Sketch Support**
+**Example: Using Custom Extraction Rules**
 
 1. Create package structure:
 ```
-my-project/design/sketch-rules/
-├── prompts.yaml
+my-project/design/my-penpot-rules/
+├── extractions.yaml
 └── examples/
-    ├── sketch-input.json
-    └── expected-output.json
+    ├── simple-input.json
+    └── simple-output.json
 ```
 
 2. Configure in `pendrop.yml`:
 ```yaml
 rules:
-  extraction:
-    sketch: ./design/sketch-rules
+  extraction: ./design/my-penpot-rules
 ```
 
-3. Use with Sketch extraction MCP or API
+3. Use with `extract_design` - the custom package will be used instead of the default
 
 A custom package must have the same structure:
-- `prompts.yaml` - Extraction instructions
+- `extractions.yaml` - Extraction instructions
 - `examples/` - Optional example extractions
 
 ## Configuration
@@ -250,15 +264,141 @@ design:
 
 rules:
   custom_rules_path: ./design/rules
-  extraction:
-    penpot: pendrop-penpot  # or custom path
-    figma: pendrop-figma
+  extraction: pendrop-penpot  # Package name or path (required if not passed as parameter)
+```
+
+**Note:** The `rules.extraction` is required if `extraction_rules` is not passed as a parameter to `extract_design`. You can specify a built-in package name (e.g., `pendrop-penpot`) or a local path (e.g., `./design/my-rules`).
 ```
 
 **Note:** Authentication is handled by each extraction MCP server (not in `pendrop.yml`):
 - **penpot-mcp**: Configure via `PENPOT_USERNAME`, `PENPOT_PASSWORD`, or `PENPOT_TOKEN` environment variables
 - **figma-mcp**: Configure via `FIGMA_TOKEN` environment variable
 - See each MCP server's documentation for authentication setup
+
+## MCP Communication Logging
+
+Theme MCP logs all communication with other MCP servers (penpot-mcp, figma-mcp, etc.) for debugging and monitoring.
+
+### Configuration
+
+Logging can be configured via environment variables:
+
+```bash
+# Enable/disable logging (default: true)
+THEME_MCP_LOG_ENABLED=true
+
+# Log to console (default: true)
+THEME_MCP_LOG_CONSOLE=true
+
+# Log to file (default: true)
+THEME_MCP_LOG_FILE=true
+
+# Log level: 'all', 'errors', or 'summary' (default: 'all')
+THEME_MCP_LOG_LEVEL=all
+```
+
+**Note:** 
+- Log directory is always `.pendrop/logs/` relative to the project root
+- Project root is the directory containing `pendrop.yml`
+- The project path is automatically detected from `project_path` parameter in tool calls
+
+### Log Format
+
+Logs are stored in a single JSON file as an array:
+
+```json
+[
+  {
+    "timestamp": "2024-01-15T10:30:45.123Z",
+    "direction": "outgoing",
+    "targetMcp": "penpot-mcp",
+    "tool": "extract_file",
+    "params": {
+      "file_url": "https://penpot.app/...",
+      "options": {}
+    },
+    "duration": 1234,
+    "result": { ... },
+    "error": null
+  },
+  {
+    "timestamp": "2024-01-15T10:30:46.456Z",
+    "direction": "incoming",
+    "targetMcp": "penpot-mcp",
+    "tool": "extract_file",
+    "result": { ... },
+    "duration": 1234
+  }
+]
+```
+
+### Log Files
+
+- **Location**: `.pendrop/logs/` (relative to project root)
+- **Filename**: `log.json` (single file, all logs)
+- **Format**: JSON array (formatted, readable)
+
+### Log Levels
+
+- **`all`**: Log all communication (requests, responses, errors)
+- **`errors`**: Log only errors
+- **`summary`**: Log only brief summaries (one line per call)
+
+### Example Log Output
+
+**Console (summary mode):**
+```
+→ ✅ penpot-mcp.extract_file (1234ms)
+← ✅ penpot-mcp.extract_file (1234ms)
+```
+
+**Console (all mode):**
+```
+→ MCP Communication ✅
+  Target: penpot-mcp
+  Tool: extract_file
+  Timestamp: 2024-01-15T10:30:45.123Z
+  Duration: 1234ms
+  Params: {
+    "file_url": "https://penpot.app/..."
+  }
+  Result: { ... }
+```
+
+**File (log.json):**
+```json
+[
+  {
+    "timestamp": "2024-01-15T10:30:45.123Z",
+    "direction": "outgoing",
+    "targetMcp": "penpot-mcp",
+    "tool": "extract_file",
+    "params": {"file_url": "..."}
+  },
+  {
+    "timestamp": "2024-01-15T10:30:45.456Z",
+    "direction": "incoming",
+    "targetMcp": "penpot-mcp",
+    "tool": "extract_file",
+    "result": {...},
+    "duration": 1234
+  }
+]
+```
+
+### Disabling Logging
+
+To disable logging completely:
+
+```bash
+THEME_MCP_LOG_ENABLED=false
+```
+
+Or disable only file logging:
+
+```bash
+THEME_MCP_LOG_FILE=false
+```
 
 ## Cursor Integration
 
@@ -305,7 +445,7 @@ Project path: /home/user/my-drupal-project
 ```
 AI: I'll extract and transform your design system.
 
-[Calls theme-mcp.extract_design_data]
+[Calls theme-mcp.extract_design]
 ↓ (detects Penpot URL)
 [Receives instructions: "Call penpot-mcp.extract_file..."]
 ↓
@@ -331,7 +471,7 @@ Project: /home/user/drupal-demo
 ```
 AI: I'll extract and transform your Figma design.
 
-[Calls theme-mcp.extract_design_data]
+[Calls theme-mcp.extract_design]
 ↓ (detects Figma URL)
 [Receives instructions: "Call figma-mcp.get_file..."]
 ↓
@@ -380,7 +520,7 @@ AI: [Calls theme-mcp.generate_component("button", "/project/path")]
 // AI orchestrates workflows for any design tool
 
 // PENPOT WORKFLOW
-const penpotInstructions = await theme_mcp.extract_design_data({
+const penpotInstructions = await theme_mcp.extract_design({
   design_url: "https://design.penpot.app/#/view/...",
   project_path: "/home/user/drupal-demo"
 });
@@ -397,7 +537,7 @@ const transformedPenpot = transformUsingRules(
 );
 
 // FIGMA WORKFLOW
-const figmaInstructions = await theme_mcp.extract_design_data({
+const figmaInstructions = await theme_mcp.extract_design({
   design_url: "https://figma.com/file/abc123/...",
   project_path: "/home/user/drupal-demo"
 });
@@ -499,7 +639,7 @@ The project uses GitHub Actions for continuous integration:
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ STEP 1: AI calls theme-mcp.extract_design_data                 │
+│ STEP 1: AI calls theme-mcp.extract_design                       │
 ├─────────────────────────────────────────────────────────────────┤
 │ {                                                               │
 │   "design_url": "https://design.penpot.app/#/view/abc/xyz",   │
@@ -602,7 +742,7 @@ mkdir -p rules/theme/extraction/pendrop-{tool}
 cd rules/theme/extraction/pendrop-{tool}
 ```
 
-**Step 2: Create `prompts.yaml`**
+**Step 2: Create `extractions.yaml`**
 
 ```yaml
 version: "1.0"

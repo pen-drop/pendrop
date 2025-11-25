@@ -14,7 +14,7 @@ tests/
 │   ├── extractionRules.test.ts # Extraction rules loader tests
 │   └── schemaLoader.test.ts     # Schema loader tests
 ├── tools/                       # Unit tests for tools
-│   └── extractionInstructions.test.ts  # Extraction instructions tests
+│   └── extract.test.ts         # Extract design tool tests
 └── integration/                 # Integration tests
     └── workflow.test.ts         # End-to-end workflow tests
 ```
@@ -66,7 +66,7 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Throws error for invalid schema type
 - ✓ Loads schema with all required properties
 
-**Extraction Instructions Tests** (`tools/extractionInstructions.test.ts`)
+**Extract Design Tests** (`tools/extract.test.ts`)
 - ✓ Returns comprehensive instructions
 - ✓ Includes extraction rules
 - ✓ References W3C DTCG format
@@ -120,19 +120,11 @@ Expected output in `pendrop.theme.json` format:
 
 ## Known Issues
 
-### Jest + ESM Configuration
+### TypeScript Linter Warnings
 
-Some tests currently fail due to Jest's handling of `import.meta` with Node16 module resolution:
+The TypeScript linter may show errors for Node.js built-in modules (`fs/promises`, `path`, `url`) in test files, but these are false positives. Vitest correctly resolves these modules at runtime, and all tests pass successfully.
 
-```
-SyntaxError: Cannot use 'import.meta' outside a module
-```
-
-**Status**: Known Jest limitation with hybrid ESM/CommonJS modules
-
-**Workaround**: Tests that don't depend on `import.meta` (like `extractionInstructions.test.ts`) pass successfully
-
-**Resolution**: Will be fixed in future Jest versions or by refactoring to avoid `import.meta`
+**Status**: Cosmetic issue only - all tests pass ✅
 
 ## Test Philosophy
 
@@ -147,7 +139,7 @@ SyntaxError: Cannot use 'import.meta' outside a module
 ### Unit Test Template
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { yourFunction } from '../../src/path/to/module.js';
 
 describe('Your Function', () => {
@@ -161,9 +153,13 @@ describe('Your Function', () => {
 ### Integration Test Template
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 describe('Your Workflow', () => {
   it('should complete workflow', async () => {
@@ -178,7 +174,6 @@ describe('Your Workflow', () => {
 
 ## Future Improvements
 
-- [ ] Fix Jest ESM configuration for full test suite
 - [ ] Add tests for `generate_component` and `generate_story` tools
 - [ ] Add tests for `save_design_data` tool
 - [ ] Add Figma-specific test fixtures
@@ -191,7 +186,7 @@ describe('Your Workflow', () => {
 - **Total Tests**: 30+ test cases
 - **Test Files**: 5
 - **Test Coverage**: Core functionality covered
-- **Passing Tests**: 5+ (extractionInstructions suite)
+- **Passing Tests**: 46 tests across 5 test files
 - **Build Status**: ✅ TypeScript compilation successful
 
 ## Contributing

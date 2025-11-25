@@ -4,6 +4,7 @@
  */
 
 import { readFile } from 'fs/promises';
+import { readdirSync } from 'fs';
 import { join, resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -30,7 +31,41 @@ function getDirname(): string {
 }
 
 /**
+ * Get the Pendrop repository root directory
+ * Schemas are always loaded from repository root, not from project_path
+ */
+function getRepositoryRoot(): string {
+  const dir = getDirname();
+  let currentDir = dir;
+  
+  // Traverse up maximum 6 levels to find repository root
+  for (let i = 0; i < 6; i++) {
+    try {
+      // Check if this directory contains both 'servers' and 'schemas' folders
+      const entries = readdirSync(currentDir);
+      if (entries.includes('servers') && entries.includes('schemas')) {
+        return currentDir;
+      }
+    } catch {
+      // Continue traversing up if readdir fails
+    }
+    currentDir = resolve(currentDir, '..');
+    
+    // Safety check: stop if we've reached the filesystem root
+    if (currentDir === resolve(currentDir, '..')) {
+      break;
+    }
+  }
+  
+  // Fallback: use relative path calculation
+  // From dist/utils: dist -> theme-mcp -> servers -> repository root (4 levels up)
+  // From src/utils: src -> theme-mcp -> servers -> repository root (4 levels up)
+  return resolve(dir, '../../../../');
+}
+
+/**
  * Load a Pendrop schema by type
+ * Schemas are always loaded from repository root
  */
 export async function loadSchema(schemaType: 'ds' | 'content'): Promise<Schema> {
   // Validate schema type
@@ -38,8 +73,9 @@ export async function loadSchema(schemaType: 'ds' | 'content'): Promise<Schema> 
     throw new Error(`Invalid schema type: ${schemaType}. Must be 'ds' or 'content'.`);
   }
   
-  // Go up from servers/theme-mcp/src/utils to project root, then to schemas
-  const schemasRoot = resolve(getDirname(), '../../../../schemas');
+  // Schemas are always loaded from repository root
+  const repoRoot = getRepositoryRoot();
+  const schemasRoot = join(repoRoot, 'schemas');
   const schemaName = schemaType === 'ds' ? 'pendrop.theme.json' : 'pendrop.content.json';
   const schemaPath = join(schemasRoot, schemaName);
   

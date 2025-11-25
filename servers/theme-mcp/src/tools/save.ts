@@ -3,53 +3,69 @@
  * Saves validated design data to project
  */
 
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, readFile } from 'fs/promises';
 import { join, dirname } from 'path';
-import { loadPendropConfig, resolvePaths } from '../utils/projectConfig.js';
-import { loadConventions } from '../utils/conventions.js';
+import { loadPendropConfig } from '../utils/projectConfig.js';
+import { setLoggerProjectPath } from '../utils/mcpLogger.js';
 
 export interface SaveDesignDataParams {
-  data: unknown;
-  project_path: string;
+  data: Record<string, unknown>;
+  project_path: string; // Path to directory containing pendrop.yml (project root)
+  type: 'tokens' | 'components' | 'stories';
 }
 
 export interface SaveDesignDataResult {
   success: boolean;
-  path: string;
-  message: string;
+  path?: string;
+  output_path?: string;
+  message?: string;
+  error?: string;
 }
 
 export async function saveDesignData(
   params: SaveDesignDataParams
 ): Promise<SaveDesignDataResult> {
-  const { data, project_path } = params;
+  const { data, project_path, type } = params;
   
-  // Load config
-  const pendropConfig = await loadPendropConfig(project_path);
+  // Set project path for logger
+  setLoggerProjectPath(project_path);
   
-  // Resolve output path
-  const conventions = await loadConventions({
-    target: pendropConfig.project.type,
-    rulesPath: '../../rules/theme',
-    projectRules: pendropConfig.rules?.custom_rules_path
-  });
-  const resolvedConventions = resolvePaths(
-    conventions,
-    pendropConfig.project.theme
-  );
-  
-  const outputPath = join(project_path, (resolvedConventions.paths as Record<string, string>).design_data || '.pendrop/dist/pendrop.data.ds.json');
+  // Fixed output path as per rules
+  const outputPath = join(project_path, '.pendrop/pendrop.data.ds.json');
   
   // Ensure directory exists
   await mkdir(dirname(outputPath), { recursive: true });
+
+  // Read existing file or initialize
+  let content: Record<string, any> = {};
+  try {
+    const fileContent = await readFile(outputPath, 'utf-8');
+    content = JSON.parse(fileContent);
+  } catch (error) {
+    // File doesn't exist or is invalid, start with empty object
+    content = {};
+  }
+
+  // Initialize the type section if it doesn't exist
+  if (!content[type]) {
+    content[type] = {};
+  }
+
+  // Merge new data into the specific section
+  // We assume data is a map of ID -> Item (e.g., { "button": { ... } })
+  content[type] = {
+    ...content[type],
+    ...data
+  };
   
   // Write file
-  await writeFile(outputPath, JSON.stringify(data, null, 2), 'utf-8');
+  await writeFile(outputPath, JSON.stringify(content, null, 2), 'utf-8');
   
   return {
     success: true,
     path: outputPath,
-    message: `✓ Design system data saved to ${outputPath}`
+    output_path: outputPath,
+    message: `✓ Design system data (${type}) saved/merged to ${outputPath}`
   };
 }
 
@@ -64,14 +80,19 @@ export const saveDesignDataTool = {
     properties: {
       data: { 
         type: 'object',
-        description: 'The validated design data to save'
+        description: 'The validated design data fragment to save (map of ID -> Item)'
       },
       project_path: { 
         type: 'string',
         description: 'Path to the project root'
+      },
+      type: {
+        type: 'string',
+        enum: ['tokens', 'components', 'stories'],
+        description: 'The type of data being saved (components, tokens, stories)'
       }
     },
-    required: ['data', 'project_path']
+    required: ['data', 'project_path', 'type']
   }
 };
 

@@ -85,7 +85,7 @@ describe('Extraction Workflow Integration', () => {
 
   describe('Extraction Rules Application', () => {
     it('should load extraction rules successfully', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/path');
 
       expect(rules).toBeDefined();
       expect(rules.version).toBe('1.0');
@@ -93,7 +93,7 @@ describe('Extraction Workflow Integration', () => {
     });
 
     it('should provide instructions for token extraction', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/path');
 
       expect(rules.tokens_instructions).toBeDefined();
       expect(rules.tokens_instructions).toContain('color');
@@ -102,7 +102,7 @@ describe('Extraction Workflow Integration', () => {
     });
 
     it('should provide instructions for component extraction', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/path');
 
       expect(rules.components_instructions).toBeDefined();
       expect(rules.components_instructions.toLowerCase()).toContain('component');
@@ -110,7 +110,7 @@ describe('Extraction Workflow Integration', () => {
     });
 
     it('should specify naming conventions', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/path');
 
       expect(rules.naming).toBeDefined();
       expect(rules.naming?.tokens).toBe('kebab-case');

@@ -9,7 +9,7 @@ import type { PendropConfig } from '../../src/utils/projectConfig.js';
 describe('Extraction Rules Loader', () => {
   describe('loadExtractionRules', () => {
     it('should load built-in Penpot extraction rules', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/project/path');
 
       expect(rules).toBeDefined();
       expect(rules.version).toBe('1.0');
@@ -20,7 +20,7 @@ describe('Extraction Rules Loader', () => {
     });
 
     it('should load built-in Figma extraction rules', async () => {
-      const rules = await loadExtractionRules('figma', '/fake/project/path');
+      const rules = await loadExtractionRules('pendrop-figma', '/fake/project/path');
 
       expect(rules).toBeDefined();
       expect(rules.version).toBe('1.0');
@@ -28,15 +28,14 @@ describe('Extraction Rules Loader', () => {
       expect(rules.instructions).toBeDefined();
     });
 
-    it('should validate source matches tool', async () => {
+    it('should fail for non-existent package', async () => {
       await expect(async () => {
-        // This should fail because the source in prompts.yaml is 'penpot'
-        await loadExtractionRules('wrongtool', '/fake/project/path');
+        await loadExtractionRules('pendrop-nonexistent', '/fake/project/path');
       }).rejects.toThrow();
     });
 
     it('should include naming conventions', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/project/path');
 
       expect(rules.naming).toBeDefined();
       expect(rules.naming?.tokens).toBeDefined();
@@ -45,7 +44,7 @@ describe('Extraction Rules Loader', () => {
     });
 
     it('should include optional hints', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/project/path');
 
       expect(rules.hints).toBeDefined();
     });
@@ -53,7 +52,7 @@ describe('Extraction Rules Loader', () => {
 
   describe('loadExamples', () => {
     it('should load example extractions for Penpot', async () => {
-      const examples = await loadExamples('penpot');
+      const examples = await loadExamples('pendrop-penpot');
 
       expect(examples).toBeDefined();
       expect(examples).toContain('Example Input');
@@ -62,13 +61,13 @@ describe('Extraction Rules Loader', () => {
     });
 
     it('should return message if examples not available', async () => {
-      const examples = await loadExamples('nonexistent-tool');
+      const examples = await loadExamples('pendrop-nonexistent');
 
       expect(examples).toContain('No examples available');
     });
 
     it('should format examples as markdown', async () => {
-      const examples = await loadExamples('penpot');
+      const examples = await loadExamples('pendrop-penpot');
 
       expect(examples).toContain('```json');
       expect(examples).toContain('```');
@@ -84,14 +83,12 @@ describe('Extraction Rules Loader', () => {
           theme: 'test',
         },
         rules: {
-          extraction: {
-            penpot: '@company/penpot-extraction',
-          },
+          extraction: '@company/penpot-extraction',
         },
       };
 
       await expect(async () => {
-        await loadExtractionRules('penpot', '/project', config);
+        await loadExtractionRules('@company/penpot-extraction', '/project', config);
       }).rejects.toThrow('NPM package extraction rules not yet supported');
     });
 
@@ -105,22 +102,20 @@ describe('Extraction Rules Loader', () => {
           theme: 'test',
         },
         rules: {
-          extraction: {
-            penpot: './custom/rules',
-          },
+          extraction: './custom/rules',
         },
       };
 
       // Would throw if file doesn't exist
       await expect(async () => {
-        await loadExtractionRules('penpot', '/nonexistent', config);
+        await loadExtractionRules('./custom/rules', '/nonexistent', config);
       }).rejects.toThrow();
     });
   });
 
   describe('Extraction Rules Structure', () => {
     it('should have all required fields', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/project/path');
 
       expect(rules.version).toBeDefined();
       expect(rules.source).toBeDefined();
@@ -130,7 +125,7 @@ describe('Extraction Rules Loader', () => {
     });
 
     it('should have optional stories instructions', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/project/path');
 
       // stories_instructions is optional
       if (rules.stories_instructions) {
@@ -139,7 +134,7 @@ describe('Extraction Rules Loader', () => {
     });
 
     it('should have valid naming conventions', async () => {
-      const rules = await loadExtractionRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('pendrop-penpot', '/fake/project/path');
 
       if (rules.naming) {
         const validCases = ['kebab-case', 'camelCase', 'snake_case', 'PascalCase'];

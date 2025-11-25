@@ -1,5 +1,5 @@
 /**
- * Unit tests for Extraction Instructions Tool
+ * Unit tests for Extract Design Tool
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -10,12 +10,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-describe('Extraction Instructions Tool', () => {
-  describe('getExtractionInstructions', () => {
+describe('Extract Design Tool', () => {
+  describe('extractDesign', () => {
     it('should return comprehensive instructions', async () => {
       // We can't easily test the actual function without mocking file system
       // But we can verify the extraction rules exist
-      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/prompts.yaml');
+      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/extractions.yaml');
       
       const exists = await readFile(rulesPath, 'utf-8')
         .then(() => true)
@@ -25,7 +25,7 @@ describe('Extraction Instructions Tool', () => {
     });
 
     it('should include extraction rules', async () => {
-      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/prompts.yaml');
+      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/extractions.yaml');
       const content = await readFile(rulesPath, 'utf-8');
       
       expect(content).toContain('version');
@@ -54,7 +54,7 @@ describe('Extraction Instructions Tool', () => {
     });
 
     it('should reference W3C DTCG format for tokens', async () => {
-      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/prompts.yaml');
+      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/extractions.yaml');
       const content = await readFile(rulesPath, 'utf-8');
       
       expect(content.toLowerCase()).toContain('w3c');
@@ -63,7 +63,7 @@ describe('Extraction Instructions Tool', () => {
     });
 
     it('should include naming conventions', async () => {
-      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/prompts.yaml');
+      const rulesPath = join(__dirname, '../../../../rules/theme/extraction/pendrop-penpot/extractions.yaml');
       const content = await readFile(rulesPath, 'utf-8');
       
       expect(content).toContain('naming');

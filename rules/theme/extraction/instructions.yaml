@@ -1,0 +1,115 @@
+---
+version: "1.0"
+
+# Global instruction template for AI extraction workflow
+# Template variables: {{source_tool}}, {{design_url}}, {{project_path}}, {{output_path}}, {{target_schema}}, etc.
+# Tool-specific parts are loaded from pendrop-{tool}/instructions.yaml
+
+instructions: |
+  # Design System Extraction Instructions
+
+  You are extracting and transforming a {{source_tool}} design file to Pendrop's design system format.
+
+  ## Step 1: Extract Source Data
+
+  {{tool_specific_extraction_instructions}}
+
+  ## Step 2: Transform Data
+
+  Transform the raw data to `pendrop.theme.json` format following these rules:
+
+  ### Target Schema
+
+  Your output must match this schema:
+
+  ```json
+  {{target_schema}}
+  ```
+
+  ### Extraction Rules
+
+  {{extraction_rules}}
+
+  ### Process per Type
+
+  You must process each type (Tokens, Components, Stories) sequentially and save the results after each step.
+
+  #### 1. Tokens
+
+  {{tokens_instructions}}
+
+  Extract design tokens in **W3C DTCG format**:
+  - Use `$value`, `$type`, `$description` properties
+  - Token types: color, dimension, fontFamily, fontSize, etc.
+
+  **Action:**
+  After extracting and transforming tokens, validate and save the data immediately.
+
+  ```
+  theme-mcp.validate_design_data({
+    data: <tokens_data_only>,
+    schema_type: "ds"
+  })
+
+  theme-mcp.save_design_data({
+    data: <tokens_data_only>,
+    project_path: "{{project_path}}"
+  })
+  ```
+
+  #### 2. Components
+
+  {{components_instructions}}
+
+  **Action:**
+  After extracting and transforming components, validate and save the data immediately (merging with existing tokens).
+
+  ```
+  theme-mcp.validate_design_data({
+    data: <components_data_merged_with_tokens>,
+    schema_type: "ds"
+  })
+
+  theme-mcp.save_design_data({
+    data: <components_data_merged_with_tokens>,
+    project_path: "{{project_path}}"
+  })
+  ```
+
+  #### 3. Stories
+
+  {{stories_instructions}}
+
+  **Action:**
+  After generating stories, validate and save the final complete data set.
+
+  ```
+  theme-mcp.validate_design_data({
+    data: <complete_data_with_stories>,
+    schema_type: "ds"
+  })
+
+  theme-mcp.save_design_data({
+    data: <complete_data_with_stories>,
+    project_path: "{{project_path}}"
+  })
+  ```
+
+  ### Naming Conventions
+
+  - Tokens: {{naming_tokens}}
+  - Components: {{naming_components}}
+  - Props: {{naming_props}}
+
+  ### Examples
+
+  {{examples}}
+
+  ## Summary
+
+  1. Extract from {{source_tool}}-mcp
+  2. Process Tokens -> Validate -> Save
+  3. Process Components -> Validate -> Save
+  4. Process Stories -> Validate -> Save
+
+  Execute these steps sequentially now.
