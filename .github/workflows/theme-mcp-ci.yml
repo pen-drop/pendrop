@@ -1,0 +1,153 @@
+name: Theme MCP CI
+
+on:
+  push:
+    branches: [ 1.x ]
+    paths:
+      - 'servers/theme-mcp/**'
+      - 'schemas/**'
+      - 'rules/**'
+      - '.github/workflows/theme-mcp-ci.yml'
+  pull_request:
+    branches: [ 1.x ]
+    paths:
+      - 'servers/theme-mcp/**'
+      - 'schemas/**'
+      - 'rules/**'
+      - '.github/workflows/theme-mcp-ci.yml'
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: servers/theme-mcp/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: servers/theme-mcp
+        run: npm ci
+      
+      - name: TypeScript type check
+        working-directory: servers/theme-mcp
+        run: npm run type-check
+      
+      - name: ESLint
+        working-directory: servers/theme-mcp
+        run: npm run lint
+      
+      - name: Run tests
+        working-directory: servers/theme-mcp
+        run: npm test
+      
+      - name: Build
+        working-directory: servers/theme-mcp
+        run: npm run build
+      
+      - name: Upload build artifacts
+        if: matrix.node-version == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-mcp-build
+          path: servers/theme-mcp/dist
+          retention-days: 7
+
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: servers/theme-mcp/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: servers/theme-mcp
+        run: npm ci
+      
+      - name: Run tests with coverage
+        working-directory: servers/theme-mcp
+        run: npm run test:coverage
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./servers/theme-mcp/coverage/lcov.info
+          flags: theme-mcp
+          name: theme-mcp-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  lint-schemas:
+    name: Validate Schemas
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      
+      - name: Validate JSON schemas
+        run: |
+          # Check if schemas are valid JSON
+          for file in schemas/*.json; do
+            echo "Validating $file"
+            if ! jq empty "$file" 2>/dev/null; then
+              echo "❌ Invalid JSON in $file"
+              exit 1
+            fi
+            echo "✓ $file is valid JSON"
+          done
+      
+      - name: Validate YAML files
+        run: |
+          # Install yamllint
+          pip install yamllint
+          
+          # Check transformation rules
+          echo "Validating YAML files in rules/"
+          yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" rules/
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: servers/theme-mcp/package-lock.json
+      
+      - name: Run npm audit
+        working-directory: servers/theme-mcp
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
