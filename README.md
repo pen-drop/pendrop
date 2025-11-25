@@ -1,5 +1,6 @@
 # Pendrop
 
+
 Pendrop automates the creation of Drupal applications using AI-powered workflows that transform design system data and content structure definitions into production-ready code.
 
 ## Concept
@@ -30,7 +31,8 @@ Transform content structure into CMS configuration:
 - Create field mappings and migrations
 - Build complete content architecture
 
-## Architecture
+
+### Components
 
 Pendrop uses **Model Context Protocol (MCP)** servers for AI-powered code generation:
 
@@ -45,6 +47,7 @@ Pendrop uses **Model Context Protocol (MCP)** servers for AI-powered code genera
 2. **Convention-Based**: Minimal conventions per target platform, easily extensible
 3. **Tool-Agnostic**: MCP servers are generic; conventions define platform-specific behavior
 4. **AI-Powered**: Code generation driven by AI using prompts and conventions
+
 
 ## Project Structure
 
@@ -84,5 +87,4 @@ See [examples/drupal-demo/README.md](examples/drupal-demo/README.md) for a compl
   - [servers/schema-mcp/README.md](servers/schema-mcp/README.md)
 
 ## License
-
 MIT

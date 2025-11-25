@@ -18,6 +18,7 @@ Penpot Design → penpot-mcp → pendrop.data.ds.json → theme-mcp → Generate
 - **Output**: `pendrop.data.ds.json` (W3C DTCG compliant tokens + components)
 - **Used by**: `theme-mcp` server for component and story generation
 
+
 ## Features
 
 - Penpot file analysis and processing
@@ -26,6 +27,7 @@ Penpot Design → penpot-mcp → pendrop.data.ds.json → theme-mcp → Generate
 - Automatic transformation to `pendrop.schema.ds.json` format
 - Integration with Pendrop workflow via MCP
 - Used by theme-mcp as extraction bridge
+
 
 ## Configuration
 
