@@ -29,6 +29,9 @@ export interface PendropConfig {
   };
   rules?: {
     custom_rules_path?: string;
+    transformations?: {
+      [tool: string]: string; // Maps tool name to package path/name
+    };
     conventions?: Record<string, unknown>;
   };
 }
@@ -114,12 +117,14 @@ export function getAuth(
   const auth = config.design.auth[tool];
   const credentials: Record<string, string> = {};
   
-  if (tool === 'penpot') {
-    if (auth.username) credentials.username = auth.username;
-    if (auth.password) credentials.password = auth.password;
-    if (auth.token) credentials.token = auth.token;
-  } else if (tool === 'figma') {
-    if (auth.token) credentials.token = auth.token;
+  if (tool === 'penpot' && auth) {
+    const penpotAuth = auth as { username?: string; password?: string; token?: string };
+    if (penpotAuth.username) credentials.username = penpotAuth.username;
+    if (penpotAuth.password) credentials.password = penpotAuth.password;
+    if (penpotAuth.token) credentials.token = penpotAuth.token;
+  } else if (tool === 'figma' && auth) {
+    const figmaAuth = auth as { token?: string };
+    if (figmaAuth.token) credentials.token = figmaAuth.token;
   }
   
   return Object.keys(credentials).length > 0 ? credentials : null;

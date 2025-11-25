@@ -1,294 +1,352 @@
 # Pendrop Architecture
 
-This document provides a comprehensive overview of the Pendrop architecture, explaining how the AI-powered workflow orchestrates design system extraction and code generation.
+## Core Paradigm: AI Orchestration
 
-## High-Level Overview
+Pendrop uses a unique architecture where **MCPs return prompts/instructions instead of results**. The AI reads these instructions and orchestrates the complete workflow.
+
+### Why This Approach?
+
+1. **Flexibility**: Easy to modify workflows by changing prompts
+2. **Transparency**: AI can explain what it's doing
+3. **Intelligence**: AI understands context and makes decisions
+4. **Error Recovery**: AI can retry and fix errors
+5. **Extensibility**: Works with any extraction MCP
+6. **Customizability**: Rules are prompts, easy to customize
+7. **No Complex IPC**: No MCP-to-MCP communication code needed
+8. **Diverse Data Handling**: AI can transform any source data format
+
+## Architecture Flow
 
 ```
-┌─────────────────┐         ┌─────────────────┐
-│  Design Tools   │         │ Manual Creation │
-│  (Penpot/Figma) │         │  (Content Def)  │
-└────────┬────────┘         └────────┬────────┘
-         │                           │
-         ├──────────┐                │
-         │          │                │
-    ┌────▼─────┐ ┌──▼──────────┐    │
-    │penpot-mcp│ │figma-mcp    │    │
-    │          │ │  (future)   │    │
-    └────┬─────┘ └──┬──────────┘    │
-         │          │                │
-         └──────────┤                │
-                    │                │
-           ┌────────▼────────┐       │
-           │   theme-mcp     │       │
-           │  (Bridge/Gen)   │       │
-           └────────┬────────┘       │
-                    │                │
-        ┌───────────┴────────┐       │
-        │                    │       │
-  ┌─────▼──────┐      ┌──────▼──────┤
-  │ pendrop.   │      │  pendrop.   │
-  │ data.ds.   │      │  data.      │
-  │ json       │      │  content.   │
-  │            │      │  json       │
-  └─────┬──────┘      └──────┬──────┘
-        │                    │
-        │  (Generation)      │
-        │                    │
-  ┌─────▼──────┐      ┌──────▼──────┐
-  │ theme-mcp  │      │ schema-mcp  │
-  │(generate)  │      │(generate)   │
-  └─────┬──────┘      └──────┬──────┘
-        │                    │
-        ├─────────┬──────────┤
-        │         │          │
-   ┌────▼───┐ ┌──▼────┐ ┌───▼────┐
-   │Compo-  │ │Stories│ │Drupal  │
-   │nents   │ │       │ │Config  │
-   └────────┘ └───────┘ └────────┘
+User/AI
+  ↓
+1. Call theme-mcp.transform_design_system(url, source_tool, project_path)
+  ↓
+theme-mcp returns INSTRUCTIONS:
+  "To transform this design system:
+   1. Call penpot-mcp.extract_file(url) to get raw data
+   2. Transform data using these rules: [rules]
+   3. Use these examples: [examples]
+   4. Validate with theme-mcp.validate_design_data()
+   5. Save with theme-mcp.save_design_data()"
+  ↓
+2. AI executes instructions step-by-step:
+  ↓
+  Calls penpot-mcp.extract_file() → raw Penpot JSON
+  ↓
+  AI transforms data using rules from instructions
+  ↓
+  Calls theme-mcp.validate_design_data() → validation result
+  ↓
+  Calls theme-mcp.save_design_data() → saves to .pendrop/dist/
+  ↓
+3. AI reports completion to user
 ```
 
-## Core Components
+## Components
 
-### 1. Extraction MCPs (Tool-Specific)
+### 1. Extraction MCPs
 
-#### penpot-mcp
-- **Purpose**: Extract design data from Penpot
-- **Input**: Penpot file URL or exported data
-- **Output**: `pendrop.data.ds.json` (W3C DTCG format)
-- **Responsibilities**:
-  - Connect to Penpot API
-  - Extract components and design tokens
-  - Transform to pendrop schema format
-  - Output standardized design system data
+**Purpose**: Extract raw design data from design tools
 
-#### figma-mcp (Future)
-- Similar to penpot-mcp but for Figma
-- Will output the same `pendrop.data.ds.json` format
+**Examples**:
+- `penpot-mcp`: Extracts Penpot file data
+- `figma-mcp`: Extracts Figma file data (future)
 
-### 2. Generation MCPs (Tool-Agnostic)
-
-#### theme-mcp (Bridge + Generator)
-- **Purpose**: Single entry point for design system operations
-- **Dual Role**:
-  1. **Bridge**: Routes extraction to appropriate tool-specific MCP
-  2. **Generator**: Generates components and stories
-
-**Tools:**
-- `extract_design(fileUrl)`: Routes to penpot-mcp/figma-mcp based on URL
-- `generate_component(pendropDsData, componentId, target)`: Generate component code
-- `generate_story(pendropDsData, componentId, target)`: Generate component story
-
-**URL Routing:**
+**Interface**:
 ```typescript
-detectDesignTool(fileUrl) {
-  if (url.includes('penpot.com')) return 'penpot';
-  if (url.includes('figma.com')) return 'figma';
-  return 'unknown';
-}
+extract_file(file_url: string, auth: object) → raw_design_data
 ```
 
-#### schema-mcp (Content Structure)
-- **Purpose**: Generate CMS configuration from content structure
-- **Input**: `pendrop.data.content.json`
-- **Output**: Drupal configuration files
+**Characteristics**:
+- Tool-specific (one per design tool)
+- Returns raw, unstructured data
+- No transformation logic
 
-**Tools:**
-- `generate_content_types(pendropContentData, target)`: Generate content type configs
-- `generate_config(pendropContentData, target)`: Generate views and other config
-- `validate_structure(data, schemaType)`: Validate against pendrop schemas
+### 2. Theme MCP (Orchestrator)
 
-### 3. Data Files (Rules)
+**Purpose**: Provide AI instructions for design system transformations
 
-#### pendrop.data.ds.json
-- **Schema**: `pendrop.schema.ds.json`
-- **Contains**: Design system definition
-  - `tokens`: Design tokens in W3C DTCG format
-  - `components`: Component definitions with props
-  - `stories`: Story/variant definitions
-- **Role**: THE rules for component generation
-- **Source**: Generated by extraction MCPs or manually created
+**Tools**:
+- `transform_design_system()`: Returns transformation instructions
+- `validate_design_data()`: Validates transformed data
+- `save_design_data()`: Saves validated data to project
 
-#### pendrop.data.content.json
-- **Schema**: `pendrop.schema.content.json`
-- **Contains**: Content structure definition
-  - `content`: Entity types, bundles, fields
-  - `config`: Views and CMS configuration
-- **Role**: THE rules for CMS configuration generation
-- **Source**: Manually created or generated by other tools
+**Characteristics**:
+- Tool-agnostic orchestrator
+- Returns prompts, not results
+- Loads transformation packages (rules + examples)
+- Validates against schemas
+- Saves to project structure
 
-### 4. Convention System
+### 3. Schema MCP (Future)
 
-#### Convention Layers
+**Purpose**: Generate CMS configuration from content structure
+
+**Tools**:
+- `generate_content_types()`: Returns instructions for content type generation
+- `generate_config()`: Returns instructions for CMS configuration
+
+### 4. Transformation Packages
+
+**Purpose**: Define how to transform source data to Pendrop format
+
+**Structure**:
 ```
-Built-in Conventions (fallback)
-    ↓
-Target Conventions (rules/targets/drupal/)
-    ↓
-Project Conventions (project-specific)
-    ↓
-Final Merged Conventions
+rules/transformations/
+└── pendrop-{tool}/
+    ├── prompts.yaml          # AI instructions
+    └── examples/             # Example transformations
+        ├── simple-input.json
+        └── simple-output.json
 ```
 
-#### Convention Files
-- **conventions.yaml**: Naming styles, paths, file structure
-- **prompts.yaml**: AI generation prompts
-- **story.yaml**: Story format configuration
-
-#### Example: Drupal Conventions
+**Configuration** (`pendrop.yml`):
 ```yaml
-# rules/targets/drupal/conventions.yaml
-naming:
-  style: snake_case
-  component_prefix: ""
-paths:
-  components: /components
-  config: /config/sync
-structure:
-  component_files: [component.yml, template.twig]
-drupal:
-  component_namespace: custom
-  schema_version: 1.0
+rules:
+  transformations:
+    penpot: pendrop-penpot              # Built-in
+    # OR
+    penpot: ./design/my-penpot-rules    # Custom local
+    # OR
+    penpot: @company/penpot-transform   # NPM package (future)
 ```
 
-## Workflows
+**Benefits**:
+- Fully customizable transformation logic
+- Easy to create custom packages
+- Shareable via npm (future)
+- AI performs transformation (handles diverse data)
 
-### Design-System-Pipeline
+### 5. Target Conventions
 
-```mermaid
-graph LR
-    A[Design Tool] -->|URL| B[theme-mcp]
-    B -->|Route| C[penpot-mcp/figma-mcp]
-    C -->|Transform| D[pendrop.data.ds.json]
-    D --> E[theme-mcp generate]
-    E --> F[Components]
-    E --> G[Stories]
+**Purpose**: Define platform-specific conventions
+
+**Structure**:
+```
+rules/targets/
+└── drupal/
+    ├── conventions.yaml      # Naming, paths, structure
+    ├── prompts.yaml          # Generation prompts
+    └── story.yaml            # Story format config
 ```
 
-**Steps:**
-1. **AI calls** `theme-mcp.extract_design(penpotUrl)`
-2. **theme-mcp routes** to penpot-mcp
-3. **penpot-mcp** extracts and transforms to `pendrop.data.ds.json`
-4. **AI calls** `theme-mcp.generate_component()` for each component
-5. **AI calls** `theme-mcp.generate_story()` for each component
-6. **Output**: Drupal SDC components + Storybook stories
+**Layering**:
+1. Built-in conventions (shipped with Pendrop)
+2. Target conventions (platform-specific)
+3. Project overrides (in `pendrop.yml` or custom files)
 
-### Content-/CMS-Pipeline
+### 6. Schemas
 
-```mermaid
-graph LR
-    A[Manual/Tool] --> B[pendrop.data.content.json]
-    B --> C[schema-mcp validate]
-    C --> D[schema-mcp generate]
-    D --> E[Content Types]
-    D --> F[Views Config]
-    D --> G[Field Config]
+**Purpose**: Define data structures
+
+**Files**:
+- `pendrop.schema.ds.json`: Design system data (tokens, components, stories)
+- `pendrop.schema.content.json`: Content structure (content types, fields)
+- `pendrop.schema.config.json`: Project configuration (`pendrop.yml`)
+
+## Data Flow: Design System Pipeline
+
+```
+1. USER: "Transform my Penpot design system"
+   ↓
+2. AI calls theme-mcp.transform_design_system({
+     design_url: "https://design.penpot.app/#/...",
+     source_tool: "penpot",
+     project_path: "/path/to/project"
+   })
+   ↓
+3. THEME-MCP:
+   - Loads pendrop.yml from project
+   - Resolves transformation package for 'penpot'
+   - Loads prompts.yaml from transformation package
+   - Loads examples (if available)
+   - Loads target schema (pendrop.schema.ds.json)
+   - Builds comprehensive instructions
+   - Returns { instructions, mcp_calls, rules, examples }
+   ↓
+4. AI reads instructions and executes:
+   
+   Step 1: Extract
+   AI calls penpot-mcp.extract_file({
+     file_url: "...",
+     auth: { username: "...", password: "..." }
+   })
+   → Returns raw Penpot JSON
+   
+   Step 2: Transform
+   AI applies transformation rules:
+   - Extracts tokens (W3C DTCG format)
+   - Identifies components
+   - Generates story variants
+   - Follows naming conventions
+   → Produces pendrop.data.ds.json
+   
+   Step 3: Validate
+   AI calls theme-mcp.validate_design_data({
+     data: <transformed>,
+     schema_type: "ds"
+   })
+   → Returns { valid: true/false, errors: [...] }
+   
+   If invalid: AI reviews errors and fixes transformation
+   
+   Step 4: Save
+   AI calls theme-mcp.save_design_data({
+     data: <validated>,
+     project_path: "/path/to/project"
+   })
+   → Saves to .pendrop/dist/pendrop.data.ds.json
+   
+   ↓
+5. AI reports to user: "✓ Design system transformed and saved"
 ```
 
-**Steps:**
-1. **Create** `pendrop.data.content.json` (manually or via tools)
-2. **AI calls** `schema-mcp.validate_structure()`
-3. **AI calls** `schema-mcp.generate_content_types()`
-4. **AI calls** `schema-mcp.generate_config()`
-5. **Output**: Drupal configuration YAML files
+## Configuration: pendrop.yml
 
-## AI Integration
-
-### How AI Uses MCP Servers
-
-1. **AI analyzes** design file URL
-2. **AI calls** `theme-mcp.extract_design(url)`
-3. **AI reviews** resulting `pendrop.data.ds.json`
-4. **AI iterates** over components
-5. **AI calls** `generate_component()` and `generate_story()` for each
-6. **AI reviews** content structure needs
-7. **AI creates/loads** `pendrop.data.content.json`
-8. **AI calls** schema-mcp tools to generate CMS config
-
-### Convention-Based Generation
-
-AI uses conventions to guide generation:
-
-```javascript
-// AI knows from conventions:
-- Naming style (snake_case)
-- File structure (component.yml + template.twig)
-- Output paths (/components)
-- Story format (Storybook with storybook-addon-sdc)
-
-// AI generates code following conventions
-generate_component({
-  componentId: "button",
-  target: "drupal",
-  // Conventions loaded automatically
-})
-```
-
-### AI Prompts
-
-Conventions include AI prompts that guide generation:
+Project configuration file that defines:
 
 ```yaml
-# rules/targets/drupal/prompts.yaml
-generate_component: |
-  Generate a Drupal SDC component with:
-  1. component.yml with proper schema
-  2. template.twig with BEM CSS classes
-  3. Accessibility attributes
-  4. Design token usage
+# Project metadata
+project:
+  type: drupal                # Target platform
+  name: my-project
+  theme: my_theme             # Theme name
+
+# Design sources
+design:
+  urls:                       # Multiple design files supported
+    - https://design.penpot.app/#/view/proj/file1
+    - https://design.penpot.app/#/view/proj/file2
+  auth:
+    penpot:
+      username: user@example.com
+      password: secret
+    figma:
+      token: figma-token
+
+# Rules configuration
+rules:
+  # Transformation packages (tool → package mapping)
+  transformations:
+    penpot: pendrop-penpot              # Built-in
+    figma: ./design/my-figma-rules      # Custom
   
-  Component data: {component_data}
-  Conventions: {conventions}
+  # Project-specific convention overrides
+  custom_rules_path: ./design/rules
 ```
 
-## Extensibility
+## File Locations
 
-### Adding New Design Tools
+Projects follow this structure:
 
-1. Create new extraction MCP (e.g., `sketch-mcp`)
-2. Implement tools that output `pendrop.schema.ds.json` format
-3. Update `theme-mcp` URL routing
-4. Configure in `theme-mcp.config.json`
+```
+project-root/
+├── pendrop.yml                     # Configuration
+├── .pendrop/
+│   └── dist/
+│       └── pendrop.data.ds.json    # Generated design system data
+├── design/                         # Design source data (optional)
+│   ├── pendrop.data.content.json   # Content structure
+│   └── rules/                      # Custom rules (optional)
+└── web/themes/custom/{theme}/      # Drupal theme (for Drupal projects)
+    ├── components/                 # Generated components
+    ├── .storybook/                 # Storybook config
+    └── ...
+```
 
-### Adding New Target Platforms
+Paths are determined by:
+1. Target conventions (`rules/targets/{type}/conventions.yaml`)
+2. Project overrides (`pendrop.yml` → `rules.custom_rules_path`)
 
-1. Create `rules/targets/{platform}/` directory
-2. Add conventions.yaml, prompts.yaml, story.yaml
-3. Define platform-specific conventions
-4. MCP servers automatically support new target
+## Extending Pendrop
 
-### Project-Specific Customization
+### Adding a New Design Tool
 
-1. Create `my-project/rules/custom-conventions.yaml`
-2. Override specific conventions
-3. Configure MCP to use project rules
-4. No code changes needed
+1. **Create Extraction MCP**:
+   - Implement `extract_file(url, auth) → raw_data`
+   - Return tool-specific raw data (no transformation)
 
-## Technology Stack
+2. **Create Transformation Package**:
+   ```
+   rules/transformations/pendrop-{tool}/
+   ├── prompts.yaml
+   └── examples/
+       ├── simple-input.json
+       └── simple-output.json
+   ```
 
-- **MCP Servers**: TypeScript, Node.js
-- **Protocol**: Model Context Protocol (MCP)
-- **Schemas**: JSON Schema (Draft 07)
-- **Conventions**: YAML
-- **Tokens**: W3C Design Tokens Community Group (DTCG) format
-- **Target**: Drupal 10+ (SDC, Configuration Management)
-- **Stories**: Storybook with storybook-addon-sdc
+3. **Write Transformation Instructions** (`prompts.yaml`):
+   - Describe source data structure
+   - Explain token extraction
+   - Explain component extraction
+   - Provide examples
 
-## Design Decisions
+4. **Configure in Project** (`pendrop.yml`):
+   ```yaml
+   rules:
+     transformations:
+       my-tool: ./my-transformations/pendrop-my-tool
+   ```
 
-See [Architecture Decision Records (ADRs)](ADR/) for detailed design decisions:
+### Adding a New Target Platform
 
-- [ADR 001: Theme MCP Bridge Pattern](ADR/001-theme-mcp-bridge-pattern.md)
-- [ADR 002: Extraction Outputs Pendrop Format](ADR/002-extraction-outputs-pendrop-format.md)
-- [ADR 003: Generic Story Concept](ADR/003-generic-story-concept.md)
-- [ADR 004: Convention Layering](ADR/004-convention-layering.md)
+1. **Create Target Conventions**:
+   ```
+   rules/targets/{platform}/
+   ├── conventions.yaml
+   ├── prompts.yaml
+   └── story.yaml
+   ```
+
+2. **Define Conventions** (`conventions.yaml`):
+   - Naming conventions
+   - File paths
+   - Structure (file formats, etc.)
+
+3. **Configure in Project** (`pendrop.yml`):
+   ```yaml
+   project:
+     type: my-platform
+   ```
+
+### Creating Custom Transformation Package
+
+1. **Create Package Structure**:
+   ```
+   my-project/design/my-penpot-transform/
+   ├── prompts.yaml
+   └── examples/
+   ```
+
+2. **Write Custom Instructions** (`prompts.yaml`):
+   - Customize token extraction logic
+   - Define custom component patterns
+   - Add project-specific hints
+
+3. **Configure** (`pendrop.yml`):
+   ```yaml
+   rules:
+     transformations:
+       penpot: ./design/my-penpot-transform
+   ```
+
+## Benefits Summary
+
+✓ **AI-Powered**: AI performs transformations, handles diverse data
+✓ **Flexible**: Change workflow by changing prompts
+✓ **Transparent**: AI explains what it's doing
+✓ **Error-Resilient**: AI can retry and fix errors
+✓ **Extensible**: Add new tools/platforms easily
+✓ **Customizable**: Override any transformation package
+✓ **Shareable**: Packages can be shared as npm modules (future)
+✓ **Simple**: No complex MCP-to-MCP communication
 
 ## Future Enhancements
 
-1. **Figma Support**: Complete figma-mcp implementation
-2. **More Targets**: WordPress, Laravel, etc.
-3. **Validation**: Schema validation in MCP servers
-4. **Testing**: Automated testing for generated code
-5. **CLI Tools**: Command-line interface for manual workflow
-6. **UI**: Web interface for configuration and monitoring
-
+- NPM package support for transformation packages
+- Web UI for transformation rule editing
+- Visual diff tool for design changes
+- Incremental updates (only changed components)
+- Multi-file design system support
+- Design token sync (bidirectional)

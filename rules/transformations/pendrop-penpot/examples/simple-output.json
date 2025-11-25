@@ -1,0 +1,29 @@
+{
+  "$schema": "../../../schemas/pendrop.schema.ds.json",
+  "tokens": {
+    "color": {
+      "primary": {
+        "$value": "#007bff",
+        "$type": "color"
+      }
+    }
+  },
+  "components": {
+    "button": {
+      "name": "Button",
+      "category": "Atoms",
+      "props": {
+        "label": { "type": "string", "required": true }
+      }
+    }
+  },
+  "stories": {
+    "button": {
+      "componentId": "button",
+      "variants": [
+        { "name": "Default", "props": { "label": "Click me" } }
+      ]
+    }
+  }
+}
+

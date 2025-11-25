@@ -1,0 +1,142 @@
+version: "1.0"
+source: figma
+
+# General instructions for AI
+instructions: |
+  You are transforming Figma design file data to Pendrop's design system format.
+  
+  Figma data structure:
+  - `document`: Root node containing pages
+  - `children[]`: Nested structure of design elements
+  - `type`: Node type (COMPONENT, FRAME, TEXT, etc.)
+  - `fills[]` and `strokes[]`: Contains colors
+  - `style`: Typography and text styling
+  
+  Your goal: Extract design tokens, components, and stories.
+
+# Token extraction instructions
+tokens_instructions: |
+  Extract design tokens in W3C DTCG format:
+  
+  **Color Tokens:**
+  - Source: Nodes with `fills[]` or `strokes[]`
+  - Look for Figma styles with type "FILL" 
+  - Naming: Use style names or node names
+  - Format:
+    ```json
+    {
+      "color": {
+        "primary": {
+          "$value": "#007bff",
+          "$type": "color",
+          "$description": "Primary brand color"
+        }
+      }
+    }
+    ```
+  
+  **Spacing Tokens:**
+  - Source: Auto-layout constraints, padding values
+  - Extract: `paddingTop`, `paddingRight`, `itemSpacing`
+  - Format:
+    ```json
+    {
+      "spacing": {
+        "md": {
+          "$value": "16px",
+          "$type": "dimension"
+        }
+      }
+    }
+    ```
+  
+  **Typography Tokens:**
+  - Source: Text nodes with text styles
+  - Extract: fontFamily, fontSize, fontWeight, lineHeight
+  - Look for text styles in the document
+  - Format:
+    ```json
+    {
+      "typography": {
+        "fontFamily": {
+          "base": {
+            "$value": "Inter",
+            "$type": "fontFamily"
+          }
+        }
+      }
+    }
+    ```
+
+# Component extraction instructions
+components_instructions: |
+  Extract component definitions:
+  
+  **Finding Components:**
+  - Look for nodes with `type: "COMPONENT"` or `type: "COMPONENT_SET"`
+  - Component sets contain variants
+  
+  **For Each Component:**
+  - name: Component name (convert to kebab-case)
+  - description: From component description field
+  - category: Based on complexity and nesting
+  - props: Analyze variants and structure
+  
+  **Determining Props:**
+  - Component properties → props (Figma's variant properties)
+  - Text layers → string props
+  - Variants → enum props with possible values
+  - Boolean properties → boolean props
+  
+  **Example:**
+  ```json
+  {
+    "button": {
+      "name": "Button",
+      "description": "Primary action button",
+      "category": "Atoms",
+      "props": {
+        "label": { "type": "string", "required": true },
+        "variant": { "type": "enum", "enum": ["primary", "secondary"] },
+        "size": { "type": "enum", "enum": ["sm", "md", "lg"] }
+      },
+      "tokens": ["color.primary", "spacing.md"]
+    }
+  }
+  ```
+
+# Story generation instructions
+stories_instructions: |
+  For each component, generate story variants:
+  
+  - **Default Story**: Base component state
+  - **Property Combinations**: One story per important combination
+  - **Figma Variants**: Create stories from Figma's variants
+  
+  Example:
+  ```json
+  {
+    "button": {
+      "componentId": "button",
+      "variants": [
+        { "name": "Default", "props": { "label": "Click me", "variant": "primary", "size": "md" } },
+        { "name": "Secondary", "props": { "variant": "secondary", "label": "Secondary" } },
+        { "name": "Small", "props": { "size": "sm", "label": "Small" } }
+      ]
+    }
+  }
+  ```
+
+# Naming conventions
+naming:
+  tokens: "kebab-case"
+  components: "kebab-case"
+  props: "camelCase"
+
+# Hints for better extraction
+hints:
+  - Figma components often have descriptions
+  - Use variant properties directly as props
+  - Color/text styles map directly to tokens
+  - Component sets contain all variants
+

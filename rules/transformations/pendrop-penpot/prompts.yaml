@@ -1,0 +1,143 @@
+version: "1.0"
+source: penpot
+
+# General instructions for AI
+instructions: |
+  You are transforming Penpot design file data to Pendrop's design system format.
+  
+  Penpot data structure:
+  - `pages[]`: Contains design pages
+  - `objects[]`: Shapes, components, text, etc. within pages
+  - `componentId`: Identifies components
+  - `fills[]` and `strokes[]`: Contains colors
+  - `fontFamily`, `fontSize`, etc.: Typography properties
+  
+  Your goal: Extract design tokens, components, and stories.
+
+# Token extraction instructions
+tokens_instructions: |
+  Extract design tokens in W3C DTCG format:
+  
+  **Color Tokens:**
+  - Source: Objects with `fills[]` or `strokes[]`
+  - Extract: `fillColor` or `strokeColor` values
+  - Naming: Use object names if they suggest tokens (e.g., "primary-color")
+  - Format:
+    ```json
+    {
+      "color": {
+        "primary": {
+          "$value": "#007bff",
+          "$type": "color",
+          "$description": "Primary brand color"
+        }
+      }
+    }
+    ```
+  
+  **Spacing Tokens:**
+  - Source: Objects named "spacing", "gap", "padding", "margin"
+  - Extract: width or height values
+  - Format:
+    ```json
+    {
+      "spacing": {
+        "md": {
+          "$value": "16px",
+          "$type": "dimension"
+        }
+      }
+    }
+    ```
+  
+  **Typography Tokens:**
+  - Source: Text objects with font properties
+  - Extract: fontFamily, fontSize, fontWeight, lineHeight
+  - Group by semantic names (e.g., "body", "heading")
+  - Format:
+    ```json
+    {
+      "typography": {
+        "fontFamily": {
+          "base": {
+            "$value": "Inter, sans-serif",
+            "$type": "fontFamily"
+          }
+        }
+      }
+    }
+    ```
+
+# Component extraction instructions
+components_instructions: |
+  Extract component definitions:
+  
+  **Finding Components:**
+  - Look for objects with `componentId` or `componentFile`
+  - Main components have meaningful names (Button, Card, Header, etc.)
+  
+  **For Each Component:**
+  - name: Component name (convert to kebab-case)
+  - description: Purpose or usage
+  - category: "Atoms", "Molecules", or "Organisms" based on complexity
+  - props: Analyze structure to determine props
+  
+  **Determining Props:**
+  - Text layers → string props (e.g., "label", "title")
+  - Variant layers → enum props with possible values
+  - States (hover, disabled) → boolean props
+  - Nested components → composition props
+  
+  **Example:**
+  ```json
+  {
+    "button": {
+      "name": "Button",
+      "description": "Primary action button",
+      "category": "Atoms",
+      "props": {
+        "label": { "type": "string", "required": true },
+        "variant": { "type": "enum", "enum": ["primary", "secondary"] },
+        "disabled": { "type": "boolean", "default": false }
+      },
+      "tokens": ["color.primary", "spacing.md"]
+    }
+  }
+  ```
+
+# Story generation instructions
+stories_instructions: |
+  For each component, generate story variants:
+  
+  - **Default Story**: Base component state
+  - **Enum Variants**: One story per enum value
+  - **State Variants**: Disabled, loading, error states
+  - **Content Variants**: Different content examples
+  
+  Example:
+  ```json
+  {
+    "button": {
+      "componentId": "button",
+      "variants": [
+        { "name": "Default", "props": { "label": "Click me" } },
+        { "name": "Primary", "props": { "variant": "primary", "label": "Primary" } },
+        { "name": "Disabled", "props": { "disabled": true, "label": "Disabled" } }
+      ]
+    }
+  }
+  ```
+
+# Naming conventions
+naming:
+  tokens: "kebab-case"
+  components: "kebab-case"
+  props: "camelCase"
+
+# Hints for better extraction
+hints:
+  - Objects named "token" or "design-system" are likely tokens
+  - Page names provide context ("Tokens" page, "Components" page)
+  - Look for naming patterns (e.g., "btn-primary", "card-header")
+  - Component instances reference main components
+
