@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.transform.json",
-  "title": "Pendrop Transformation Package Schema",
-  "description": "Schema for transformation packages that define how to convert design tool data to Pendrop format",
+  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.extraction.json",
+  "title": "Pendrop Extraction Package Schema",
+  "description": "Schema for extraction packages that define how to extract and convert design tool data to Pendrop format",
   "type": "object",
   "required": ["version", "source", "target_schema", "instructions", "tokens_instructions", "components_instructions"],
   "properties": {
@@ -27,7 +27,7 @@
     },
     "instructions": {
       "type": "string",
-      "description": "General AI instructions for transformation process"
+      "description": "General AI instructions for extraction and transformation process"
     },
     "tokens_instructions": {
       "type": "string",

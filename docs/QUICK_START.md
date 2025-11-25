@@ -1,8 +1,8 @@
-# Quick Start: AI-Orchestrated Design System Transformation
+# Quick Start: AI-Orchestrated Design System Extraction
 
 ## Overview
 
-Pendrop transforms design files (Penpot, Figma) into production-ready code using AI orchestration. Instead of hardcoded transformations, MCPs return instructions that guide the AI through the workflow.
+Pendrop transforms design files (Penpot, Figma) into production-ready code using AI orchestration. Instead of hardcoded extractions, MCPs return instructions that guide the AI through the workflow.
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ design:
       password: your-password
 
 rules:
-  transformations:
+  extraction:
     penpot: pendrop-penpot  # Use built-in package
 ```
 
@@ -81,9 +81,9 @@ Project path: /path/to/my-drupal-project
 ```
 
 The AI will:
-1. Call `theme-mcp.transform_design_system()` to get instructions
+1. Call `theme-mcp.extract_design_system()` to get instructions
 2. Call `penpot-mcp.extract_file()` to get raw design data
-3. Transform the data using AI + transformation rules
+3. Transform the data using AI + extraction rules
 4. Validate with `theme-mcp.validate_design_data()`
 5. Save with `theme-mcp.save_design_data()`
 
@@ -105,9 +105,9 @@ using storybook-addon-sdc
 
 ## Customization
 
-### Custom Transformation Package
+### Custom Extraction Package
 
-Create your own transformation rules:
+Create your own extraction rules:
 
 1. **Create Package Structure**:
 ```
@@ -124,7 +124,7 @@ version: "1.0"
 source: penpot
 
 instructions: |
-  Your custom transformation instructions...
+  Your custom extraction instructions...
 
 tokens_instructions: |
   Extract tokens like this...
@@ -141,7 +141,7 @@ naming:
 3. **Configure in `pendrop.yml`**:
 ```yaml
 rules:
-  transformations:
+  extraction:
     penpot: ./design/my-penpot-rules
 ```
 
@@ -170,17 +170,17 @@ rules:
 
 ## Workflow Details
 
-### What Happens During Transformation?
+### What Happens During Extraction?
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │ 1. AI asks theme-mcp for instructions              │
-│    theme-mcp.transform_design_system(url, tool, path) │
+│    theme-mcp.extract_design_system(url, tool, path) │
 └─────────────────────────────────────────────────────┘
                         ↓
 ┌─────────────────────────────────────────────────────┐
 │ 2. theme-mcp returns comprehensive instructions:    │
-│    - Transformation rules from prompts.yaml         │
+│    - Extraction rules from prompts.yaml         │
 │    - Examples from examples/                        │
 │    - Target schema (pendrop.schema.ds.json)        │
 │    - Authentication config                          │
@@ -266,7 +266,7 @@ If validation fails, the AI will receive detailed errors:
   - /components/button/props: must be object
 ```
 
-The AI will automatically fix the transformation and retry.
+The AI will automatically fix the extraction and retry.
 
 ### Authentication Issues
 
@@ -280,11 +280,11 @@ design:
       password: correct-password
 ```
 
-### Missing Transformation Package
+### Missing Extraction Package
 
-Error: `Failed to load transformation rules from ...`
+Error: `Failed to load extraction rules from ...`
 
-Solution: Check `pendrop.yml` → `rules.transformations.{tool}` points to valid path.
+Solution: Check `pendrop.yml` → `rules.extractions.{tool}` points to valid path.
 
 ## Examples
 
@@ -296,9 +296,9 @@ See `examples/drupal-demo/` for a complete working example:
 
 ## Next Steps
 
-1. **Explore transformation packages**: `rules/transformations/`
+1. **Explore extraction packages**: `rules/theme/extraction/`
 2. **Read architecture docs**: `docs/ARCHITECTURE.md`
-3. **Customize for your project**: Create custom transformation package
+3. **Customize for your project**: Create custom extraction package
 4. **Generate components**: Ask AI to generate Drupal SDC components
 5. **Build Storybook**: Generate stories for your components
 
@@ -312,8 +312,8 @@ See `examples/drupal-demo/` for a complete working example:
 ## Support
 
 For issues or questions:
-- Check transformation package prompts: `rules/transformations/pendrop-{tool}/prompts.yaml`
-- Review AI instructions returned by `transform_design_system`
+- Check extraction package prompts: `rules/theme/extraction/pendrop-{tool}/prompts.yaml`
+- Review AI instructions returned by `extract_design_system`
 - Examine validation errors for schema compliance
 - Consult architecture documentation
 

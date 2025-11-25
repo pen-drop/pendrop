@@ -1,0 +1,135 @@
+name: Theme MCP CI
+
+on:
+  push:
+    branches: [ 1.x ]
+    paths:
+      - 'servers/theme-mcp/**'
+      - 'schemas/**'
+      - 'rules/**'
+      - '.github/workflows/theme-mcp-ci.yml'
+  pull_request:
+    branches: [ 1.x ]
+    paths:
+      - 'servers/theme-mcp/**'
+      - 'schemas/**'
+      - 'rules/**'
+      - '.github/workflows/theme-mcp-ci.yml'
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: ['20', '22']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Install dependencies
+        working-directory: servers/theme-mcp
+        run: npm ci
+      
+      - name: TypeScript type check
+        working-directory: servers/theme-mcp
+        run: npm run type-check
+      
+      - name: ESLint
+        working-directory: servers/theme-mcp
+        run: npm run lint
+      
+      - name: Run tests
+        working-directory: servers/theme-mcp
+        run: npm test
+      
+      - name: Build
+        working-directory: servers/theme-mcp
+        run: npm run build
+      
+      - name: Upload build artifacts
+        if: matrix.node-version == '20'
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-mcp-build
+          path: servers/theme-mcp/dist
+          retention-days: 7
+
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        working-directory: servers/theme-mcp
+        run: npm ci
+      
+      - name: Run tests with coverage
+        working-directory: servers/theme-mcp
+        run: npm run test:coverage
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./servers/theme-mcp/coverage/lcov.info
+          flags: theme-mcp
+          name: theme-mcp-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  lint-schemas:
+    name: Validate Schemas
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install root dependencies
+        run: npm ci
+      
+      - name: Validate JSON schemas
+        run: npm run validate:schemas
+      
+      - name: Validate YAML files
+        run: npm run validate:yaml
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Run npm audit
+        working-directory: servers/theme-mcp
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+

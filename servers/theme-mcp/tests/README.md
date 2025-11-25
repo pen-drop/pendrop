@@ -1,6 +1,6 @@
 # Theme MCP Test Suite
 
-Comprehensive test suite for the AI-orchestrated design system transformation workflow.
+Comprehensive test suite for the AI-orchestrated design system extraction workflow.
 
 ## Test Structure
 
@@ -8,13 +8,13 @@ Comprehensive test suite for the AI-orchestrated design system transformation wo
 tests/
 ├── fixtures/                    # Test data
 │   ├── penpot-raw.json          # Raw Penpot design file
-│   └── penpot-transformed.json  # Expected transformation output
+│   └── penpot-transformed.json  # Expected extraction output
 ├── utils/                       # Unit tests for utilities
 │   ├── validator.test.ts        # Schema validation tests
 │   ├── transformRules.test.ts   # Transform rules loader tests
 │   └── schemaLoader.test.ts     # Schema loader tests
 ├── tools/                       # Unit tests for tools
-│   └── transformInstructions.test.ts  # Transformation instructions tests
+│   └── transformInstructions.test.ts  # Extraction instructions tests
 └── integration/                 # Integration tests
     └── workflow.test.ts         # End-to-end workflow tests
 ```
@@ -50,12 +50,12 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Caches schemas for performance
 
 **Transform Rules Tests** (`utils/transformRules.test.ts`)
-- ✓ Loads built-in Penpot transformation rules
-- ✓ Loads built-in Figma transformation rules
+- ✓ Loads built-in Penpot extraction rules
+- ✓ Loads built-in Figma extraction rules
 - ✓ Validates source matches tool
 - ✓ Includes naming conventions
 - ✓ Includes optional hints
-- ✓ Loads example transformations
+- ✓ Loads example extractions
 - ✓ Throws error for NPM packages (not yet supported)
 - ✓ Validates transform rules structure
 
@@ -68,14 +68,14 @@ npx vitest run tests/utils/validator.test.ts
 
 **Transform Instructions Tests** (`tools/transformInstructions.test.ts`)
 - ✓ Returns comprehensive instructions
-- ✓ Includes transformation rules
+- ✓ Includes extraction rules
 - ✓ References W3C DTCG format
 - ✓ Includes naming conventions
 
 ### Integration Tests
 
 **Workflow Tests** (`integration/workflow.test.ts`)
-- End-to-end transformation validation
+- End-to-end extraction validation
 - Token extraction and validation
 - Component extraction and validation
 - Story generation and validation

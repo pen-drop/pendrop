@@ -15,6 +15,29 @@
 - Pull requests should target `1.x`
 - CI/CD workflows target `1.x` as the main branch
 
+
+## GitHub Actions
+
+**npm cache configuration:**
+
+- Do NOT use `cache: 'npm'` with `cache-dependency-path` in GitHub Actions workflows
+- The cache can fail if the path is not correctly resolved relative to the repository root
+- Let GitHub Actions handle caching automatically or omit it entirely
+- Use `npm ci` for clean, reproducible installations without cache issues
+
+Example:
+```yaml
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20.x'
+    # NO cache configuration
+
+- name: Install dependencies
+  working-directory: servers/theme-mcp
+  run: npm ci
+```
+
 ## Language Rule
 
 **All project documentation, code comments, commit messages, and communication must be in English.**

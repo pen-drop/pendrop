@@ -39,7 +39,7 @@
             "type": "string"
           },
           "description": "Multiple design source URLs"
-        },
+        }
       },
       "oneOf": [
         {
@@ -57,6 +57,14 @@
         "custom_rules_path": {
           "type": "string",
           "description": "Path to custom rules directory (optional)"
+        },
+        "extraction": {
+          "type": "object",
+          "description": "Custom extraction packages per design tool",
+          "additionalProperties": {
+            "type": "string",
+            "description": "Path or package name for extraction rules (e.g., './custom/penpot-extraction' or '@company/penpot-extraction')"
+          }
         },
         "conventions": {
           "type": "object",

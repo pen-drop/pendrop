@@ -1,21 +1,21 @@
 /**
- * Transform Instructions Tool
- * Returns AI prompts/instructions for transforming design data
+ * Extraction Instructions Tool
+ * Returns AI prompts/instructions for extracting and transforming design data
  */
 
 import { join } from 'path';
 import { loadPendropConfig, resolvePaths } from '../utils/projectConfig.js';
-import { loadTransformRules, loadExamples } from '../utils/transformRules.js';
+import { loadExtractionRules, loadExamples } from '../utils/extractionRules.js';
 import { loadSchema } from '../utils/schemaLoader.js';
 import { loadConventions } from '../utils/conventions.js';
 
-export interface TransformDesignSystemParams {
+export interface ExtractDesignSystemParams {
   design_url: string;
   source_tool: string;
   project_path: string;
 }
 
-export interface TransformDesignSystemResult {
+export interface ExtractDesignSystemResult {
   success: boolean;
   instructions: string;
   mcp_calls: Array<{
@@ -27,16 +27,16 @@ export interface TransformDesignSystemResult {
   examples?: string;
 }
 
-export async function getTransformInstructions(
-  params: TransformDesignSystemParams
-): Promise<TransformDesignSystemResult> {
+export async function getExtractionInstructions(
+  params: ExtractDesignSystemParams
+): Promise<ExtractDesignSystemResult> {
   const { design_url, source_tool, project_path } = params;
   
   // 1. Load project config
   const pendropConfig = await loadPendropConfig(project_path);
   
-  // 2. Load transformation rules
-  const rules = await loadTransformRules(source_tool, project_path, pendropConfig);
+  // 2. Load extraction rules
+  const rules = await loadExtractionRules(source_tool, project_path, pendropConfig);
   
   // 3. Load examples
   const examples = await loadExamples(source_tool, project_path, pendropConfig);
@@ -47,7 +47,7 @@ export async function getTransformInstructions(
   // 5. Determine output path
   const conventions = await loadConventions({
     target: pendropConfig.project.type,
-    rulesPath: '../../rules',
+    rulesPath: '../../rules/theme',
     projectRules: pendropConfig.rules?.custom_rules_path
   });
   const resolvedConventions = resolvePaths(
@@ -58,9 +58,9 @@ export async function getTransformInstructions(
   
   // 7. Build instructions prompt
   const instructions = `
-# Design System Transformation Instructions
+# Design System Extraction Instructions
 
-You are transforming a ${source_tool} design file to Pendrop's design system format.
+You are extracting and transforming a ${source_tool} design file to Pendrop's design system format.
 
 ## Step 1: Extract Source Data
 
@@ -88,7 +88,7 @@ Your output must match this schema:
 ${JSON.stringify(schema, null, 2)}
 \`\`\`
 
-### Transformation Rules
+### Extraction Rules
 
 ${rules.instructions}
 
@@ -182,9 +182,9 @@ Execute these steps now.
 /**
  * Tool definition for MCP
  */
-export const transformDesignSystemTool = {
-  name: 'transform_design_system',
-  description: 'Get instructions for transforming a design file to pendrop format. Returns a prompt with steps for AI to execute.',
+export const extractDesignSystemTool = {
+  name: 'extract_design_system',
+  description: 'Get instructions for extracting and transforming a design file to pendrop format. Returns a prompt with steps for AI to execute.',
   inputSchema: {
     type: 'object',
     properties: {

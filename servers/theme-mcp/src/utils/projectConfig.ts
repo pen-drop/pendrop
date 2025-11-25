@@ -19,7 +19,7 @@ export interface PendropConfig {
   };
   rules?: {
     custom_rules_path?: string;
-    transformations?: {
+    extraction?: {
       [tool: string]: string; // Maps tool name to package path/name
     };
     conventions?: Record<string, unknown>;

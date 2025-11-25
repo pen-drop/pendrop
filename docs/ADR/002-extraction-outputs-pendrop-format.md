@@ -10,7 +10,7 @@ Design tool extraction MCPs (penpot-mcp, figma-mcp) need to output data that can
 
 1. What format should extraction MCPs output?
 2. Should they output raw tool data or transformed data?
-3. Who is responsible for transformation: extraction MCP or generation MCP?
+3. Who is responsible for extraction: extraction MCP or generation MCP?
 
 The key insight is that `pendrop.data.ds.json` and `pendrop.data.content.json` ARE the rules for generation. These files define the structure that generation tools expect.
 
@@ -46,7 +46,7 @@ The output is `pendrop.data.ds.json` - a valid instance of `pendrop.schema.ds.js
 
 ### Negative
 
-- **Extraction complexity**: Each extraction MCP must implement transformation
+- **Extraction complexity**: Each extraction MCP must implement extraction
 - **Schema coupling**: Extraction MCPs depend on pendrop schema
 - **Update coordination**: Schema changes require updating all extraction MCPs
 

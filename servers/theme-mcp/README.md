@@ -1,6 +1,6 @@
 # Theme MCP Server
 
-AI orchestrator MCP server for design system transformations. Returns instructions/prompts for AI to execute, coordinating between extraction MCPs and generation tasks.
+AI orchestrator MCP server for design system extraction and transformation. Returns instructions/prompts for AI to execute, coordinating between extraction MCPs and generation tasks.
 
 ## Overview
 
@@ -16,7 +16,7 @@ The AI reads instructions and orchestrates the workflow by calling multiple MCPs
 
 **Design Tool Agnostic:**
 - Works with `penpot-mcp`, `figma-mcp`, or any future design tool MCP
-- Transformation rules are configurable per design tool
+- Extraction rules are configurable per design tool
 - Easy to add support for new design tools
 
 ## Architecture
@@ -46,8 +46,8 @@ AI executes instructions:
 **Supported Design Tools:**
 - ✅ **Penpot** - via `penpot-mcp` ([docs](../penpot-mcp/README.md))
 - ✅ **Figma** - via `figma-mcp` (planned)
-- 🔄 **Sketch** - Easy to add with custom transformation rules
-- 🔄 **Adobe XD** - Easy to add with custom transformation rules
+- 🔄 **Sketch** - Easy to add with custom extraction rules
+- 🔄 **Adobe XD** - Easy to add with custom extraction rules
 
 ## Tools
 
@@ -61,11 +61,11 @@ AI executes instructions:
    - `penpot-mcp` for `design.penpot.app` URLs
    - `figma-mcp` for `figma.com` URLs
    - Custom MCP based on configuration
-3. Loads tool-specific transformation rules (e.g., `pendrop-penpot`, `pendrop-figma`)
+3. Loads tool-specific extraction rules (e.g., `pendrop-penpot`, `pendrop-figma`)
 4. Returns detailed AI prompt with:
    - Step-by-step instructions
    - Which extraction MCP to call with auth details
-   - Tool-specific transformation rules (W3C DTCG format, component structure, etc.)
+   - Tool-specific extraction rules (W3C DTCG format, component structure, etc.)
    - Validation and save steps
 
 **Parameters:**
@@ -88,7 +88,7 @@ AI executes instructions:
 }
 ```
 
-### `transform_design_system(source_data, source_tool, project_path)`
+### `extract_design_system(source_data, source_tool, project_path)`
 
 Returns AI instructions for transforming raw design data to `pendrop.theme.json` format.
 
@@ -97,12 +97,12 @@ Returns AI instructions for transforming raw design data to `pendrop.theme.json`
 - `source_tool` (string): Source design tool (`penpot`, `figma`, `sketch`, etc.)
 - `project_path` (string): Path to project root
 
-**Returns:** AI instructions with tool-specific transformation rules
+**Returns:** AI instructions with tool-specific extraction rules
 
 **Supported Source Tools:**
 - `penpot` - Penpot design files
 - `figma` - Figma design files
-- Custom tools via transformation packages
+- Custom tools via extraction packages
 
 ### `validate_design_data(data, schema_type)`
 
@@ -155,16 +155,16 @@ These tools return AI instructions for code generation:
 - `generate_component(component_id, project_path)` - Returns instructions for generating component code
 - `generate_story(component_id, project_path)` - Returns instructions for generating Storybook stories
 
-## Transformation Packages
+## Extraction Packages
 
-Transformation rules are organized into **packages** that define how to transform a specific design tool's data to Pendrop format. **Each design tool has its own transformation package.**
+Extraction rules are organized into **packages** that define how to transform a specific design tool's data to Pendrop format. **Each design tool has its own extraction package.**
 
 ### Package Structure
 
 ```
-rules/transformations/
+rules/theme/extraction/
 ├── pendrop-penpot/          # Penpot → Pendrop (built-in)
-│   ├── prompts.yaml         # AI transformation instructions
+│   ├── prompts.yaml         # AI extraction instructions
 │   └── examples/            # Example input/output pairs
 │       ├── simple-input.json
 │       └── simple-output.json
@@ -182,18 +182,18 @@ rules/transformations/
 **Adding a New Design Tool:**
 
 To support a new design tool (e.g., Sketch):
-1. Create a transformation package: `rules/transformations/pendrop-sketch/`
-2. Write `prompts.yaml` with tool-specific transformation instructions
+1. Create an extraction package: `rules/theme/extraction/pendrop-sketch/`
+2. Write `prompts.yaml` with tool-specific extraction instructions
 3. Add extraction MCP (e.g., `sketch-mcp`) or use existing API
 4. Configure in `pendrop.yml`
 
-### Custom Transformation Packages
+### Custom Extraction Packages
 
-Projects can override or add transformation rules by configuring custom packages in `pendrop.yml`:
+Projects can override or add extraction rules by configuring custom packages in `pendrop.yml`:
 
 ```yaml
 rules:
-  transformations:
+  extraction:
     # Built-in packages (default)
     penpot: pendrop-penpot
     figma: pendrop-figma
@@ -221,15 +221,15 @@ my-project/design/sketch-rules/
 2. Configure in `pendrop.yml`:
 ```yaml
 rules:
-  transformations:
+  extraction:
     sketch: ./design/sketch-rules
 ```
 
 3. Use with Sketch extraction MCP or API
 
 A custom package must have the same structure:
-- `prompts.yaml` - Transformation instructions
-- `examples/` - Optional example transformations
+- `prompts.yaml` - Extraction instructions
+- `examples/` - Optional example extractions
 
 ## Configuration
 
@@ -250,7 +250,7 @@ design:
 
 rules:
   custom_rules_path: ./design/rules
-  transformations:
+  extraction:
     penpot: pendrop-penpot  # or custom path
     figma: pendrop-figma
 ```
@@ -474,7 +474,7 @@ The project uses GitHub Actions for continuous integration:
   
 - **Lint Schemas**
   - JSON schema validation
-  - YAML transformation rules validation
+  - YAML extraction rules validation
   
 - **Security**
   - npm audit for vulnerabilities
@@ -595,11 +595,11 @@ The project uses GitHub Actions for continuous integration:
 
 ### Adding a New Design Tool
 
-**Step 1: Create Transformation Package**
+**Step 1: Create Extraction Package**
 
 ```bash
-mkdir -p rules/transformations/pendrop-{tool}
-cd rules/transformations/pendrop-{tool}
+mkdir -p rules/theme/extraction/pendrop-{tool}
+cd rules/theme/extraction/pendrop-{tool}
 ```
 
 **Step 2: Create `prompts.yaml`**
@@ -656,7 +656,7 @@ Or use existing APIs/formats (Sketch JSON export, etc.)
 ```yaml
 # pendrop.yml
 rules:
-  transformations:
+  extraction:
     {tool}: pendrop-{tool}
     
 design:
@@ -677,7 +677,7 @@ Project: /path/to/project"
 
 ### Adding a New Target Platform
 
-1. Create conventions in `rules/targets/{platform}/`
+1. Create conventions in `rules/theme/targets/{platform}/`
 2. Define naming, paths, and structure conventions
 3. Configure in project's `pendrop.yml`
 

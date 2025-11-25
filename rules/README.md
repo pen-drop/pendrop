@@ -89,7 +89,7 @@ Conventions are merged in this order (later overrides earlier):
 
 To add support for a new target platform (e.g., WordPress, Laravel):
 
-1. Create `rules/targets/{platform}/` directory
+1. Create `rules/theme/targets/{platform}/` directory
 2. Add `conventions.yaml` with platform-specific conventions
 3. Add `prompts.yaml` with AI generation prompts
 4. Add `story.yaml` if applicable
@@ -98,11 +98,11 @@ To add support for a new target platform (e.g., WordPress, Laravel):
 ### Example: Adding WordPress
 
 ```bash
-mkdir -p rules/targets/wordpress
+mkdir -p rules/theme/targets/wordpress
 ```
 
 ```yaml
-# rules/targets/wordpress/conventions.yaml
+# rules/theme/targets/wordpress/conventions.yaml
 naming:
   style: kebab-case
   component_prefix: "wp-"

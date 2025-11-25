@@ -23,7 +23,7 @@ export interface ThemeMcpConfig {
 
 const defaultConfig: ThemeMcpConfig = {
   target: 'drupal',
-  rulesPath: join(__dirname, '../../../rules'),
+  rulesPath: join(__dirname, '../../../rules/theme'),
   projectRules: null,
   extractors: {
     penpot: {

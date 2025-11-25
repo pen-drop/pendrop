@@ -7,7 +7,7 @@ import { readFile } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { PendropValidator } from '../../src/utils/validator.js';
-import { loadTransformRules } from '../../src/utils/transformRules.js';
+import { loadExtractionRules } from '../../src/utils/extractionRules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,7 +85,7 @@ describe('Transformation Workflow Integration', () => {
 
   describe('Transformation Rules Application', () => {
     it('should load transformation rules successfully', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('penpot', '/fake/path');
 
       expect(rules).toBeDefined();
       expect(rules.version).toBe('1.0');
@@ -93,7 +93,7 @@ describe('Transformation Workflow Integration', () => {
     });
 
     it('should provide instructions for token extraction', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('penpot', '/fake/path');
 
       expect(rules.tokens_instructions).toBeDefined();
       expect(rules.tokens_instructions).toContain('color');
@@ -102,7 +102,7 @@ describe('Transformation Workflow Integration', () => {
     });
 
     it('should provide instructions for component extraction', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('penpot', '/fake/path');
 
       expect(rules.components_instructions).toBeDefined();
       expect(rules.components_instructions.toLowerCase()).toContain('component');
@@ -110,7 +110,7 @@ describe('Transformation Workflow Integration', () => {
     });
 
     it('should specify naming conventions', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/path');
+      const rules = await loadExtractionRules('penpot', '/fake/path');
 
       expect(rules.naming).toBeDefined();
       expect(rules.naming?.tokens).toBe('kebab-case');

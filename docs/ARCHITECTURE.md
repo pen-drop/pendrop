@@ -20,7 +20,7 @@ Pendrop uses a unique architecture where **MCPs return prompts/instructions inst
 ```
 User/AI
   ↓
-1. Call theme-mcp.transform_design_system(url, source_tool, project_path)
+1. Call theme-mcp.extract_design_system(url, source_tool, project_path)
   ↓
 theme-mcp returns INSTRUCTIONS:
   "To transform this design system:
@@ -61,21 +61,21 @@ extract_file(file_url: string, auth: object) → raw_design_data
 **Characteristics**:
 - Tool-specific (one per design tool)
 - Returns raw, unstructured data
-- No transformation logic
+- No extraction logic
 
 ### 2. Theme MCP (Orchestrator)
 
-**Purpose**: Provide AI instructions for design system transformations
+**Purpose**: Provide AI instructions for design system extractions
 
 **Tools**:
-- `transform_design_system()`: Returns transformation instructions
+- `extract_design_system()`: Returns extraction instructions
 - `validate_design_data()`: Validates transformed data
 - `save_design_data()`: Saves validated data to project
 
 **Characteristics**:
 - Tool-agnostic orchestrator
 - Returns prompts, not results
-- Loads transformation packages (rules + examples)
+- Loads extraction packages (rules + examples)
 - Validates against schemas
 - Saves to project structure
 
@@ -87,16 +87,16 @@ extract_file(file_url: string, auth: object) → raw_design_data
 - `generate_content_types()`: Returns instructions for content type generation
 - `generate_config()`: Returns instructions for CMS configuration
 
-### 4. Transformation Packages
+### 4. Extraction Packages
 
 **Purpose**: Define how to transform source data to Pendrop format
 
 **Structure**:
 ```
-rules/transformations/
+rules/theme/extraction/
 └── pendrop-{tool}/
     ├── prompts.yaml          # AI instructions
-    └── examples/             # Example transformations
+    └── examples/             # Example extractions
         ├── simple-input.json
         └── simple-output.json
 ```
@@ -104,7 +104,7 @@ rules/transformations/
 **Configuration** (`pendrop.yml`):
 ```yaml
 rules:
-  transformations:
+  extraction:
     penpot: pendrop-penpot              # Built-in
     # OR
     penpot: ./design/my-penpot-rules    # Custom local
@@ -113,10 +113,10 @@ rules:
 ```
 
 **Benefits**:
-- Fully customizable transformation logic
+- Fully customizable extraction logic
 - Easy to create custom packages
 - Shareable via npm (future)
-- AI performs transformation (handles diverse data)
+- AI performs extraction (handles diverse data)
 
 ### 5. Target Conventions
 
@@ -124,7 +124,7 @@ rules:
 
 **Structure**:
 ```
-rules/targets/
+rules/theme/targets/
 └── drupal/
     ├── conventions.yaml      # Naming, paths, structure
     ├── prompts.yaml          # Generation prompts
@@ -150,7 +150,7 @@ rules/targets/
 ```
 1. USER: "Transform my Penpot design system"
    ↓
-2. AI calls theme-mcp.transform_design_system({
+2. AI calls theme-mcp.extract_design_system({
      design_url: "https://design.penpot.app/#/...",
      source_tool: "penpot",
      project_path: "/path/to/project"
@@ -158,8 +158,8 @@ rules/targets/
    ↓
 3. THEME-MCP:
   - Loads pendrop.yml from project
-  - Resolves transformation package for 'penpot'
-  - Loads prompts.yaml from transformation package
+  - Resolves extraction package for 'penpot'
+  - Loads prompts.yaml from extraction package
   - Loads examples (if available)
   - Loads target schema (pendrop.theme.json)
    - Builds comprehensive instructions
@@ -175,7 +175,7 @@ rules/targets/
    → Returns raw Penpot JSON
    
   Step 2: Transform
-  AI applies transformation rules:
+  AI applies extraction rules:
   - Extracts tokens (W3C DTCG format)
   - Identifies components
   - Generates story variants
@@ -189,7 +189,7 @@ rules/targets/
    })
    → Returns { valid: true/false, errors: [...] }
    
-   If invalid: AI reviews errors and fixes transformation
+   If invalid: AI reviews errors and fixes extraction
    
    Step 4: Save
    AI calls theme-mcp.save_design_data({
@@ -227,8 +227,8 @@ design:
 
 # Rules configuration
 rules:
-  # Transformation packages (tool → package mapping)
-  transformations:
+  # Extraction packages (tool → package mapping)
+  extraction:
     penpot: pendrop-penpot              # Built-in
     figma: ./design/my-figma-rules      # Custom
   
@@ -256,7 +256,7 @@ project-root/
 ```
 
 Paths are determined by:
-1. Target conventions (`rules/targets/{type}/conventions.yaml`)
+1. Target conventions (`rules/theme/targets/{type}/conventions.yaml`)
 2. Project overrides (`pendrop.yml` → `rules.custom_rules_path`)
 
 ## Extending Pendrop
@@ -265,18 +265,18 @@ Paths are determined by:
 
 1. **Create Extraction MCP**:
    - Implement `extract_file(url, auth) → raw_data`
-   - Return tool-specific raw data (no transformation)
+   - Return tool-specific raw data (no extraction)
 
-2. **Create Transformation Package**:
+2. **Create Extraction Package**:
    ```
-   rules/transformations/pendrop-{tool}/
+   rules/theme/extraction/pendrop-{tool}/
    ├── prompts.yaml
    └── examples/
        ├── simple-input.json
        └── simple-output.json
    ```
 
-3. **Write Transformation Instructions** (`prompts.yaml`):
+3. **Write Extraction Instructions** (`prompts.yaml`):
    - Describe source data structure
    - Explain token extraction
    - Explain component extraction
@@ -285,15 +285,15 @@ Paths are determined by:
 4. **Configure in Project** (`pendrop.yml`):
    ```yaml
    rules:
-     transformations:
-       my-tool: ./my-transformations/pendrop-my-tool
+     extraction:
+       my-tool: ./my-extractions/pendrop-my-tool
    ```
 
 ### Adding a New Target Platform
 
 1. **Create Target Conventions**:
    ```
-   rules/targets/{platform}/
+   rules/theme/targets/{platform}/
    ├── conventions.yaml
    ├── prompts.yaml
    └── story.yaml
@@ -310,7 +310,7 @@ Paths are determined by:
      type: my-platform
    ```
 
-### Creating Custom Transformation Package
+### Creating Custom Extraction Package
 
 1. **Create Package Structure**:
    ```
@@ -327,25 +327,25 @@ Paths are determined by:
 3. **Configure** (`pendrop.yml`):
    ```yaml
    rules:
-     transformations:
+     extraction:
        penpot: ./design/my-penpot-transform
    ```
 
 ## Benefits Summary
 
-✓ **AI-Powered**: AI performs transformations, handles diverse data
+✓ **AI-Powered**: AI performs extractions, handles diverse data
 ✓ **Flexible**: Change workflow by changing prompts
 ✓ **Transparent**: AI explains what it's doing
 ✓ **Error-Resilient**: AI can retry and fix errors
 ✓ **Extensible**: Add new tools/platforms easily
-✓ **Customizable**: Override any transformation package
+✓ **Customizable**: Override any extraction package
 ✓ **Shareable**: Packages can be shared as npm modules (future)
 ✓ **Simple**: No complex MCP-to-MCP communication
 
 ## Future Enhancements
 
-- NPM package support for transformation packages
-- Web UI for transformation rule editing
+- NPM package support for extraction packages
+- Web UI for extraction rule editing
 - Visual diff tool for design changes
 - Incremental updates (only changed components)
 - Multi-file design system support

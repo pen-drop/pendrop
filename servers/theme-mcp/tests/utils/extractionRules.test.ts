@@ -1,15 +1,15 @@
 /**
- * Unit tests for Transform Rules Loader
+ * Unit tests for Extraction Rules Loader
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { loadTransformRules, loadExamples } from '../../src/utils/transformRules.js';
+import { loadExtractionRules, loadExamples } from '../../src/utils/extractionRules.js';
 import type { PendropConfig } from '../../src/utils/projectConfig.js';
 
-describe('Transform Rules Loader', () => {
-  describe('loadTransformRules', () => {
-    it('should load built-in Penpot transformation rules', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/project/path');
+describe('Extraction Rules Loader', () => {
+  describe('loadExtractionRules', () => {
+    it('should load built-in Penpot extraction rules', async () => {
+      const rules = await loadExtractionRules('penpot', '/fake/project/path');
 
       expect(rules).toBeDefined();
       expect(rules.version).toBe('1.0');
@@ -19,8 +19,8 @@ describe('Transform Rules Loader', () => {
       expect(rules.components_instructions).toBeDefined();
     });
 
-    it('should load built-in Figma transformation rules', async () => {
-      const rules = await loadTransformRules('figma', '/fake/project/path');
+    it('should load built-in Figma extraction rules', async () => {
+      const rules = await loadExtractionRules('figma', '/fake/project/path');
 
       expect(rules).toBeDefined();
       expect(rules.version).toBe('1.0');
@@ -31,12 +31,12 @@ describe('Transform Rules Loader', () => {
     it('should validate source matches tool', async () => {
       await expect(async () => {
         // This should fail because the source in prompts.yaml is 'penpot'
-        await loadTransformRules('wrongtool', '/fake/project/path');
+        await loadExtractionRules('wrongtool', '/fake/project/path');
       }).rejects.toThrow();
     });
 
     it('should include naming conventions', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('penpot', '/fake/project/path');
 
       expect(rules.naming).toBeDefined();
       expect(rules.naming?.tokens).toBeDefined();
@@ -45,14 +45,14 @@ describe('Transform Rules Loader', () => {
     });
 
     it('should include optional hints', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('penpot', '/fake/project/path');
 
       expect(rules.hints).toBeDefined();
     });
   });
 
   describe('loadExamples', () => {
-    it('should load example transformations for Penpot', async () => {
+    it('should load example extractions for Penpot', async () => {
       const examples = await loadExamples('penpot');
 
       expect(examples).toBeDefined();
@@ -84,15 +84,15 @@ describe('Transform Rules Loader', () => {
           theme: 'test',
         },
         rules: {
-          transformations: {
-            penpot: '@company/penpot-transform',
+          extraction: {
+            penpot: '@company/penpot-extraction',
           },
         },
       };
 
       await expect(async () => {
-        await loadTransformRules('penpot', '/project', config);
-      }).rejects.toThrow('NPM package transformation rules not yet supported');
+        await loadExtractionRules('penpot', '/project', config);
+      }).rejects.toThrow('NPM package extraction rules not yet supported');
     });
 
     it('should accept local path configuration', async () => {
@@ -105,7 +105,7 @@ describe('Transform Rules Loader', () => {
           theme: 'test',
         },
         rules: {
-          transformations: {
+          extraction: {
             penpot: './custom/rules',
           },
         },
@@ -113,14 +113,14 @@ describe('Transform Rules Loader', () => {
 
       // Would throw if file doesn't exist
       await expect(async () => {
-        await loadTransformRules('penpot', '/nonexistent', config);
+        await loadExtractionRules('penpot', '/nonexistent', config);
       }).rejects.toThrow();
     });
   });
 
-  describe('Transform Rules Structure', () => {
+  describe('Extraction Rules Structure', () => {
     it('should have all required fields', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('penpot', '/fake/project/path');
 
       expect(rules.version).toBeDefined();
       expect(rules.source).toBeDefined();
@@ -130,7 +130,7 @@ describe('Transform Rules Loader', () => {
     });
 
     it('should have optional stories instructions', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('penpot', '/fake/project/path');
 
       // stories_instructions is optional
       if (rules.stories_instructions) {
@@ -139,7 +139,7 @@ describe('Transform Rules Loader', () => {
     });
 
     it('should have valid naming conventions', async () => {
-      const rules = await loadTransformRules('penpot', '/fake/project/path');
+      const rules = await loadExtractionRules('penpot', '/fake/project/path');
 
       if (rules.naming) {
         const validCases = ['kebab-case', 'camelCase', 'snake_case', 'PascalCase'];
