@@ -161,7 +161,7 @@ rules/targets/
   - Resolves transformation package for 'penpot'
   - Loads prompts.yaml from transformation package
   - Loads examples (if available)
-  - Loads target schema (pendrop.design-system.json)
+  - Loads target schema (pendrop.theme.json)
    - Builds comprehensive instructions
    - Returns { instructions, mcp_calls, rules, examples }
    ↓
@@ -180,7 +180,7 @@ rules/targets/
   - Identifies components
   - Generates story variants
   - Follows naming conventions
-  → Produces pendrop.data.ds.json (conforming to pendrop.design-system.json schema)
+  → Produces pendrop.data.ds.json (conforming to pendrop.theme.json schema)
    
    Step 3: Validate
    AI calls theme-mcp.validate_design_data({

@@ -18,7 +18,7 @@
     },
     "target_schema": {
       "type": "string",
-      "description": "Name of the target Pendrop schema (e.g., pendrop.design-system.json)"
+      "description": "Name of the target Pendrop schema (e.g., pendrop.theme.json, pendrop.content.json)"
     },
     "target_schema_url": {
       "type": "string",

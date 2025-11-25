@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.design-system.json",
-  "title": "Pendrop Design System Schema",
+  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json",
+  "title": "Pendrop Theme Schema",
   "description": "JSON Schema for Pendrop design system based on W3C Design Tokens Community Group (DTCG) format specification",
   "type": "object",
   "properties": {

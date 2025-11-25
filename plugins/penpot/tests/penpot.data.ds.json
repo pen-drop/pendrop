@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.design-system.json",
+  "$schema": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json",
   "tokens": {
     "color": {
       "$type": "color",

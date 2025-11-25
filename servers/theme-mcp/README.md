@@ -80,7 +80,7 @@ Validates transformed design data against Pendrop schemas.
 {
   "success": true,
   "valid": true,
-  "message": "✓ Data is valid pendrop.design-system.json"
+  "message": "✓ Data is valid pendrop.theme.json"
 }
 ```
 

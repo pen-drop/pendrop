@@ -80,7 +80,7 @@ This will return raw ${source_tool} data.
 
 ## Step 2: Transform Data
 
-Transform the raw data to \`pendrop.design-system.json\` format following these rules:
+Transform the raw data to \`pendrop.theme.json\` format following these rules:
 
 ### Target Schema
 

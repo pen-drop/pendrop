@@ -1,5 +1,5 @@
 {
-  "$schema": "../../schemas/pendrop.schema.content.json",
+  "$schema": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.content.json",
   "content": {
     "node": {
       "landing_page": {

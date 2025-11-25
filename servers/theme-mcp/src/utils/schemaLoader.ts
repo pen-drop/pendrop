@@ -26,7 +26,7 @@ function getDirname(): string {
 export async function loadSchema(schemaType: 'ds' | 'content'): Promise<Schema> {
   // Go up from servers/theme-mcp/src/utils to project root, then to schemas
   const schemasRoot = resolve(getDirname(), '../../../../schemas');
-  const schemaName = schemaType === 'ds' ? 'pendrop.design-system.json' : 'pendrop.schema.content.json';
+  const schemaName = schemaType === 'ds' ? 'pendrop.theme.json' : 'pendrop.content.json';
   const schemaPath = join(schemasRoot, schemaName);
   
   try {
