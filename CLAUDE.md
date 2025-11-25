@@ -15,6 +15,7 @@
 - Pull requests should target `1.x`
 - CI/CD workflows target `1.x` as the main branch
 
+
 ## GitHub Actions
 
 **npm cache configuration:**
