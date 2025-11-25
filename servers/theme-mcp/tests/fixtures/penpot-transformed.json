@@ -1,0 +1,166 @@
+{
+  "$schema": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json",
+  "tokens": {
+    "color": {
+      "primary": {
+        "$value": "#007bff",
+        "$type": "color",
+        "$description": "Primary brand color"
+      },
+      "secondary": {
+        "$value": "#6c757d",
+        "$type": "color",
+        "$description": "Secondary color"
+      }
+    },
+    "spacing": {
+      "sm": {
+        "$value": "8px",
+        "$type": "dimension",
+        "$description": "Small spacing"
+      },
+      "md": {
+        "$value": "16px",
+        "$type": "dimension",
+        "$description": "Medium spacing"
+      },
+      "lg": {
+        "$value": "24px",
+        "$type": "dimension",
+        "$description": "Large spacing"
+      }
+    },
+    "typography": {
+      "fontFamily": {
+        "base": {
+          "$value": "Inter, sans-serif",
+          "$type": "fontFamily"
+        }
+      },
+      "fontSize": {
+        "body": {
+          "$value": "16px",
+          "$type": "dimension"
+        },
+        "heading": {
+          "$value": "24px",
+          "$type": "dimension"
+        }
+      },
+      "fontWeight": {
+        "normal": {
+          "$value": "400",
+          "$type": "fontWeight"
+        },
+        "bold": {
+          "$value": "700",
+          "$type": "fontWeight"
+        }
+      }
+    }
+  },
+  "components": {
+    "button": {
+      "name": "Button",
+      "description": "Primary action button component",
+      "category": "Atoms",
+      "props": {
+        "label": {
+          "type": "string",
+          "required": true,
+          "description": "Button label text"
+        },
+        "variant": {
+          "type": "enum",
+          "enum": ["primary", "secondary"],
+          "default": "primary",
+          "description": "Button style variant"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disabled state"
+        }
+      },
+      "tokens": ["color.primary", "spacing.md", "typography.fontSize.body"]
+    },
+    "card": {
+      "name": "Card",
+      "description": "Card component for displaying content",
+      "category": "Molecules",
+      "props": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "Card title"
+        },
+        "body": {
+          "type": "string",
+          "required": true,
+          "description": "Card body content"
+        }
+      },
+      "tokens": ["spacing.md", "typography.fontSize.body", "typography.fontSize.heading"]
+    }
+  },
+  "stories": {
+    "button": {
+      "componentId": "button",
+      "variants": [
+        {
+          "name": "Default",
+          "description": "Default button state",
+          "props": {
+            "label": "Click me"
+          }
+        },
+        {
+          "name": "Primary",
+          "description": "Primary variant",
+          "props": {
+            "label": "Primary Button",
+            "variant": "primary"
+          }
+        },
+        {
+          "name": "Secondary",
+          "description": "Secondary variant",
+          "props": {
+            "label": "Secondary Button",
+            "variant": "secondary"
+          }
+        },
+        {
+          "name": "Disabled",
+          "description": "Disabled state",
+          "props": {
+            "label": "Disabled Button",
+            "disabled": true
+          }
+        }
+      ]
+    },
+    "card": {
+      "componentId": "card",
+      "variants": [
+        {
+          "name": "Default",
+          "description": "Default card",
+          "props": {
+            "title": "Card Title",
+            "body": "This is the card body content."
+          }
+        },
+        {
+          "name": "Long Content",
+          "description": "Card with longer content",
+          "props": {
+            "title": "Long Card Title",
+            "body": "This is a much longer card body content that demonstrates how the card handles more text."
+          }
+        }
+      ]
+    }
+  }
+}
+

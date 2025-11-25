@@ -40,44 +40,6 @@
           },
           "description": "Multiple design source URLs"
         },
-        "auth": {
-          "type": "object",
-          "description": "Authentication for design tools",
-          "properties": {
-            "penpot": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                },
-                "token": {
-                  "type": "string"
-                }
-              },
-              "oneOf": [
-                {
-                  "required": ["username", "password"]
-                },
-                {
-                  "required": ["token"]
-                }
-              ]
-            },
-            "figma": {
-              "type": "object",
-              "properties": {
-                "token": {
-                  "type": "string",
-                  "description": "Figma personal access token"
-                }
-              },
-              "required": ["token"]
-            }
-          }
-        }
       },
       "oneOf": [
         {

@@ -49,11 +49,11 @@ export async function generateComponent(
     story: Convention;
   }
 ): Promise<GenerateComponentResult> {
-  const { pendropDsData, componentId, target, conventions: overrides } = params;
+  const { pendropDsData: _pendropDsData, componentId: _componentId, target: _target, conventions: overrides } = params;
   
   // Merge conventions with overrides
-  const conventions = overrides ? { ...loadedConventions.conventions, ...overrides } : loadedConventions.conventions;
-  const prompts = loadedConventions.prompts;
+  const _conventions = overrides ? { ...loadedConventions.conventions, ...overrides } : loadedConventions.conventions;
+  const _prompts = loadedConventions.prompts;
   
   // TODO: Implement actual component generation using AI
   // This would involve:
@@ -66,11 +66,11 @@ export async function generateComponent(
     success: true,
     files: [
       {
-        path: `/components/${componentId}/component.yml`,
+        path: `/components/${_componentId}/component.yml`,
         content: '# TODO: Generate component.yml using AI with prompts and conventions',
       },
       {
-        path: `/components/${componentId}/template.twig`,
+        path: `/components/${_componentId}/template.twig`,
         content: '{# TODO: Generate Twig template using AI with prompts and conventions #}',
       },
     ],
@@ -90,12 +90,12 @@ export async function generateStory(
     story: Convention;
   }
 ): Promise<GenerateStoryResult> {
-  const { pendropDsData, componentId, target, conventions: overrides } = params;
+  const { pendropDsData: _pendropDsData, componentId: _componentId, target: _target, conventions: overrides } = params;
   
   // Merge conventions
-  const conventions = overrides ? { ...loadedConventions.conventions, ...overrides } : loadedConventions.conventions;
-  const prompts = loadedConventions.prompts;
-  const storyConfig = loadedConventions.story;
+  const _conventions = overrides ? { ...loadedConventions.conventions, ...overrides } : loadedConventions.conventions;
+  const _prompts = loadedConventions.prompts;
+  const _storyConfig = loadedConventions.story;
   
   // TODO: Implement actual story generation using AI
   // This would involve:
@@ -104,7 +104,7 @@ export async function generateStory(
   // 3. Generate story file based on storyConfig.format (e.g., Storybook with storybook-addon-sdc)
   
   // Placeholder response
-  const storyPath = `${storyConfig.path || '/stories'}/${componentId}${storyConfig.file_suffix || '.stories.js'}`;
+  const storyPath = `${_storyConfig.path || '/stories'}/${_componentId}${_storyConfig.file_suffix || '.stories.js'}`;
   
   return {
     success: true,

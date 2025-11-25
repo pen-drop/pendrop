@@ -95,7 +95,7 @@ export async function loadAllConventions(config: ConventionConfig): Promise<{
 /**
  * Validate conventions against schema (future enhancement)
  */
-export async function validateConventions(conventions: Convention): Promise<boolean> {
+export async function validateConventions(_conventions: Convention): Promise<boolean> {
   // TODO: Load pendrop.rules.json schema and validate
   // For now, just return true
   return true;

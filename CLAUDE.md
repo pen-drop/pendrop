@@ -6,6 +6,15 @@
 
 - **Penpot Plugin**: See `penpot-plugin/CLAUDE.md` for Vue.js, FormKit, and plugin-specific rules
 
+## Git Branching
+
+**Main branch is `1.x`:**
+
+- The primary development branch is `1.x` (not `main` or `master`)
+- All feature branches should be based on `1.x`
+- Pull requests should target `1.x`
+- CI/CD workflows target `1.x` as the main branch
+
 ## Language Rule
 
 **All project documentation, code comments, commit messages, and communication must be in English.**
@@ -32,6 +41,43 @@ Exceptions:
 - **Be concise**: Keep READMEs brief and focused on essential information
 - **No file/folder references**: Do not include references to specific files or folder structures
 - **English only**: All READMEs must be written in English
+
+## JavaScript/TypeScript Development Rules
+
+**Always use ECMAScript Modules (ESM):**
+
+- All TypeScript/JavaScript projects must use `"type": "module"` in `package.json`
+- Use ESM import/export syntax (not CommonJS `require`/`module.exports`)
+- Use `.js` extensions in import statements for TypeScript files
+- TypeScript config must use `"module": "Node16"` or `"NodeNext"` with `"moduleResolution": "Node16"` or `"NodeNext"`
+
+**Testing Framework:**
+
+- **Always use Vitest** (not Jest) for all test suites
+- Vitest has native ESM and TypeScript support without experimental flags
+- Test files should use `.test.ts` extension
+- Import test functions from `vitest`: `import { describe, it, expect, vi } from 'vitest'`
+- Use `vitest.config.ts` for configuration
+- For mocking, use `vi.mock()` instead of `jest.mock()`
+
+**Package.json Scripts:**
+
+```json
+{
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
+  }
+}
+```
+
+**Required Dependencies for Testing:**
+
+- `vitest` - Test framework
+- `@vitest/ui` - Optional UI for test runner
+- `@vitest/coverage-v8` - Code coverage
 
 ## Project Context
 

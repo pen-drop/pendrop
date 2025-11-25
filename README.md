@@ -34,19 +34,20 @@ Transform content structure into CMS configuration:
 
 ### Components
 
-Pendrop uses **Model Context Protocol (MCP)** servers for AI-powered code generation:
+Pendrop uses **Model Context Protocol (MCP)** servers for AI-powered orchestration:
 
-- **penpot-mcp**: Extract design data from Penpot (outputs `pendrop.data.ds.json`)
-- **theme-mcp**: Bridge/orchestrator for design system operations (extraction routing + generation)
-- **schema-mcp**: Content structure and CMS configuration generation
+- **penpot-mcp**: Extract design data from Penpot
 - **figma-mcp** (future): Extract design data from Figma
+- **theme-mcp**: AI orchestrator for design system transformations (returns instructions/prompts)
+- **schema-mcp**: Content structure and CMS configuration generation
 
 ### Key Principles
 
-1. **Data as Rules**: `pendrop.data.ds.json` and `pendrop.data.content.json` ARE the rules
-2. **Convention-Based**: Minimal conventions per target platform, easily extensible
-3. **Tool-Agnostic**: MCP servers are generic; conventions define platform-specific behavior
-4. **AI-Powered**: Code generation driven by AI using prompts and conventions
+1. **AI Orchestration**: MCPs return prompts/instructions, not results. AI executes the workflow.
+2. **Data as Rules**: `pendrop.data.ds.json` and `pendrop.data.content.json` define generation rules
+3. **Configurable Transformations**: Transformation packages (rules + prompts) are customizable
+4. **Convention-Based**: Minimal conventions per target platform, easily extensible
+5. **Tool-Agnostic**: Works with any design tool that provides extraction MCP
 
 
 ## Project Structure
@@ -54,8 +55,8 @@ Pendrop uses **Model Context Protocol (MCP)** servers for AI-powered code genera
 ```
 pendrop/
 ├── schemas/                    # JSON schemas
-│   ├── pendrop.schema.content.json
-│   ├── pendrop.schema.ds.json
+│   ├── pendrop.content.json
+│   ├── pendrop.theme.json
 │   └── pendrop.rules.json
 ├── rules/                      # Generation conventions
 │   └── targets/

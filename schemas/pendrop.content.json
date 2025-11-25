@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.content.json",
   "title": "Pendrop Content Schema",
   "description": "JSON Schema for Pendrop content and configuration structure data",
   "type": "object",

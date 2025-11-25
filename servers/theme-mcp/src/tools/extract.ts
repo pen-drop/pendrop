@@ -48,7 +48,7 @@ export async function extractDesign(
     success: true,
     tool,
     data: {
-      $schema: '../../schemas/pendrop.schema.ds.json',
+      $schema: 'https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json',
       tokens: {},
       components: {},
       stories: {},
@@ -65,13 +65,13 @@ export async function extractDesign(
  */
 export const extractDesignTool = {
   name: 'extract_design',
-  description: 'Extract design system data from Penpot or Figma URL. Routes to appropriate extraction MCP and returns pendrop.data.ds.json format.',
+  description: 'Extract design system data from any design tool URL. Routes to appropriate extraction MCP and returns pendrop.theme.json format.',
   inputSchema: {
     type: 'object',
     properties: {
       fileUrl: {
         type: 'string',
-        description: 'URL or path to design file (Penpot or Figma)',
+        description: 'URL or path to design file',
       },
       options: {
         type: 'object',

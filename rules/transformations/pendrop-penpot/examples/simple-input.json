@@ -1,0 +1,22 @@
+{
+  "pages": [{
+    "name": "Design System",
+    "objects": [
+      {
+        "id": "1",
+        "name": "primary-color",
+        "fills": [{ "fillColor": "#007bff" }]
+      },
+      {
+        "id": "2",
+        "componentId": "btn",
+        "name": "Button",
+        "children": [{
+          "type": "text",
+          "name": "label"
+        }]
+      }
+    ]
+  }]
+}
+

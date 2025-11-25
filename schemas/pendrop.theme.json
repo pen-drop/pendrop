@@ -1,8 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Pendrop Design System Schema",
+  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json",
+  "title": "Pendrop Theme Schema",
   "description": "JSON Schema for Pendrop design system based on W3C Design Tokens Community Group (DTCG) format specification",
   "type": "object",
+  "required": ["tokens", "components", "stories"],
   "properties": {
     "tokens": {
       "type": "object",
@@ -229,31 +231,38 @@
     "story": {
       "type": "object",
       "title": "Story",
-      "description": "Storybook story definition",
+      "description": "Story definition with multiple variants for a component",
       "properties": {
-        "component": {
+        "componentId": {
           "type": "string",
-          "description": "Component this story belongs to"
+          "description": "Reference to the component this story belongs to"
         },
-        "name": {
-          "type": "string",
-          "description": "Story name"
-        },
-        "args": {
-          "type": "object",
-          "description": "Story arguments/props",
-          "additionalProperties": true
-        },
-        "parameters": {
-          "type": "object",
-          "description": "Storybook parameters",
-          "additionalProperties": true
+        "variants": {
+          "type": "array",
+          "description": "List of story variants (different states, props combinations)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Variant name (e.g., 'Default', 'Primary', 'Disabled')"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of this variant"
+              },
+              "props": {
+                "type": "object",
+                "description": "Props to pass to the component for this variant",
+                "additionalProperties": true
+              }
+            },
+            "required": ["name", "props"]
+          }
         }
       },
-      "required": [
-        "name"
-      ],
-      "additionalProperties": true
+      "required": ["componentId", "variants"],
+      "additionalProperties": false
     }
   }
 }

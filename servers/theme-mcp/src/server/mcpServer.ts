@@ -25,6 +25,21 @@ import {
   type GenerateComponentParams,
   type GenerateStoryParams,
 } from '../tools/generate.js';
+import {
+  getTransformInstructions,
+  transformDesignSystemTool,
+  type TransformDesignSystemParams,
+} from '../tools/transformInstructions.js';
+import {
+  validateDesignData,
+  validateDesignDataTool,
+  type ValidateDesignDataParams,
+} from '../tools/validate.js';
+import {
+  saveDesignData,
+  saveDesignDataTool,
+  type SaveDesignDataParams,
+} from '../tools/save.js';
 
 // Server state
 let config: ThemeMcpConfig;
@@ -78,7 +93,14 @@ export async function startServer(): Promise<void> {
   // List available tools
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: [extractDesignTool, generateComponentTool, generateStoryTool],
+      tools: [
+        transformDesignSystemTool,
+        validateDesignDataTool,
+        saveDesignDataTool,
+        extractDesignTool,
+        generateComponentTool,
+        generateStoryTool,
+      ],
     };
   });
 
@@ -88,8 +110,50 @@ export async function startServer(): Promise<void> {
 
     try {
       switch (name) {
+        case 'transform_design_system': {
+          const result = await getTransformInstructions(
+            args as unknown as TransformDesignSystemParams
+          );
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'validate_design_data': {
+          const result = await validateDesignData(
+            args as unknown as ValidateDesignDataParams
+          );
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'save_design_data': {
+          const result = await saveDesignData(
+            args as unknown as SaveDesignDataParams
+          );
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
         case 'extract_design': {
-          const result = await extractDesign(args as ExtractDesignParams, config);
+          const result = await extractDesign(args as unknown as ExtractDesignParams, config);
           return {
             content: [
               {
@@ -102,7 +166,7 @@ export async function startServer(): Promise<void> {
 
         case 'generate_component': {
           const result = await generateComponent(
-            args as GenerateComponentParams,
+            args as unknown as GenerateComponentParams,
             conventions
           );
           return {
@@ -117,7 +181,7 @@ export async function startServer(): Promise<void> {
 
         case 'generate_story': {
           const result = await generateStory(
-            args as GenerateStoryParams,
+            args as unknown as GenerateStoryParams,
             conventions
           );
           return {

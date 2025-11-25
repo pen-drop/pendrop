@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.transform.json",
+  "title": "Pendrop Transformation Package Schema",
+  "description": "Schema for transformation packages that define how to convert design tool data to Pendrop format",
+  "type": "object",
+  "required": ["version", "source", "target_schema", "instructions", "tokens_instructions", "components_instructions"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version",
+      "pattern": "^\\d+\\.\\d+$"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source design tool name",
+      "enum": ["penpot", "figma", "sketch", "xd", "abstract"]
+    },
+    "target_schema": {
+      "type": "string",
+      "description": "Name of the target Pendrop schema (e.g., pendrop.theme.json, pendrop.content.json)"
+    },
+    "target_schema_url": {
+      "type": "string",
+      "description": "Full URL to the target schema",
+      "format": "uri"
+    },
+    "instructions": {
+      "type": "string",
+      "description": "General AI instructions for transformation process"
+    },
+    "tokens_instructions": {
+      "type": "string",
+      "description": "Instructions for extracting design tokens (W3C DTCG format)"
+    },
+    "components_instructions": {
+      "type": "string",
+      "description": "Instructions for extracting component definitions"
+    },
+    "stories_instructions": {
+      "type": "string",
+      "description": "Instructions for generating story variants (optional)"
+    },
+    "schema_structure": {
+      "type": "string",
+      "description": "Detailed description of the target schema structure"
+    },
+    "naming": {
+      "type": "object",
+      "description": "Naming convention preferences",
+      "properties": {
+        "tokens": {
+          "type": "string",
+          "description": "Token naming convention",
+          "enum": ["kebab-case", "camelCase", "snake_case", "PascalCase"]
+        },
+        "components": {
+          "type": "string",
+          "description": "Component naming convention",
+          "enum": ["kebab-case", "camelCase", "snake_case", "PascalCase"]
+        },
+        "props": {
+          "type": "string",
+          "description": "Props naming convention",
+          "enum": ["kebab-case", "camelCase", "snake_case", "PascalCase"]
+        }
+      }
+    },
+    "hints": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "description": "Hints for better extraction (can be array or string)"
+    },
+    "token_extraction": {
+      "type": "object",
+      "description": "Specific token extraction rules",
+      "properties": {
+        "color": {
+          "type": "object",
+          "properties": {
+            "source": {"type": "string"},
+            "pattern": {"type": "string"},
+            "format": {"type": "string"}
+          }
+        },
+        "spacing": {
+          "type": "object",
+          "properties": {
+            "source": {"type": "string"},
+            "pattern": {"type": "string"},
+            "format": {"type": "string"}
+          }
+        },
+        "typography": {
+          "type": "object",
+          "properties": {
+            "source": {"type": "string"},
+            "pattern": {"type": "string"},
+            "format": {"type": "string"}
+          }
+        }
+      }
+    },
+    "component_extraction": {
+      "type": "object",
+      "description": "Specific component extraction rules",
+      "properties": {
+        "pattern": {"type": "string"},
+        "category_mapping": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        },
+        "prop_detection": {
+          "type": "object",
+          "properties": {
+            "text_layers": {"type": "string"},
+            "variants": {"type": "string"},
+            "states": {"type": "array", "items": {"type": "string"}}
+          }
+        }
+      }
+    },
+    "story_generation": {
+      "type": "object",
+      "description": "Story generation rules",
+      "properties": {
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["default", "enum_variants", "state_variants", "content_variants"]
+          }
+        },
+        "naming_pattern": {"type": "string"}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Package metadata",
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "author": {"type": "string"},
+        "version": {"type": "string"},
+        "license": {"type": "string"}
+      }
+    }
+  }
+}
+
