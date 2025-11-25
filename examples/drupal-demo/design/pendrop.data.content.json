@@ -1,0 +1,88 @@
+{
+  "$schema": "../../../schemas/pendrop.schema.content.json",
+  "$comment": "This file is created manually or by other tools. Defines content structure for CMS generation.",
+  "content": {
+    "node": {
+      "article": {
+        "label": "Article",
+        "description": "Content type for articles",
+        "fields": {
+          "title": {
+            "type": "string",
+            "label": "Title",
+            "required": true,
+            "maxLength": 255
+          },
+          "body": {
+            "type": "text_long",
+            "label": "Body",
+            "required": true
+          },
+          "author": {
+            "type": "entity_reference",
+            "label": "Author",
+            "target_type": "user"
+          },
+          "featured_image": {
+            "type": "image",
+            "label": "Featured Image"
+          },
+          "tags": {
+            "type": "entity_reference",
+            "label": "Tags",
+            "target_type": "taxonomy_term",
+            "target_bundle": "tags",
+            "cardinality": -1
+          }
+        }
+      },
+      "page": {
+        "label": "Page",
+        "description": "Basic page content type",
+        "fields": {
+          "title": {
+            "type": "string",
+            "label": "Title",
+            "required": true
+          },
+          "body": {
+            "type": "text_long",
+            "label": "Body"
+          }
+        }
+      }
+    }
+  },
+  "config": {
+    "views": {
+      "articles_list": {
+        "label": "Articles List",
+        "description": "List view for articles",
+        "base_table": "node",
+        "displays": {
+          "page": {
+            "path": "/articles",
+            "title": "Articles"
+          },
+          "block": {
+            "title": "Recent Articles",
+            "items_per_page": 5
+          }
+        },
+        "filters": {
+          "type": {
+            "value": "article"
+          },
+          "status": {
+            "value": true
+          }
+        },
+        "fields": ["title", "created", "author"],
+        "sorts": {
+          "created": "DESC"
+        }
+      }
+    }
+  }
+}
+

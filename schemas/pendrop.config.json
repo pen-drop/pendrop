@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pendrop.io/schemas/pendrop.config.json",
+  "title": "Pendrop Configuration Schema",
+  "description": "Schema for pendrop.yml configuration file",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "object",
+      "description": "Project configuration",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["drupal", "wordpress", "laravel"],
+          "description": "Target platform type (determines path conventions)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Project name"
+        },
+        "theme": {
+          "type": "string",
+          "description": "Theme name (used in path resolution)"
+        }
+      },
+      "required": ["type", "name", "theme"]
+    },
+    "design": {
+      "type": "object",
+      "description": "Design source configuration",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Single design source URL (Penpot, Figma, or local file)"
+        },
+        "urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Multiple design source URLs"
+        },
+        "auth": {
+          "type": "object",
+          "description": "Authentication for design tools",
+          "properties": {
+            "penpot": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "token": {
+                  "type": "string"
+                }
+              },
+              "oneOf": [
+                {
+                  "required": ["username", "password"]
+                },
+                {
+                  "required": ["token"]
+                }
+              ]
+            },
+            "figma": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Figma personal access token"
+                }
+              },
+              "required": ["token"]
+            }
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["url"]
+        },
+        {
+          "required": ["urls"]
+        }
+      ]
+    },
+    "rules": {
+      "type": "object",
+      "description": "Custom rules configuration",
+      "properties": {
+        "custom_rules_path": {
+          "type": "string",
+          "description": "Path to custom rules directory (optional)"
+        },
+        "conventions": {
+          "type": "object",
+          "description": "Direct convention overrides (merged with target conventions)",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "required": ["project"],
+  "additionalProperties": false
+}
+

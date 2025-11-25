@@ -1,0 +1,28 @@
+/**
+ * @file
+ * Pendrop theme styles
+ *
+ * This file contains base theme styles. Component-specific styles
+ * are defined within each component's directory.
+ */
+
+/* Base styles */
+:root {
+  /* Design tokens will be added here via AI generation */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Layout */
+.layout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Components are auto-loaded from components/ directory */
+

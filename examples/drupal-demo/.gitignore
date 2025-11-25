@@ -1,0 +1,47 @@
+# Drupal core
+/vendor/
+/web/core/
+/web/modules/contrib/
+/web/themes/contrib/
+/web/profiles/contrib/
+/web/sites/*/files/
+/web/sites/*/private/
+/web/sites/*/settings.local.php
+/web/sites/*/settings.php
+/web/sites/*/services.local.yml
+
+# Pendrop generated files
+/.pendrop/dist/
+/web/themes/custom/*/components/
+/web/themes/custom/*/stories/
+/config/sync/*.yml
+
+# Keep example content structure
+!design/pendrop.data.content.json
+
+# Sensitive configuration (contains credentials)
+/pendrop.yml
+/pendrop.local.yml
+
+# Node modules (Storybook)
+/web/themes/custom/*/.storybook/node_modules/
+/web/themes/custom/*/node_modules/
+/web/themes/custom/*/storybook-static/
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Composer
+/composer.lock
+
+# Drush
+/drush/contrib/
+

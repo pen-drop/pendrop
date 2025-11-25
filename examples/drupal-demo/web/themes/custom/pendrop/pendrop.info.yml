@@ -1,0 +1,31 @@
+name: Pendrop
+type: theme
+base theme: false
+core_version_requirement: ^11
+description: 'Pendrop demo theme with AI-generated Single Directory Components'
+package: Custom
+version: 1.0.0
+
+libraries:
+  - pendrop/global
+
+regions:
+  header: Header
+  primary_menu: 'Primary menu'
+  secondary_menu: 'Secondary menu'
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
+  breadcrumb: Breadcrumb
+  highlighted: Highlighted
+  help: Help
+  content: Content
+  sidebar_first: 'Sidebar first'
+  sidebar_second: 'Sidebar second'
+  footer: Footer
+
+# Single Directory Components path
+components:
+  namespaces:
+    pendrop:
+      - components
+

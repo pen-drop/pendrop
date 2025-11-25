@@ -1,0 +1,20 @@
+{
+  "name": "pendrop-theme",
+  "version": "1.0.0",
+  "description": "Pendrop Drupal theme with Storybook integration",
+  "private": true,
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^8.0.0",
+    "@storybook/addon-essentials": "^8.0.0",
+    "@storybook/addon-links": "^8.0.0",
+    "@storybook/html": "^8.0.0",
+    "@storybook/html-vite": "^8.0.0",
+    "storybook": "^8.0.0",
+    "storybook-addon-sdc": "^1.0.0"
+  }
+}
+

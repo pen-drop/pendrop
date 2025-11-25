@@ -1,0 +1,33 @@
+# Project-specific convention overrides
+# These override the base Drupal conventions from rules/targets/drupal/
+
+naming:
+  # Add custom prefix for all components (optional)
+  # component_prefix: "pendrop_"
+  
+paths:
+  # Custom paths can override defaults here if needed
+  # But usually paths come from rules/targets/drupal/conventions.yaml
+  
+drupal:
+  # Custom component namespace (overrides "custom")
+  component_namespace: pendrop
+  
+  # Project-specific metadata
+  project_name: "Pendrop Demo"
+  theme_name: "pendrop"
+
+# Custom conventions for this project
+pendrop:
+  # Always include accessibility features
+  accessibility_required: true
+  
+  # Include BEM naming for CSS classes
+  css_methodology: bem
+  
+  # Support RTL languages
+  rtl_support: true
+  
+  # Component documentation
+  docs_required: true
+

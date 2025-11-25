@@ -1,0 +1,112 @@
+# Story Configuration for Drupal Target
+# Defines how component stories are generated and structured
+
+# Story format (storybook, custom, etc.)
+format: storybook
+
+# Storybook addon for Drupal SDC components
+addon: storybook-addon-sdc
+
+# File naming
+file_suffix: .stories.js
+file_naming: "{component_name}{file_suffix}"
+
+# Story location
+path: /stories
+
+# Story structure
+structure:
+  # Use Component Story Format 3.0
+  csf_version: 3.0
+  
+  # Default story variants to generate
+  default_variants:
+    - name: Default
+      description: Default component state
+    - name: WithContent
+      description: Component with sample content
+    - name: Interactive
+      description: Interactive component with controls
+  
+  # Additional variants based on component properties
+  conditional_variants:
+    - condition: has_states
+      variants:
+        - Hover
+        - Active
+        - Disabled
+        - Focus
+    - condition: supports_theme
+      variants:
+        - LightMode
+        - DarkMode
+    - condition: responsive
+      variants:
+        - Mobile
+        - Tablet
+        - Desktop
+
+# Storybook configuration
+storybook:
+  # Story metadata
+  meta:
+    # Component categorization
+    categories:
+      - Atoms
+      - Molecules
+      - Organisms
+      - Templates
+    
+  # Controls configuration
+  controls:
+    # Enable controls panel
+    enabled: true
+    # Exclude props from controls
+    exclude:
+      - className
+      - children
+  
+  # Documentation
+  docs:
+    # Enable docs page
+    enabled: true
+    # Include design tokens in docs
+    show_tokens: true
+    # Include accessibility guidelines
+    show_a11y: true
+
+# Integration with storybook-addon-sdc
+sdc_integration:
+  # Component import method
+  import_method: addon
+  
+  # Component registration
+  register_components: true
+  
+  # Twig namespace for SDC components
+  twig_namespace: components
+  
+  # Load component metadata from component.yml
+  load_metadata: true
+  
+  # Include component schema in stories
+  include_schema: true
+
+# Preview configuration
+preview:
+  # Backgrounds for stories
+  backgrounds:
+    - name: light
+      value: '#ffffff'
+      default: true
+    - name: dark
+      value: '#1a1a1a'
+    - name: gray
+      value: '#f5f5f5'
+  
+  # Viewport presets
+  viewports:
+    mobile: 320
+    tablet: 768
+    desktop: 1440
+

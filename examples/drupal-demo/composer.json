@@ -1,0 +1,102 @@
+{
+  "name": "pendrop/drupal-demo",
+  "description": "Pendrop Drupal 11 demo project with AI-generated components",
+  "type": "project",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/pen-drop/pendrop",
+  "support": {
+    "docs": "https://github.com/pen-drop/pendrop",
+    "chat": "https://github.com/pen-drop/pendrop/discussions"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packages.drupal.org/11"
+    }
+  ],
+  "require": {
+    "php": ">=8.3",
+    "composer/installers": "^2.0",
+    "drupal/core-composer-scaffold": "^11.0",
+    "drupal/core-project-message": "^11.0",
+    "drupal/core-recommended": "^11.0",
+    "drush/drush": "^13.0"
+  },
+  "require-dev": {
+    "drupal/core-dev": "^11.0"
+  },
+  "conflict": {
+    "drupal/drupal": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "drupal/core-composer-scaffold": true,
+      "drupal/core-project-message": true,
+      "phpstan/extension-installer": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "php-http/discovery": true
+    },
+    "sort-packages": true
+  },
+  "extra": {
+    "drupal-scaffold": {
+      "locations": {
+        "web-root": "web/"
+      },
+      "file-mapping": {
+        "[web-root]/sites/development.services.yml": false
+      }
+    },
+    "installer-paths": {
+      "web/core": [
+        "type:drupal-core"
+      ],
+      "web/libraries/{$name}": [
+        "type:drupal-library"
+      ],
+      "web/modules/contrib/{$name}": [
+        "type:drupal-module"
+      ],
+      "web/profiles/contrib/{$name}": [
+        "type:drupal-profile"
+      ],
+      "web/themes/contrib/{$name}": [
+        "type:drupal-theme"
+      ],
+      "drush/Commands/contrib/{$name}": [
+        "type:drupal-drush"
+      ],
+      "web/modules/custom/{$name}": [
+        "type:drupal-custom-module"
+      ],
+      "web/profiles/custom/{$name}": [
+        "type:drupal-custom-profile"
+      ],
+      "web/themes/custom/{$name}": [
+        "type:drupal-custom-theme"
+      ]
+    },
+    "drupal-core-project-message": {
+      "include-keys": [
+        "homepage",
+        "support"
+      ],
+      "post-create-project-cmd-message": [
+        "<bg=blue;fg=white>                                                         </>",
+        "<bg=blue;fg=white>  Congratulations, you've installed the Pendrop Drupal  </>",
+        "<bg=blue;fg=white>  demo project with AI-powered component generation!    </>",
+        "<bg=blue;fg=white>                                                         </>",
+        "",
+        "<bg=yellow;fg=black>Next steps</>:",
+        "  * Configure pendrop.yml with your design tool credentials",
+        "  * Run the AI workflow to generate components",
+        "  * Install Drupal: <fg=yellow>drush site:install</>",
+        "  * Read the docs: https://github.com/pen-drop/pendrop"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
+
