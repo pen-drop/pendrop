@@ -1,18 +1,34 @@
 version: "1.0"
 source: penpot
 
+# Target schema reference
+target_schema: "pendrop.schema.ds.json"
+target_schema_url: "https://pendrop.io/schemas/pendrop.schema.ds.json"
+
 # General instructions for AI
 instructions: |
   You are transforming Penpot design file data to Pendrop's design system format.
   
-  Penpot data structure:
+  **Target Output Format:** Your output MUST conform to `pendrop.schema.ds.json`
+  
+  **Required Top-Level Structure:**
+  ```json
+  {
+    "$schema": "../../schemas/pendrop.schema.ds.json",
+    "tokens": { /* W3C DTCG tokens */ },
+    "components": { /* component definitions */ },
+    "stories": { /* story variants */ }
+  }
+  ```
+  
+  **Penpot Input Data Structure:**
   - `pages[]`: Contains design pages
   - `objects[]`: Shapes, components, text, etc. within pages
   - `componentId`: Identifies components
   - `fills[]` and `strokes[]`: Contains colors
   - `fontFamily`, `fontSize`, etc.: Typography properties
   
-  Your goal: Extract design tokens, components, and stories.
+  **Your Goal:** Extract and structure design tokens, components, and stories according to the target schema.
 
 # Token extraction instructions
 tokens_instructions: |
@@ -134,10 +150,45 @@ naming:
   components: "kebab-case"
   props: "camelCase"
 
+# Target schema structure
+schema_structure: |
+  Your output must match this exact structure (pendrop.schema.ds.json):
+  
+  **Root Object:**
+  - `$schema` (string, optional): Schema reference
+  - `tokens` (object, required): Design tokens grouped by category
+  - `components` (object, required): Component definitions
+  - `stories` (object, required): Story variants
+  
+  **Tokens Structure:**
+  Each token category (color, spacing, typography, etc.) contains token objects with:
+  - `$value` (required): The token value
+  - `$type` (required): Token type (color, dimension, fontFamily, etc.)
+  - `$description` (optional): Human-readable description
+  
+  **Components Structure:**
+  Each component (keyed by component ID) contains:
+  - `name` (string, required): Display name
+  - `description` (string, optional): Component purpose
+  - `category` (string, required): Atoms, Molecules, or Organisms
+  - `props` (object, required): Prop definitions with type, required, default, enum
+  - `tokens` (array, optional): Referenced token paths (e.g., ["color.primary"])
+  
+  **Stories Structure:**
+  Each story (keyed by component ID) contains:
+  - `componentId` (string, required): Component this story belongs to
+  - `variants` (array, required): Array of variant objects
+    - `name` (string): Variant name
+    - `description` (string, optional): Variant purpose
+    - `props` (object): Prop values for this variant
+
 # Hints for better extraction
 hints:
   - Objects named "token" or "design-system" are likely tokens
   - Page names provide context ("Tokens" page, "Components" page)
   - Look for naming patterns (e.g., "btn-primary", "card-header")
   - Component instances reference main components
+  - Always include the `$schema` property in your output
+  - Ensure all required properties are present per the schema
+  - Validate token references in components exist in the tokens section
 
