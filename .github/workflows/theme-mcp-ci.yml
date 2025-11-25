@@ -113,13 +113,7 @@ jobs:
         run: npm run validate:schemas
       
       - name: Validate YAML files
-        run: |
-          # Install yamllint
-          pip install yamllint
-          
-          # Check transformation rules
-          echo "Validating YAML files in rules/"
-          yamllint -d "{extends: default, rules: {line-length: {max: 120}}}" rules/
+        run: npm run validate:yaml
 
   security:
     name: Security Audit
