@@ -1,3 +1,4 @@
+---
 version: "1.0"
 source: penpot
 
@@ -8,9 +9,9 @@ target_schema_url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schem
 # General instructions for AI
 instructions: |
   You are transforming Penpot design file data to Pendrop's design system format.
-  
+
   **Target Output Format:** Your output MUST conform to `pendrop.theme.json`
-  
+
   **Required Top-Level Structure:**
   ```json
   {
@@ -20,20 +21,20 @@ instructions: |
     "stories": { /* story variants */ }
   }
   ```
-  
+
   **Penpot Input Data Structure:**
   - `pages[]`: Contains design pages
   - `objects[]`: Shapes, components, text, etc. within pages
   - `componentId`: Identifies components
   - `fills[]` and `strokes[]`: Contains colors
   - `fontFamily`, `fontSize`, etc.: Typography properties
-  
+
   **Your Goal:** Extract and structure design tokens, components, and stories according to the target schema.
 
 # Token extraction instructions
 tokens_instructions: |
   Extract design tokens in W3C DTCG format:
-  
+
   **Color Tokens:**
   - Source: Objects with `fills[]` or `strokes[]`
   - Extract: `fillColor` or `strokeColor` values
@@ -50,7 +51,7 @@ tokens_instructions: |
       }
     }
     ```
-  
+
   **Spacing Tokens:**
   - Source: Objects named "spacing", "gap", "padding", "margin"
   - Extract: width or height values
@@ -65,7 +66,7 @@ tokens_instructions: |
       }
     }
     ```
-  
+
   **Typography Tokens:**
   - Source: Text objects with font properties
   - Extract: fontFamily, fontSize, fontWeight, lineHeight
@@ -87,23 +88,23 @@ tokens_instructions: |
 # Component extraction instructions
 components_instructions: |
   Extract component definitions:
-  
+
   **Finding Components:**
   - Look for objects with `componentId` or `componentFile`
   - Main components have meaningful names (Button, Card, Header, etc.)
-  
+
   **For Each Component:**
   - name: Component name (convert to kebab-case)
   - description: Purpose or usage
   - category: "Atoms", "Molecules", or "Organisms" based on complexity
   - props: Analyze structure to determine props
-  
+
   **Determining Props:**
   - Text layers → string props (e.g., "label", "title")
   - Variant layers → enum props with possible values
   - States (hover, disabled) → boolean props
   - Nested components → composition props
-  
+
   **Example:**
   ```json
   {
@@ -124,12 +125,12 @@ components_instructions: |
 # Story generation instructions
 stories_instructions: |
   For each component, generate story variants:
-  
+
   - **Default Story**: Base component state
   - **Enum Variants**: One story per enum value
   - **State Variants**: Disabled, loading, error states
   - **Content Variants**: Different content examples
-  
+
   Example:
   ```json
   {
@@ -153,19 +154,19 @@ naming:
 # Target schema structure
 schema_structure: |
   Your output must match this exact structure (pendrop.theme.json):
-  
+
   **Root Object:**
   - `$schema` (string, optional): Schema reference
   - `tokens` (object, required): Design tokens grouped by category
   - `components` (object, required): Component definitions
   - `stories` (object, required): Story variants
-  
+
   **Tokens Structure:**
   Each token category (color, spacing, typography, etc.) contains token objects with:
   - `$value` (required): The token value
   - `$type` (required): Token type (color, dimension, fontFamily, etc.)
   - `$description` (optional): Human-readable description
-  
+
   **Components Structure:**
   Each component (keyed by component ID) contains:
   - `name` (string, required): Display name
@@ -173,7 +174,7 @@ schema_structure: |
   - `category` (string, required): Atoms, Molecules, or Organisms
   - `props` (object, required): Prop definitions with type, required, default, enum
   - `tokens` (array, optional): Referenced token paths (e.g., ["color.primary"])
-  
+
   **Stories Structure:**
   Each story (keyed by component ID) contains:
   - `componentId` (string, required): Component this story belongs to

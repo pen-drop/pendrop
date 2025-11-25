@@ -1,0 +1,17 @@
+{
+    "name": "pendrop-root",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Root package for Pendrop project maintenance and validation",
+    "type": "module",
+    "scripts": {
+        "validate:schemas": "ajv compile -s \"schemas/*.json\" --spec=draft7 -c ajv-formats"
+    },
+    "devDependencies": {
+        "ajv-cli": "^5.0.0",
+        "ajv-formats": "^3.0.1"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    }
+}

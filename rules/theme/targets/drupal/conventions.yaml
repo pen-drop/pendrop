@@ -1,3 +1,4 @@
+---
 # Drupal Target Conventions
 # These conventions guide code generation for Drupal projects
 
@@ -17,22 +18,22 @@ naming:
 paths:
   # Where extracted design data is stored
   design_data: ./.pendrop/dist/pendrop.data.ds.json
-  
+
   # Where generated components go
   components: ./web/themes/custom/{theme_name}/components
-  
+
   # Where generated stories go
   stories: ./web/themes/custom/{theme_name}/stories
-  
+
   # Storybook configuration directory
   storybook: ./web/themes/custom/{theme_name}/.storybook
-  
+
   # Generated Drupal config
   config: ./config/sync
-  
+
   # Drupal theme root
   theme_root: ./web/themes/custom/{theme_name}
-  
+
   # Views configuration
   views: ./config/sync/views.view.*.yml
 

@@ -106,17 +106,11 @@ jobs:
         with:
           node-version: '20'
       
+      - name: Install root dependencies
+        run: npm ci
+      
       - name: Validate JSON schemas
-        run: |
-          # Check if schemas are valid JSON
-          for file in schemas/*.json; do
-            echo "Validating $file"
-            if ! jq empty "$file" 2>/dev/null; then
-              echo "❌ Invalid JSON in $file"
-              exit 1
-            fi
-            echo "✓ $file is valid JSON"
-          done
+        run: npm run validate:schemas
       
       - name: Validate YAML files
         run: |
