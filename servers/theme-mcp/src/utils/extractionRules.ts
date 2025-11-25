@@ -96,6 +96,59 @@ export async function loadExtractionRules(
 }
 
 /**
+ * Load instruction template from extraction directory
+ * Instructions are tool-agnostic and located directly in rules/theme/extraction/
+ */
+export async function loadInstructionTemplate(
+  _sourceTool: string,
+  projectPath?: string,
+  pendropConfig?: PendropConfig
+): Promise<string> {
+  let extractionPath: string;
+
+  // Check if custom extraction path is configured
+  const customExtractionPath = pendropConfig?.rules?.extraction?._instructions_path;
+  
+  if (customExtractionPath) {
+    if (customExtractionPath.startsWith('./') || customExtractionPath.startsWith('../') || customExtractionPath.startsWith('/')) {
+      extractionPath = resolve(projectPath || process.cwd(), customExtractionPath);
+    } else {
+      throw new Error(`Custom extraction path must be a local path: ${customExtractionPath}`);
+    }
+  } else {
+    // Use built-in instructions from rules/theme/extraction/
+    const rulesRoot = resolve(getDirname(), '../../../../rules/theme/extraction');
+    extractionPath = rulesRoot;
+  }
+
+  const instructionsPath = join(extractionPath, 'instructions.md');
+  
+  try {
+    const content = await readFile(instructionsPath, 'utf-8');
+    return content;
+  } catch (error) {
+    throw new Error(`Failed to load instruction template from ${instructionsPath}: ${error}`);
+  }
+}
+
+/**
+ * Replace template variables in instruction template
+ */
+export function replaceTemplateVariables(
+  template: string,
+  variables: Record<string, string>
+): string {
+  let result = template;
+  
+  for (const [key, value] of Object.entries(variables)) {
+    const placeholder = `{{${key}}}`;
+    result = result.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+  }
+  
+  return result;
+}
+
+/**
  * Load example files from extraction package
  */
 export async function loadExamples(

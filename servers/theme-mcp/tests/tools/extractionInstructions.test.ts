@@ -38,13 +38,13 @@ describe('Extraction Instructions Tool', () => {
     it('should include all workflow steps in instructions', () => {
       // Instructions should guide through:
       // 1. Extract from source MCP
-      // 2. Transform using rules
+      // 2. Extract/transform using rules
       // 3. Validate with theme-mcp
       // 4. Save with theme-mcp
       
       const expectedSteps = [
         'extract',
-        'transform',
+        'extract',
         'validate',
         'save',
       ];

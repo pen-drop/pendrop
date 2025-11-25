@@ -4,7 +4,8 @@
 
 **Additional rules specific to subprojects are located in their respective directories:**
 
-- **Penpot Plugin**: See `penpot-plugin/CLAUDE.md` for Vue.js, FormKit, and plugin-specific rules
+- **Penpot Plugin**: See `plugins/penpot/CLAUDE.md` for Vue.js, FormKit, and plugin-specific rules
+- **Theme MCP**: See `servers/theme-mcp/CLAUDE.md` for tool-agnostic architecture and no-hardcoded-prompts rules
 
 ## Git Branching
 

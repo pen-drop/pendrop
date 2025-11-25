@@ -8,13 +8,13 @@ Comprehensive test suite for the AI-orchestrated design system extraction workfl
 tests/
 ├── fixtures/                    # Test data
 │   ├── penpot-raw.json          # Raw Penpot design file
-│   └── penpot-transformed.json  # Expected extraction output
+│   └── penpot-extracted.json  # Expected extraction output
 ├── utils/                       # Unit tests for utilities
 │   ├── validator.test.ts        # Schema validation tests
-│   ├── transformRules.test.ts   # Transform rules loader tests
+│   ├── extractionRules.test.ts # Extraction rules loader tests
 │   └── schemaLoader.test.ts     # Schema loader tests
 ├── tools/                       # Unit tests for tools
-│   └── transformInstructions.test.ts  # Extraction instructions tests
+│   └── extractionInstructions.test.ts  # Extraction instructions tests
 └── integration/                 # Integration tests
     └── workflow.test.ts         # End-to-end workflow tests
 ```
@@ -49,7 +49,7 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Reports multiple errors
 - ✓ Caches schemas for performance
 
-**Transform Rules Tests** (`utils/transformRules.test.ts`)
+**Extraction Rules Tests** (`utils/extractionRules.test.ts`)
 - ✓ Loads built-in Penpot extraction rules
 - ✓ Loads built-in Figma extraction rules
 - ✓ Validates source matches tool
@@ -57,7 +57,7 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Includes optional hints
 - ✓ Loads example extractions
 - ✓ Throws error for NPM packages (not yet supported)
-- ✓ Validates transform rules structure
+- ✓ Validates extraction rules structure
 
 **Schema Loader Tests** (`utils/schemaLoader.test.ts`)
 - ✓ Loads design system schema
@@ -66,7 +66,7 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Throws error for invalid schema type
 - ✓ Loads schema with all required properties
 
-**Transform Instructions Tests** (`tools/transformInstructions.test.ts`)
+**Extraction Instructions Tests** (`tools/extractionInstructions.test.ts`)
 - ✓ Returns comprehensive instructions
 - ✓ Includes extraction rules
 - ✓ References W3C DTCG format
@@ -79,7 +79,7 @@ npx vitest run tests/utils/validator.test.ts
 - Token extraction and validation
 - Component extraction and validation
 - Story generation and validation
-- Data flow verification (raw → transformed)
+- Data flow verification (raw → extracted)
 - Component relationship preservation
 - Story-component linking
 - Schema compliance
@@ -111,9 +111,9 @@ Structure:
 }
 ```
 
-### Transformed Data (`fixtures/penpot-transformed.json`)
+### Extracted Data (`fixtures/penpot-extracted.json`)
 
-Expected output in `pendrop.schema.ds.json` format:
+Expected output in `pendrop.theme.json` format:
 - **W3C DTCG tokens**: Colors, spacing, typography
 - **Components**: Button, Card with full prop definitions
 - **Stories**: Multiple variants per component
@@ -130,7 +130,7 @@ SyntaxError: Cannot use 'import.meta' outside a module
 
 **Status**: Known Jest limitation with hybrid ESM/CommonJS modules
 
-**Workaround**: Tests that don't depend on `import.meta` (like `transformInstructions.test.ts`) pass successfully
+**Workaround**: Tests that don't depend on `import.meta` (like `extractionInstructions.test.ts`) pass successfully
 
 **Resolution**: Will be fixed in future Jest versions or by refactoring to avoid `import.meta`
 
@@ -191,7 +191,7 @@ describe('Your Workflow', () => {
 - **Total Tests**: 30+ test cases
 - **Test Files**: 5
 - **Test Coverage**: Core functionality covered
-- **Passing Tests**: 5 (transformInstructions suite)
+- **Passing Tests**: 5+ (extractionInstructions suite)
 - **Build Status**: ✅ TypeScript compilation successful
 
 ## Contributing

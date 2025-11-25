@@ -1,5 +1,5 @@
 /**
- * Integration tests for complete transformation workflow
+ * Integration tests for complete extraction workflow
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -12,22 +12,22 @@ import { loadExtractionRules } from '../../src/utils/extractionRules.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-describe('Transformation Workflow Integration', () => {
+describe('Extraction Workflow Integration', () => {
   let validator: PendropValidator;
 
   beforeAll(() => {
     validator = new PendropValidator();
   });
 
-  describe('End-to-End Transformation', () => {
-    it('should validate transformed fixture data', async () => {
-      // Load the transformed fixture
-      const fixturePath = join(__dirname, '../fixtures/penpot-transformed.json');
+  describe('End-to-End Extraction', () => {
+    it('should validate extracted fixture data', async () => {
+      // Load the extracted fixture
+      const fixturePath = join(__dirname, '../fixtures/penpot-extracted.json');
       const fixtureContent = await readFile(fixturePath, 'utf-8');
-      const transformedData = JSON.parse(fixtureContent);
+      const extractedData = JSON.parse(fixtureContent);
 
       // Validate against design system schema
-      const result = await validator.validate(transformedData, 'ds');
+      const result = await validator.validate(extractedData, 'ds');
 
       expect(result.valid).toBe(true);
       if (!result.valid) {
@@ -35,47 +35,47 @@ describe('Transformation Workflow Integration', () => {
       }
     });
 
-    it('should have valid tokens in transformed data', async () => {
-      const fixturePath = join(__dirname, '../fixtures/penpot-transformed.json');
+    it('should have valid tokens in extracted data', async () => {
+      const fixturePath = join(__dirname, '../fixtures/penpot-extracted.json');
       const fixtureContent = await readFile(fixturePath, 'utf-8');
-      const transformedData = JSON.parse(fixtureContent);
+      const extractedData = JSON.parse(fixtureContent);
 
-      expect(transformedData.tokens).toBeDefined();
-      expect(transformedData.tokens.color).toBeDefined();
-      expect(transformedData.tokens.spacing).toBeDefined();
-      expect(transformedData.tokens.typography).toBeDefined();
+      expect(extractedData.tokens).toBeDefined();
+      expect(extractedData.tokens.color).toBeDefined();
+      expect(extractedData.tokens.spacing).toBeDefined();
+      expect(extractedData.tokens.typography).toBeDefined();
 
       // Check W3C DTCG format
-      const primaryColor = transformedData.tokens.color.primary;
+      const primaryColor = extractedData.tokens.color.primary;
       expect(primaryColor).toHaveProperty('$value');
       expect(primaryColor).toHaveProperty('$type');
       expect(primaryColor.$type).toBe('color');
     });
 
-    it('should have valid components in transformed data', async () => {
-      const fixturePath = join(__dirname, '../fixtures/penpot-transformed.json');
+    it('should have valid components in extracted data', async () => {
+      const fixturePath = join(__dirname, '../fixtures/penpot-extracted.json');
       const fixtureContent = await readFile(fixturePath, 'utf-8');
-      const transformedData = JSON.parse(fixtureContent);
+      const extractedData = JSON.parse(fixtureContent);
 
-      expect(transformedData.components).toBeDefined();
-      expect(transformedData.components.button).toBeDefined();
+      expect(extractedData.components).toBeDefined();
+      expect(extractedData.components.button).toBeDefined();
       
-      const button = transformedData.components.button;
+      const button = extractedData.components.button;
       expect(button).toHaveProperty('name');
       expect(button).toHaveProperty('category');
       expect(button).toHaveProperty('props');
       expect(button.category).toBe('Atoms');
     });
 
-    it('should have valid stories in transformed data', async () => {
-      const fixturePath = join(__dirname, '../fixtures/penpot-transformed.json');
+    it('should have valid stories in extracted data', async () => {
+      const fixturePath = join(__dirname, '../fixtures/penpot-extracted.json');
       const fixtureContent = await readFile(fixturePath, 'utf-8');
-      const transformedData = JSON.parse(fixtureContent);
+      const extractedData = JSON.parse(fixtureContent);
 
-      expect(transformedData.stories).toBeDefined();
-      expect(transformedData.stories.button).toBeDefined();
+      expect(extractedData.stories).toBeDefined();
+      expect(extractedData.stories.button).toBeDefined();
       
-      const buttonStories = transformedData.stories.button;
+      const buttonStories = extractedData.stories.button;
       expect(buttonStories).toHaveProperty('componentId');
       expect(buttonStories).toHaveProperty('variants');
       expect(Array.isArray(buttonStories.variants)).toBe(true);
@@ -83,8 +83,8 @@ describe('Transformation Workflow Integration', () => {
     });
   });
 
-  describe('Transformation Rules Application', () => {
-    it('should load transformation rules successfully', async () => {
+  describe('Extraction Rules Application', () => {
+    it('should load extraction rules successfully', async () => {
       const rules = await loadExtractionRules('penpot', '/fake/path');
 
       expect(rules).toBeDefined();
@@ -120,38 +120,38 @@ describe('Transformation Workflow Integration', () => {
   });
 
   describe('Data Flow Validation', () => {
-    it('should demonstrate raw → transformed flow', async () => {
+    it('should demonstrate raw → extracted flow', async () => {
       // Load raw fixture
       const rawPath = join(__dirname, '../fixtures/penpot-raw.json');
       const rawContent = await readFile(rawPath, 'utf-8');
       const rawData = JSON.parse(rawContent);
 
-      // Load transformed fixture
-      const transformedPath = join(__dirname, '../fixtures/penpot-transformed.json');
-      const transformedContent = await readFile(transformedPath, 'utf-8');
-      const transformedData = JSON.parse(transformedContent);
+      // Load extracted fixture
+      const extractedPath = join(__dirname, '../fixtures/penpot-extracted.json');
+      const extractedContent = await readFile(extractedPath, 'utf-8');
+      const extractedData = JSON.parse(extractedContent);
 
-      // Verify transformation captured key data
+      // Verify extraction captured key data
       expect(rawData.pages).toBeDefined();
-      expect(transformedData.tokens).toBeDefined();
-      expect(transformedData.components).toBeDefined();
+      expect(extractedData.tokens).toBeDefined();
+      expect(extractedData.components).toBeDefined();
 
-      // Verify specific transformations
-      // Raw has "primary-color" object -> Transformed has color.primary token
+      // Verify specific extractions
+      // Raw has "primary-color" object -> Extracted has color.primary token
       const hasPrimaryColorRaw = rawData.pages.some((page: any) =>
         page.objects.some((obj: any) => obj.name === 'primary-color')
       );
       expect(hasPrimaryColorRaw).toBe(true);
-      expect(transformedData.tokens.color.primary).toBeDefined();
+      expect(extractedData.tokens.color.primary).toBeDefined();
     });
 
     it('should preserve component relationships', async () => {
-      const transformedPath = join(__dirname, '../fixtures/penpot-transformed.json');
-      const transformedContent = await readFile(transformedPath, 'utf-8');
-      const transformedData = JSON.parse(transformedContent);
+      const extractedPath = join(__dirname, '../fixtures/penpot-extracted.json');
+      const extractedContent = await readFile(extractedPath, 'utf-8');
+      const extractedData = JSON.parse(extractedContent);
 
       // Button component should reference tokens
-      const button = transformedData.components.button;
+      const button = extractedData.components.button;
       expect(button.tokens).toBeDefined();
       expect(Array.isArray(button.tokens)).toBe(true);
       expect(button.tokens.length).toBeGreaterThan(0);
@@ -159,44 +159,44 @@ describe('Transformation Workflow Integration', () => {
       // Verify referenced tokens exist
       for (const tokenRef of button.tokens) {
         const [category, name] = tokenRef.split('.');
-        expect(transformedData.tokens[category]).toBeDefined();
-        expect(transformedData.tokens[category][name]).toBeDefined();
+        expect(extractedData.tokens[category]).toBeDefined();
+        expect(extractedData.tokens[category][name]).toBeDefined();
       }
     });
 
     it('should link stories to components', async () => {
-      const transformedPath = join(__dirname, '../fixtures/penpot-transformed.json');
-      const transformedContent = await readFile(transformedPath, 'utf-8');
-      const transformedData = JSON.parse(transformedContent);
+      const extractedPath = join(__dirname, '../fixtures/penpot-extracted.json');
+      const extractedContent = await readFile(extractedPath, 'utf-8');
+      const extractedData = JSON.parse(extractedContent);
 
       // Each story should reference a valid component
-      for (const [storyId, story] of Object.entries(transformedData.stories)) {
+      for (const [storyId, story] of Object.entries(extractedData.stories)) {
         const componentId = (story as any).componentId;
         expect(componentId).toBeDefined();
-        expect(transformedData.components[componentId]).toBeDefined();
+        expect(extractedData.components[componentId]).toBeDefined();
       }
     });
   });
 
   describe('Schema Compliance', () => {
     it('should validate against pendrop.theme.json', async () => {
-      const transformedPath = join(__dirname, '../fixtures/penpot-transformed.json');
-      const transformedContent = await readFile(transformedPath, 'utf-8');
-      const transformedData = JSON.parse(transformedContent);
+      const extractedPath = join(__dirname, '../fixtures/penpot-extracted.json');
+      const extractedContent = await readFile(extractedPath, 'utf-8');
+      const extractedData = JSON.parse(extractedContent);
 
-      const result = await validator.validate(transformedData, 'ds');
+      const result = await validator.validate(extractedData, 'ds');
 
       expect(result.valid).toBe(true);
       expect(result.errors).toBeUndefined();
     });
 
     it('should have valid W3C DTCG token structure', async () => {
-      const transformedPath = join(__dirname, '../fixtures/penpot-transformed.json');
-      const transformedContent = await readFile(transformedPath, 'utf-8');
-      const transformedData = JSON.parse(transformedContent);
+      const extractedPath = join(__dirname, '../fixtures/penpot-extracted.json');
+      const extractedContent = await readFile(extractedPath, 'utf-8');
+      const extractedData = JSON.parse(extractedContent);
 
       // Check all tokens have W3C DTCG structure
-      for (const [category, tokens] of Object.entries(transformedData.tokens)) {
+      for (const [category, tokens] of Object.entries(extractedData.tokens)) {
         for (const [name, token] of Object.entries(tokens as any)) {
           if (typeof token === 'object' && token !== null && '$value' in token) {
             expect(token).toHaveProperty('$value');
