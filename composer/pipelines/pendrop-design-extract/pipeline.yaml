@@ -1,0 +1,27 @@
+---
+version: "1.0"
+description: "Design System Extraction Pipeline"
+
+steps:
+  init:
+    description: "Initialization and Global Context"
+  
+  extract-source:
+    description: "Extract Source Data"
+    dependencies: ["init"]
+
+  transform-tokens:
+    description: "Transform Tokens"
+    dependencies: ["extract-source"]
+
+  transform-components:
+    description: "Transform Components"
+    dependencies: ["transform-tokens"]
+
+  transform-stories:
+    description: "Transform Stories"
+    dependencies: ["transform-components"]
+
+  summary:
+    description: "Execution Summary"
+    dependencies: ["transform-stories"]
