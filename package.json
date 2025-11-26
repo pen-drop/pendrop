@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "validate:schemas": "ajv compile -s \"schemas/*.json\" --spec=draft7 -c ajv-formats",
-        "validate:yaml": "yamllint rules/**/*.yaml",
+        "validate:yaml": "yamllint pipelines/**/*.yaml",
         "mcp:test": "npm --prefix tools/mcp-client start --"
     },
     "devDependencies": {
