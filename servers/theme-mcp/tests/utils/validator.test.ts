@@ -40,17 +40,23 @@ describe('PendropValidator', () => {
       expect(result.errors).toBeUndefined();
     });
 
-    it('should reject data missing required properties', async () => {
-      const invalidData = {
-        tokens: {},
-        // Missing components and stories
+    it('should accept data with only tokens (components and stories are optional)', async () => {
+      const validData = {
+        tokens: {
+          color: {
+            primary: {
+              $value: '#007bff',
+              $type: 'color',
+            },
+          },
+        },
+        // components and stories are optional per schema
       };
 
-      const result = await validator.validate(invalidData, 'ds');
+      const result = await validator.validate(validData, 'ds');
 
-      expect(result.valid).toBe(false);
-      expect(result.errors).toBeDefined();
-      expect(result.errors!.length).toBeGreaterThan(0);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeUndefined();
     });
 
     it('should reject invalid token format', async () => {

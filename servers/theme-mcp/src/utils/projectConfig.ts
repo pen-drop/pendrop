@@ -19,15 +19,14 @@ export interface PendropConfig {
   };
   rules?: {
     custom_rules_path?: string;
-    extraction?: {
-      [tool: string]: string; // Maps tool name to package path/name
-    };
+    extraction?: string; // Package path/name (e.g., 'pendrop-penpot' or './design/my-rules')
     conventions?: Record<string, unknown>;
   };
 }
 
 /**
  * Load pendrop.yml configuration from project root
+ * @param projectPath - Path to the directory containing pendrop.yml (project root)
  */
 export async function loadPendropConfig(projectPath: string): Promise<PendropConfig> {
   const configPath = join(projectPath, 'pendrop.yml');

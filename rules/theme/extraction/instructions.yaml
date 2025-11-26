@@ -1,0 +1,78 @@
+---
+version: "1.0"
+
+# Global instruction template for AI extraction workflow
+# Template variables: {{source_tool}}, {{design_url}}, {{project_path}}, {{output_path}}, {{target_schema}}, etc.
+# Tool-specific parts are loaded from pendrop-{tool}/instructions.yaml
+
+instructions: |
+  # Design System Extraction Instructions
+
+  You are extracting and transforming a {{source_tool}} design file to Pendrop's design system format.
+
+  ## Step 1: Extract Source Data
+
+  {{tool_specific_extraction_instructions}}
+
+  ## Step 2: Transform Data
+
+  Transform the raw data to `pendrop.theme.json` format following these rules:
+
+  ### Target Schema
+
+  Your output must match this schema:
+
+  ```json
+  {{target_schema}}
+  ```
+
+  ### Extraction Rules
+
+  {{extraction_rules}}
+
+  ### Process per Type
+
+  You must process each type (Tokens, Components, Stories) sequentially and save the results after each step.
+
+  **Use allways:**
+
+  ```
+  theme-mcp.save_design_data({
+    data: <tokens_data>,
+    project_path: "{{project_path}}"
+  })
+  ```
+  #### 1. Tokens
+
+  {{tokens_instructions}}
+
+
+
+  #### 2. Components
+
+  {{components_instructions}}
+
+
+  #### 3. Stories
+
+  {{stories_instructions}}
+
+
+  ### Naming Conventions
+
+  - Tokens: {{naming_tokens}}
+  - Components: {{naming_components}}
+  - Props: {{naming_props}}
+
+  ### Examples
+
+  {{examples}}
+
+  ## Summary
+
+  1. Extract from {{source_tool}}-mcp
+  2. Process Tokens -> Validate -> Save
+  3. Process Components -> Validate -> Save
+  4. Process Stories -> Validate -> Save
+
+  Execute these steps sequentially now.

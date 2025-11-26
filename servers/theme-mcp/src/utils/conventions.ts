@@ -61,7 +61,8 @@ export async function loadConventions(
   const { target, rulesPath, projectRules } = config;
   
   // 1. Load target conventions (built-in)
-  const targetPath = join(rulesPath, 'theme', 'targets', target, `${conventionType}.yaml`);
+  // rulesPath already points to rules/theme, so just append targets
+  const targetPath = join(rulesPath, 'targets', target, `${conventionType}.yaml`);
   const targetConventions = await loadConventionFile(targetPath) || {};
   
   // 2. Load project-specific conventions (if provided)

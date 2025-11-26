@@ -3,53 +3,110 @@
  * Saves validated design data to project
  */
 
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, readFile } from 'fs/promises';
 import { join, dirname } from 'path';
-import { loadPendropConfig, resolvePaths } from '../utils/projectConfig.js';
-import { loadConventions } from '../utils/conventions.js';
+import { setLoggerProjectPath } from '../utils/mcpLogger.js';
+import { PendropValidator } from '../utils/validator.js';
 
 export interface SaveDesignDataParams {
-  data: unknown;
-  project_path: string;
+  data: Record<string, unknown>;
+  project_path: string; // Path to directory containing pendrop.yml (project root)
+  type: 'tokens' | 'components' | 'stories';
+  dryrun?: boolean; // If true, only validate without saving
 }
 
 export interface SaveDesignDataResult {
   success: boolean;
-  path: string;
-  message: string;
+  path?: string;
+  output_path?: string;
+  message?: string;
+  error?: string;
+  valid?: boolean;
+  errors?: Array<{
+    path: string;
+    message: string;
+    expected?: string;
+  }>;
 }
 
 export async function saveDesignData(
   params: SaveDesignDataParams
 ): Promise<SaveDesignDataResult> {
-  const { data, project_path } = params;
+  const { data, project_path, type, dryrun = false } = params;
   
-  // Load config
-  const pendropConfig = await loadPendropConfig(project_path);
+  // Set project path for logger
+  setLoggerProjectPath(project_path);
   
-  // Resolve output path
-  const conventions = await loadConventions({
-    target: pendropConfig.project.type,
-    rulesPath: '../../rules/theme',
-    projectRules: pendropConfig.rules?.custom_rules_path
-  });
-  const resolvedConventions = resolvePaths(
-    conventions,
-    pendropConfig.project.theme
-  );
+  // Fixed output path as per rules
+  const outputPath = join(project_path, '.pendrop/dist/pendrop.data.ds.json');
   
-  const outputPath = join(project_path, (resolvedConventions.paths as Record<string, string>).design_data || '.pendrop/dist/pendrop.data.ds.json');
+  // Ensure directory exists (only if not dryrun)
+  if (!dryrun) {
+    await mkdir(dirname(outputPath), { recursive: true });
+  }
+
+  // Read existing file or initialize
+  let content: Record<string, unknown> = {};
+  try {
+    const fileContent = await readFile(outputPath, 'utf-8');
+    content = JSON.parse(fileContent);
+  } catch (error) {
+    // File doesn't exist or is invalid, start with empty object
+    content = {};
+  }
+
+  // Initialize the type section if it doesn't exist
+  if (!content[type]) {
+    content[type] = {};
+  }
+
+  // Merge new data into the specific section
+  // We assume data is a map of ID -> Item (e.g., { "button": { ... } })
+  const existingSection = content[type];
+  if (typeof existingSection === 'object' && existingSection !== null && !Array.isArray(existingSection)) {
+    content[type] = {
+      ...existingSection,
+      ...data
+    };
+  } else {
+    content[type] = data;
+  }
   
-  // Ensure directory exists
-  await mkdir(dirname(outputPath), { recursive: true });
+  // Always validate the merged content before saving
+  const validator = new PendropValidator();
+  const validation = await validator.validate(content, 'ds');
   
-  // Write file
-  await writeFile(outputPath, JSON.stringify(data, null, 2), 'utf-8');
+  if (!validation.valid) {
+    // Validation failed - return error without saving
+    return {
+      success: false,
+      valid: false,
+      errors: validation.errors,
+      error: `Validation failed. Fix these errors and try again:\n${
+        validation.errors?.map(e => `  - ${e.path}: ${e.message}`).join('\n')
+      }`,
+      message: `✗ Validation failed for design system data (${type})`
+    };
+  }
+  
+  // If dryrun is true, return validation result without saving
+  if (dryrun) {
+    return {
+      success: true,
+      valid: true,
+      message: `✓ Design system data (${type}) is valid (dryrun mode - not saved)`
+    };
+  }
+  
+  // Validation succeeded - write file
+  await writeFile(outputPath, JSON.stringify(content, null, 2), 'utf-8');
   
   return {
     success: true,
     path: outputPath,
-    message: `✓ Design system data saved to ${outputPath}`
+    output_path: outputPath,
+    valid: true,
+    message: `✓ Design system data (${type}) saved/merged to ${outputPath}`
   };
 }
 
@@ -58,20 +115,30 @@ export async function saveDesignData(
  */
 export const saveDesignDataTool = {
   name: 'save_design_data',
-  description: 'Save validated design data to .pendrop/dist/',
+  description: 'Save validated design data to .pendrop/dist/. Always validates before saving. If dryrun is true, only validates without saving.',
   inputSchema: {
     type: 'object',
     properties: {
       data: { 
         type: 'object',
-        description: 'The validated design data to save'
+        description: 'The validated design data fragment to save (map of ID -> Item)'
       },
       project_path: { 
         type: 'string',
         description: 'Path to the project root'
+      },
+      type: {
+        type: 'string',
+        enum: ['tokens', 'components', 'stories'],
+        description: 'The type of data being saved (components, tokens, stories)'
+      },
+      dryrun: {
+        type: 'boolean',
+        default: false,
+        description: 'If true, only validate without saving'
       }
     },
-    required: ['data', 'project_path']
+    required: ['data', 'project_path', 'type']
   }
 };
 

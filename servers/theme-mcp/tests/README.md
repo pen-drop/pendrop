@@ -8,13 +8,13 @@ Comprehensive test suite for the AI-orchestrated design system extraction workfl
 tests/
 ├── fixtures/                    # Test data
 │   ├── penpot-raw.json          # Raw Penpot design file
-│   └── penpot-transformed.json  # Expected extraction output
+│   └── penpot-extracted.json  # Expected extraction output
 ├── utils/                       # Unit tests for utilities
 │   ├── validator.test.ts        # Schema validation tests
-│   ├── transformRules.test.ts   # Transform rules loader tests
+│   ├── extractionRules.test.ts # Extraction rules loader tests
 │   └── schemaLoader.test.ts     # Schema loader tests
 ├── tools/                       # Unit tests for tools
-│   └── transformInstructions.test.ts  # Extraction instructions tests
+│   └── extract.test.ts         # Extract design tool tests
 └── integration/                 # Integration tests
     └── workflow.test.ts         # End-to-end workflow tests
 ```
@@ -49,7 +49,7 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Reports multiple errors
 - ✓ Caches schemas for performance
 
-**Transform Rules Tests** (`utils/transformRules.test.ts`)
+**Extraction Rules Tests** (`utils/extractionRules.test.ts`)
 - ✓ Loads built-in Penpot extraction rules
 - ✓ Loads built-in Figma extraction rules
 - ✓ Validates source matches tool
@@ -57,7 +57,7 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Includes optional hints
 - ✓ Loads example extractions
 - ✓ Throws error for NPM packages (not yet supported)
-- ✓ Validates transform rules structure
+- ✓ Validates extraction rules structure
 
 **Schema Loader Tests** (`utils/schemaLoader.test.ts`)
 - ✓ Loads design system schema
@@ -66,7 +66,7 @@ npx vitest run tests/utils/validator.test.ts
 - ✓ Throws error for invalid schema type
 - ✓ Loads schema with all required properties
 
-**Transform Instructions Tests** (`tools/transformInstructions.test.ts`)
+**Extract Design Tests** (`tools/extract.test.ts`)
 - ✓ Returns comprehensive instructions
 - ✓ Includes extraction rules
 - ✓ References W3C DTCG format
@@ -79,7 +79,7 @@ npx vitest run tests/utils/validator.test.ts
 - Token extraction and validation
 - Component extraction and validation
 - Story generation and validation
-- Data flow verification (raw → transformed)
+- Data flow verification (raw → extracted)
 - Component relationship preservation
 - Story-component linking
 - Schema compliance
@@ -111,28 +111,20 @@ Structure:
 }
 ```
 
-### Transformed Data (`fixtures/penpot-transformed.json`)
+### Extracted Data (`fixtures/penpot-extracted.json`)
 
-Expected output in `pendrop.schema.ds.json` format:
+Expected output in `pendrop.theme.json` format:
 - **W3C DTCG tokens**: Colors, spacing, typography
 - **Components**: Button, Card with full prop definitions
 - **Stories**: Multiple variants per component
 
 ## Known Issues
 
-### Jest + ESM Configuration
+### TypeScript Linter Warnings
 
-Some tests currently fail due to Jest's handling of `import.meta` with Node16 module resolution:
+The TypeScript linter may show errors for Node.js built-in modules (`fs/promises`, `path`, `url`) in test files, but these are false positives. Vitest correctly resolves these modules at runtime, and all tests pass successfully.
 
-```
-SyntaxError: Cannot use 'import.meta' outside a module
-```
-
-**Status**: Known Jest limitation with hybrid ESM/CommonJS modules
-
-**Workaround**: Tests that don't depend on `import.meta` (like `transformInstructions.test.ts`) pass successfully
-
-**Resolution**: Will be fixed in future Jest versions or by refactoring to avoid `import.meta`
+**Status**: Cosmetic issue only - all tests pass ✅
 
 ## Test Philosophy
 
@@ -147,7 +139,7 @@ SyntaxError: Cannot use 'import.meta' outside a module
 ### Unit Test Template
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { yourFunction } from '../../src/path/to/module.js';
 
 describe('Your Function', () => {
@@ -161,9 +153,13 @@ describe('Your Function', () => {
 ### Integration Test Template
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 describe('Your Workflow', () => {
   it('should complete workflow', async () => {
@@ -178,7 +174,6 @@ describe('Your Workflow', () => {
 
 ## Future Improvements
 
-- [ ] Fix Jest ESM configuration for full test suite
 - [ ] Add tests for `generate_component` and `generate_story` tools
 - [ ] Add tests for `save_design_data` tool
 - [ ] Add Figma-specific test fixtures
@@ -191,7 +186,7 @@ describe('Your Workflow', () => {
 - **Total Tests**: 30+ test cases
 - **Test Files**: 5
 - **Test Coverage**: Core functionality covered
-- **Passing Tests**: 5 (transformInstructions suite)
+- **Passing Tests**: 46 tests across 5 test files
 - **Build Status**: ✅ TypeScript compilation successful
 
 ## Contributing

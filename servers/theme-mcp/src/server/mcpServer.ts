@@ -26,20 +26,11 @@ import {
   type GenerateStoryParams,
 } from '../tools/generate.js';
 import {
-  getExtractionInstructions,
-  extractDesignSystemTool,
-  type ExtractDesignSystemParams,
-} from '../tools/extractionInstructions.js';
-import {
-  validateDesignData,
-  validateDesignDataTool,
-  type ValidateDesignDataParams,
-} from '../tools/validate.js';
-import {
   saveDesignData,
   saveDesignDataTool,
   type SaveDesignDataParams,
 } from '../tools/save.js';
+import { initLogger } from '../utils/mcpLogger.js';
 
 // Server state
 let config: ThemeMcpConfig;
@@ -57,6 +48,20 @@ async function initialize() {
   const configPath = process.env.THEME_MCP_CONFIG;
   config = await loadConfig(configPath);
   
+  // Initialize MCP logger
+  const logEnabled = process.env.THEME_MCP_LOG_ENABLED !== 'false';
+  const logToConsole = process.env.THEME_MCP_LOG_CONSOLE !== 'false';
+  const logToFile = process.env.THEME_MCP_LOG_FILE !== 'false';
+  const logLevel = (process.env.THEME_MCP_LOG_LEVEL as 'all' | 'errors' | 'summary') || 'all';
+  
+  initLogger({
+    enabled: logEnabled,
+    logToFile,
+    logToConsole,
+    logLevel,
+    // projectPath will be set per-request via setLoggerProjectPath()
+  });
+  
   // Load conventions for the target
   conventions = await loadAllConventions({
     target: config.target,
@@ -68,6 +73,9 @@ async function initialize() {
   console.error(`Target: ${config.target}`);
   console.error(`Rules path: ${config.rulesPath}`);
   console.error(`Project rules: ${config.projectRules || 'none'}`);
+  if (logEnabled) {
+    console.error(`MCP logging: ${logToConsole ? 'console' : ''} ${logToFile ? 'file (.pendrop/logs/log.json relative to project root)' : ''} [${logLevel}]`);
+  }
 }
 
 /**
@@ -81,7 +89,7 @@ export async function startServer(): Promise<void> {
   const server = new Server(
     {
       name: 'theme-mcp',
-      version: '0.1.0',
+      version: '0.1.1', // Bumped version to trigger Cursor reload
     },
     {
       capabilities: {
@@ -94,10 +102,8 @@ export async function startServer(): Promise<void> {
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
       tools: [
-        extractDesignSystemTool,
-        validateDesignDataTool,
-        saveDesignDataTool,
         extractDesignTool,
+        saveDesignDataTool,
         generateComponentTool,
         generateStoryTool,
       ],
@@ -110,24 +116,10 @@ export async function startServer(): Promise<void> {
 
     try {
       switch (name) {
-        case 'extract_design_system': {
-          const result = await getExtractionInstructions(
-            args as unknown as ExtractDesignSystemParams
-          );
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
+        case 'extract_design': {
+          // Map fileUrl to design_url for compatibility with external MCP wrappers
 
-        case 'validate_design_data': {
-          const result = await validateDesignData(
-            args as unknown as ValidateDesignDataParams
-          );
+          const result = await extractDesign(args as unknown as ExtractDesignParams);
           return {
             content: [
               {
@@ -142,18 +134,6 @@ export async function startServer(): Promise<void> {
           const result = await saveDesignData(
             args as unknown as SaveDesignDataParams
           );
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
-        case 'extract_design': {
-          const result = await extractDesign(args as unknown as ExtractDesignParams, config);
           return {
             content: [
               {
