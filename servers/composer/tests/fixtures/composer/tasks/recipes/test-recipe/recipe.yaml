@@ -1,0 +1,16 @@
+---
+version: "1.0"
+pipeline: test-pipeline
+
+variables:
+  global_var: "Global"
+  target_schema: "fake_schema" # Usually overridden or injected
+
+tasks:
+  step1:
+    variables:
+      step1_instructions: "Do step 1 task."
+  
+  step2:
+    variables:
+      step2_instructions: "Do step 2 task."

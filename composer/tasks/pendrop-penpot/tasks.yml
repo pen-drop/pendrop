@@ -1,0 +1,189 @@
+---
+version: "1.0"
+source: penpot
+pipeline: pendrop-design-extract
+
+variables:
+  source_tool: "penpot"
+  extraction_rules: |
+    - Objects named "token" or "design-system" are likely tokens
+    - Page names provide context ("Tokens" page, "Components" page)
+    - Look for naming patterns (e.g., "btn-primary", "card-header")
+    - Component instances reference main components
+    - Always include the `$schema` property in your output
+    - Ensure all required properties are present per the schema
+    - Validate token references in components exist in the tokens section
+  
+  naming_tokens: "kebab-case"
+  naming_components: "kebab-case"
+  naming_props: "camelCase"
+  
+  examples: |
+    No examples provided.
+
+steps:
+  init:
+    template: |
+      # Design System Extraction Instructions
+
+      You are extracting and transforming a {{source_tool}} design file to Pendrop's design system format.
+
+      Transform the raw data to `pendrop.theme.json` format following these rules:
+
+      ### Target Schema
+
+      Your output must match this schema:
+
+      ```json
+      {{target_schema}}
+      ```
+
+      ### Extraction Rules
+
+      {{extraction_rules}}
+
+      ### Naming Conventions
+
+      - Tokens: {{naming_tokens}}
+      - Components: {{naming_components}}
+      - Props: {{naming_props}}
+
+      ### Examples
+
+      {{examples}}
+
+      **Use allways:**
+
+      ```
+      theme-mcp.save_design_data({
+        data: <data>,
+        type: "<type>",
+        project_path: "{{project_path}}"
+      })
+      ```
+      Where <type> is one of: tokens, components, stories.
+
+  extract-source:
+    template: |
+      ## Step 1: Extract Source Data
+
+      {{tool_specific_extraction_instructions}}
+
+  transform-tokens:
+    template: |
+      #### 1. Tokens
+
+      Extract design tokens in W3C DTCG format:
+
+      fetch tokens_data from: 
+      ```
+      penpot-mcp.get_tokens({
+        design_url: "{{design_url}}"
+      })
+      ```
+      save tokens_data with type tokens including tokensLib
+      
+      ```
+      **Color Tokens:**
+      - Source: Objects with `fills[]` or `strokes[]`
+      - Extract: `fillColor` or `strokeColor` values
+      - Naming: Use object names if they suggest tokens (e.g., "primary-color")
+      - Format:
+        ```json
+        {
+          "color": {
+            "primary": {
+              "$value": "#007bff",
+              "$type": "color",
+              "$description": "Primary brand color"
+            }
+          }
+        }
+        ```
+      
+      **Spacing Tokens:**
+      - Source: Objects named "spacing", "gap", "padding", "margin"
+      - Extract: width or height values
+      - Format:
+        ```json
+        {
+          "spacing": {
+            "md": {
+              "$value": "16px",
+              "$type": "dimension"
+            }
+          }
+        }
+        ```
+
+      **Typography Tokens:**
+      - Source: Text objects with font properties
+      - Extract: fontFamily, fontSize, fontWeight, lineHeight
+      - Group by semantic names (e.g., "body", "heading")
+      - Format:
+        ```json
+        {
+          "typography": {
+            "fontFamily": {
+              "base": {
+                "$value": "Inter, sans-serif",
+                "$type": "fontFamily"
+              }
+            }
+          }
+        }
+        ```
+
+  transform-components:
+    template: |
+      #### 2. Components
+
+      Extract component definitions:
+
+      **Finding Components:**
+      - Use penpot-mcp.search_object to find components with the query "[Component]"
+      - Extract object tree with pendrop:penpot-mcp.get_object_tree.
+      - Main components have meaningful names (Button, Card, Header, etc.)
+
+      **For Each Component:**
+      - Convert the component to defined structure in repository_root/schemas/pendrop.theme.json #/definitions/component
+      - description: Purpose or usage
+      - props: Each variant has seperate prop variants. Add each of this variants as a prop. Ignore state props. 
+      - check #/definitions/component { repository_root/schemas/pendrop.theme.json } for the correct structure
+      - variants: Each variant has seperate prop variant in penpot. Add each of this variants as a variant subkey in the pendrop component. Ignore state variants. 
+
+  transform-stories:
+    template: |
+      #### 3. Stories
+
+      For each component, generate story variants:
+
+      - **Default Story**: Base component state
+      - **Enum Variants**: One story per enum value
+      - **State Variants**: Disabled, loading, error states
+      - **Content Variants**: Different content examples
+
+      Example:
+      ```json
+      {
+        "button": {
+          "componentId": "button",
+          "variants": [
+            { "name": "Default", "props": { "label": "Click me" } },
+            { "name": "Primary", "props": { "variant": "primary", "label": "Primary" } },
+            { "name": "Disabled", "props": { "disabled": true, "label": "Disabled" } }
+          ]
+        }
+      }
+      ```
+
+  summary:
+    template: |
+      ## Summary
+
+      1. Extract from {{source_tool}}-mcp
+      2. Process Tokens -> Validate -> Save
+      3. Process Components -> Validate -> Save
+      4. Process Stories -> Validate -> Save
+
+      Execute these steps sequentially now.

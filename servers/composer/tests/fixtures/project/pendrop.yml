@@ -1,0 +1,7 @@
+pipelines:
+  design-extract:
+    tasks: test-recipe
+    variables:
+      step1_instructions: "Do step 1 task."
+      step2_instructions: "Do step 2 task."
+      design_url: "http://example.com"
