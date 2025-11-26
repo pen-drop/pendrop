@@ -17,11 +17,15 @@ export interface ValidationResult {
 }
 
 export class PendropValidator {
-  private ajv: Ajv;
+  // Ajv instance - using any due to ESM import type issues with ajv v8
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private ajv: any;
   private schemas: Map<string, Schema>;
 
   constructor() {
-    this.ajv = new Ajv({ allErrors: true, verbose: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const AjvClass = Ajv as any;
+    this.ajv = new AjvClass({ allErrors: true, verbose: true });
     this.schemas = new Map();
   }
 

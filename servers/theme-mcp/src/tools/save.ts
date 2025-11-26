@@ -62,10 +62,15 @@ export async function saveDesignData(
 
   // Merge new data into the specific section
   // We assume data is a map of ID -> Item (e.g., { "button": { ... } })
-  content[type] = {
-    ...content[type],
-    ...data
-  };
+  const existingSection = content[type];
+  if (typeof existingSection === 'object' && existingSection !== null && !Array.isArray(existingSection)) {
+    content[type] = {
+      ...existingSection,
+      ...data
+    };
+  } else {
+    content[type] = data;
+  }
   
   // Always validate the merged content before saving
   const validator = new PendropValidator();
