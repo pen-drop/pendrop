@@ -1,15 +1,18 @@
 ---
-version: "1.0"
-description: "Test Pipeline"
+variables:
+  pipeline_var: "pipeline_value"
+
+assets:
+  pipeline_asset:
+    path: "{{project_path}}/pipeline-asset.json"
+    writeable: false
 
 steps:
   header:
-    description: "Header Step"
-  
+    description: "Header step"
   step1:
-    description: "First Step"
+    description: "Step 1"
     dependencies: ["header"]
-
   step2:
-    description: "Second Step"
+    description: "Step 2"
     dependencies: ["step1"]

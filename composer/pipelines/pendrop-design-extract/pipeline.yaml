@@ -1,6 +1,7 @@
 ---
-version: "1.0"
-description: "Design System Extraction Pipeline"
+variables: {}
+
+assets: {}
 
 steps:
   init:
@@ -10,18 +11,18 @@ steps:
     description: "Extract Source Data"
     dependencies: ["init"]
 
-  transform-tokens:
-    description: "Transform Tokens"
+  extract-tokens:
+    description: "Extract design tokens from Design Tool and convert to schema format"
     dependencies: ["extract-source"]
 
-  transform-components:
-    description: "Transform Components"
-    dependencies: ["transform-tokens"]
+  extract-components:
+    description: "Extract components from Design Tool and convert to schema format"
+    dependencies: ["extract-tokens"]
 
-  transform-stories:
-    description: "Transform Stories"
-    dependencies: ["transform-components"]
+  extract-stories:
+    description: "Extract stories from Design Tool and convert to schema format"
+    dependencies: ["extract-components"]
 
   summary:
     description: "Execution Summary"
-    dependencies: ["transform-stories"]
+    dependencies: ["extract-stories"]

@@ -1,6 +1,7 @@
 import { loadPipeline } from './utils/pipelineLoader.js';
 import { loadTasks } from './utils/tasksLoader.js';
 import { loadPendropConfig } from './utils/projectConfig.js';
+import { loadMergedConfig } from './utils/configLoader.js';
 import { getRepositoryRoot } from './utils/paths.js';
 
 export interface ComposeParams {
@@ -91,24 +92,24 @@ export async function composePipeline(params: ComposeParams): Promise<ComposeRes
   }
 
   const tasksPackage = pipelineConfig.tasks;
-  const configVariables = pipelineConfig.variables || {};
 
-  // 3. Load Tasks & Pipeline
+  // 3. Load merged config (assets and variables from all sources)
+  const mergedConfig = await loadMergedConfig(project_path, pipeline, tasksPackage);
+
+  // 4. Load Tasks & Pipeline
   const tasksData = await loadTasks(tasksPackage, repoRoot);
   
   // The tasks define which pipeline definition to use
   const pipelineData = await loadPipeline(tasksData.pipeline, repoRoot);
 
-  // 4. Resolve Steps
+  // 5. Resolve Steps
   const stepsToRun = resolveSteps(pipelineData.steps, step);
 
-  // 5. Base Variables (Global)
-  // Priority: Runtime > Pendrop.yml Pipeline Vars > Tasks Global Vars
+  // 6. Base Variables (Global)
+  // Priority: Runtime > Merged Config Variables
   const baseVariables: Record<string, any> = {
     project_path,
-    target_schema: JSON.stringify(pipelineData.schema, null, 2),
-    ...tasksData.variables,
-    ...configVariables,
+    ...mergedConfig.variables,
     ...variables
   };
 

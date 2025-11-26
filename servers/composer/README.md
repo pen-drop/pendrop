@@ -44,8 +44,8 @@ Returns INSTRUCTIONS:
 AI executes instructions:
   → Calls extraction MCPs (penpot-mcp, figma-mcp, etc.)
   → Transforms data using AI
-  → Validates with theme-mcp
-  → Saves with theme-mcp
+  → Extracts schemas using composer.extract_asset
+  → Saves with composer.save_asset
 ```
 
 ## Installation & Build
@@ -64,6 +64,19 @@ npm run build
 ```
 
 The built server will be available at `dist/index.js`.
+
+## Environment Variables
+
+### `PENDROP_REPO_ROOT`
+
+Override the repository root directory detection. Set this to the absolute path of the Pendrop repository root if the auto-detection fails (e.g., when running the MCP server from a different working directory).
+
+**Example:**
+```bash
+export PENDROP_REPO_ROOT=/home/cw/projects/pendrop
+```
+
+If not set, the server will automatically detect the repository root by traversing up from the current working directory until it finds both `composer/` and `servers/` directories.
 
 ## Configuration
 
@@ -84,19 +97,30 @@ pipelines:
 **Pipeline Configuration:**
 - `pipelines`: Object mapping pipeline names to their configurations
   - `tasks`: Name of the task package (e.g., `pendrop-penpot`) - must exist in `composer/tasks/`
+  - `assets`: Asset definitions (URLs or paths with variable support)
   - `variables`: Key-value pairs of variables to substitute in templates
+
+**Assets:**
+Assets can be defined at root level, pipeline level, in `pipeline.yaml`, or in `tasks.yml`. Assets support:
+- `url`: HTTP/HTTPS URL to fetch from
+- `path`: Local file path (supports `{{variables}}`)
+- `writeable`: Whether the asset can be written to
+- `schema`: Optional schema URL for validation
 
 **Variable Substitution:**
 Variables use `{{variable_name}}` syntax in task templates. The composer automatically substitutes:
-- Variables from `pendrop.yml` pipeline configuration
+- Variables from `pendrop.yml` (root and pipeline level)
+- Variables from `pipeline.yaml`
 - Variables from task package defaults
 - Runtime variables (passed when calling the tool)
-- Built-in variables: `project_path`, `target_schema`
+- Built-in variables: `project_path`
 
-**Variable Priority (highest to lowest):**
+**Variable and Asset Priority (highest to lowest):**
 1. Runtime variables (passed to `compose_pipeline`)
-2. Pipeline variables (from `pendrop.yml`)
-3. Task variables (from `composer/tasks/<package>/tasks.yml`)
+2. Root assets/variables (from `pendrop.yml` root)
+3. Pipeline assets/variables (from `pendrop.yml` pipeline)
+4. Pipeline YAML assets/variables (from `composer/pipelines/<name>/pipeline.yaml`)
+5. Task assets/variables (from `composer/tasks/<package>/tasks.yml`)
 
 ## Usage
 
@@ -276,14 +300,13 @@ npm run mcp:test -- --server composer compose_pipeline \
 ### Task Packages (`composer/tasks/<package>/tasks.yml`)
 
 Task packages define:
+- **Assets**: Optional asset definitions
 - **Variables**: Default variables for the pipeline
 - **Steps**: Step templates with `{{variable}}` placeholders
 - **Pipeline reference**: Which pipeline definition to use
 
 **Example:**
 ```yaml
-version: "1.0"
-source: penpot
 pipeline: pendrop-design-extract
 
 variables:
@@ -291,6 +314,8 @@ variables:
   extraction_rules: |
     - Objects named "token" are likely tokens
     - Look for naming patterns
+
+assets: {}
 
 steps:
   init:
@@ -305,12 +330,17 @@ steps:
 
 Pipeline definitions define:
 - **Steps**: Step structure with descriptions and dependencies
-- **Schema**: Target schema for validation (loaded from `schema.json`)
+- **Assets**: Optional asset definitions (URLs or paths)
+- **Variables**: Optional variables
 
 **Example:**
 ```yaml
-version: "1.0"
-description: "Design System Extraction Pipeline"
+variables: {}
+
+assets:
+  schema_url:
+    url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
+    writeable: false
 
 steps:
   init:
@@ -318,10 +348,55 @@ steps:
   extract-source:
     description: "Extract Source Data"
     dependencies: ["init"]
-  transform-tokens:
-    description: "Transform Tokens"
+  extract-tokens:
+    description: "Extract design tokens from Design Tool and convert to schema format"
     dependencies: ["extract-source"]
 ```
+
+### Asset Management
+
+Assets can be defined in `pendrop.yml`, `pipeline.yaml`, or `tasks.yml`. Assets support variable substitution in paths using `{{variable}}` syntax.
+
+**Example asset definitions:**
+```yaml
+assets:
+  schema_url:
+    url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
+    writeable: false
+    schema: null
+  design_data:
+    path: "{{project_path}}/.pendrop/dist/pendrop.data.ds.json"
+    writeable: true
+    schema: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
+```
+
+**Available Tools:**
+
+- `extract_asset`: Extract parts from assets using JSONPath
+  ```javascript
+  composer.extract_asset({
+    asset_id: "schema_url",
+    jsonpath: "$.definitions.component",
+    project_path: "/path/to/project",
+    pipeline: "design-extract",
+    options: { minify: true }
+  })
+  ```
+
+- `save_asset`: Save data to writeable assets with deep merge
+  ```javascript
+  composer.save_asset({
+    asset_id: "design_data",
+    data: { components: {...} },
+    project_path: "/path/to/project",
+    pipeline: "design-extract",
+    options: {
+      merge: true,      // Deep merge with existing data
+      validate: true,   // Validate against schema if provided
+      dryrun: false     // Only validate, don't save
+    }
+  })
+  ```
 
 ## Troubleshooting
 
@@ -353,7 +428,6 @@ steps:
 ## Related Documentation
 
 - [MCP Integration Guide](../../docs/MCP_INTEGRATION.md) - General MCP setup
-- [Theme MCP Server](../theme-mcp/README.md) - Design system orchestration
 - [Penpot MCP Server](../penpot-mcp/README.md) - Penpot integration
 - [MCP Client Tool](../../tools/mcp-client/README.md) - Testing MCP servers
 

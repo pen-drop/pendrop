@@ -1,6 +1,4 @@
 ---
-version: "1.0"
-source: penpot
 pipeline: pendrop-design-extract
 
 variables:
@@ -32,10 +30,14 @@ steps:
 
       ### Target Schema
 
-      Your output must match this schema:
-
-      ```json
-      {{target_schema}}
+      To get the schema, use:
+      ```
+      composer.extract_asset({
+        asset_id: "schema_url",
+        jsonpath: "$",
+        project_path: "{{project_path}}",
+        pipeline: "design-extract"
+      })
       ```
 
       ### Extraction Rules
@@ -52,16 +54,21 @@ steps:
 
       {{examples}}
 
-      **Use allways:**
+      **Use always:**
 
       ```
-      theme-mcp.save_design_data({
+      composer.save_asset({
+        asset_id: "design_data",
         data: <data>,
-        type: "<type>",
-        project_path: "{{project_path}}"
+        project_path: "{{project_path}}",
+        pipeline: "design-extract",
+        options: {
+          merge: true,
+          validate: true
+        }
       })
       ```
-      Where <type> is one of: tokens, components, stories.
+      The asset_id "design_data" should be defined in pendrop.yml assets section.
 
   extract-source:
     template: |
@@ -69,121 +76,148 @@ steps:
 
       {{tool_specific_extraction_instructions}}
 
-  transform-tokens:
+  extract-tokens:
     template: |
-      #### 1. Tokens
+      ## Step: Extract Tokens
 
-      Extract design tokens in W3C DTCG format:
+      Extract design tokens from the Penpot design file and save them in W3C DTCG format.
 
-      fetch tokens_data from: 
-      ```
-      penpot-mcp.get_tokens({
-        design_url: "{{design_url}}"
-      })
-      ```
-      save tokens_data with type tokens including tokensLib
-      
-      ```
-      **Color Tokens:**
-      - Source: Objects with `fills[]` or `strokes[]`
-      - Extract: `fillColor` or `strokeColor` values
-      - Naming: Use object names if they suggest tokens (e.g., "primary-color")
-      - Format:
-        ```json
-        {
-          "color": {
-            "primary": {
-              "$value": "#007bff",
-              "$type": "color",
-              "$description": "Primary brand color"
-            }
-          }
-        }
-        ```
-      
-      **Spacing Tokens:**
-      - Source: Objects named "spacing", "gap", "padding", "margin"
-      - Extract: width or height values
-      - Format:
-        ```json
-        {
-          "spacing": {
-            "md": {
-              "$value": "16px",
-              "$type": "dimension"
-            }
-          }
-        }
-        ```
+      ### Instructions:
 
-      **Typography Tokens:**
-      - Source: Text objects with font properties
-      - Extract: fontFamily, fontSize, fontWeight, lineHeight
-      - Group by semantic names (e.g., "body", "heading")
-      - Format:
-        ```json
-        {
-          "typography": {
-            "fontFamily": {
-              "base": {
-                "$value": "Inter, sans-serif",
-                "$type": "fontFamily"
-              }
-            }
-          }
-        }
-        ```
+      1. **Load tokens from Penpot:**
+         Use the `penpot-mcp.get_tokens` tool to retrieve all tokens from the design file:
+         ```
+         penpot-mcp.get_tokens({
+           file_id: "<file_id>"
+         })
+         ```
+         This returns tokens and tokensLib data from Penpot.
 
-  transform-components:
+      2. **Convert to schema format:**
+         Transform the tokens to match the `pendrop.theme.json` schema structure. The tokens should follow W3C Design Tokens Community Group (DTCG) format with `$value`, `$type`, and optional `$description` properties.
+
+      3. **Save tokens:**
+         Save the converted tokens using the `composer.save_asset` tool:
+         ```
+         composer.save_asset({
+           asset_id: "design_data",
+           data: { tokens: <converted_tokens_data> },
+           project_path: "{{project_path}}",
+           pipeline: "design-extract",
+           options: {
+             merge: true,
+             validate: true
+           }
+         })
+         ```
+         The data should include both tokens and tokensLib from Penpot, converted to the target schema format.
+
+  extract-components:
     template: |
-      #### 2. Components
+      ## Step: Extract Components
 
-      Extract component definitions:
+      Extract component definitions from Penpot by searching for objects with `[component]` in their name, then converting them to the Pendrop component schema format.
 
-      **Finding Components:**
-      - Use penpot-mcp.search_object to find components with the query "[Component]"
-      - Extract object tree with pendrop:penpot-mcp.get_object_tree.
-      - Main components have meaningful names (Button, Card, Header, etc.)
+      ### Instructions:
 
-      **For Each Component:**
-      - Convert the component to defined structure in repository_root/schemas/pendrop.theme.json #/definitions/component
-      - description: Purpose or usage
-      - props: Each variant has seperate prop variants. Add each of this variants as a prop. Ignore state props. 
-      - check #/definitions/component { repository_root/schemas/pendrop.theme.json } for the correct structure
-      - variants: Each variant has seperate prop variant in penpot. Add each of this variants as a variant subkey in the pendrop component. Ignore state variants. 
+      1. **Search for components:**
+         Use the `penpot-mcp.search_object` tool to find all objects with `[component]` in their name:
+         ```
+         penpot-mcp.search_object({
+           file_id: "<file_id>",
+           query: "[component]"
+         })
+         ```
+         This returns a list of component object IDs.
 
-  transform-stories:
+      2. **Load each component:**
+         For each component found, use `penpot-mcp.get_object_tree` to retrieve the full component structure:
+         ```
+         penpot-mcp.get_object_tree({
+           file_id: "<file_id>",
+           object_id: "<component_object_id>",
+           fields: ["tree", "image"]
+         })
+         ```
+
+      3. **Convert to schema format:**
+         Convert each component to match the structure defined in `schemas/pendrop.theme.json#/definitions/component`:
+         - **Props:** Each variant in Penpot has separate prop variants. Extract all variant props and add them as component props. Ignore state props (like "disabled", "loading", etc.).
+         - **Variants:** Each variant in Penpot becomes a variant in the Pendrop component. Ignore state variants (like "disabled", "loading", "error", etc.).
+         - **Description:** Include the component's purpose or usage if available.
+
+      4. **Save components:**
+         Save the converted components using the `composer.save_asset` tool:
+         ```
+         composer.save_asset({
+           asset_id: "design_data",
+           data: { components: <converted_components_data> },
+           project_path: "{{project_path}}",
+           pipeline: "design-extract",
+           options: {
+             merge: true,
+             validate: true
+           }
+         })
+         ```
+         The data should be an object where each key is a component ID and the value matches the component schema structure. 
+
+  extract-stories:
     template: |
-      #### 3. Stories
+      ## Step: Extract Stories
 
-      For each component, generate story variants:
+      Extract story definitions from Penpot by searching for objects with `[story]` in their name, then converting them to the Pendrop story schema format.
 
-      - **Default Story**: Base component state
-      - **Enum Variants**: One story per enum value
-      - **State Variants**: Disabled, loading, error states
-      - **Content Variants**: Different content examples
+      ### Instructions:
 
-      Example:
-      ```json
-      {
-        "button": {
-          "componentId": "button",
-          "variants": [
-            { "name": "Default", "props": { "label": "Click me" } },
-            { "name": "Primary", "props": { "variant": "primary", "label": "Primary" } },
-            { "name": "Disabled", "props": { "disabled": true, "label": "Disabled" } }
-          ]
-        }
-      }
-      ```
+      1. **Search for stories:**
+         Use the `penpot-mcp.search_object` tool to find all objects with `[story]` in their name:
+         ```
+         penpot-mcp.search_object({
+           file_id: "<file_id>",
+           query: "[story]"
+         })
+         ```
+         This returns a list of story object IDs.
+
+      2. **Load each story:**
+         For each story found, use `penpot-mcp.get_object_tree` to retrieve the full story structure:
+         ```
+         penpot-mcp.get_object_tree({
+           file_id: "<file_id>",
+           object_id: "<story_object_id>",
+           fields: ["tree", "image"]
+         })
+         ```
+
+      3. **Convert to schema format:**
+         Convert each story to match the structure defined in `schemas/pendrop.theme.json#/definitions/story`:
+         - **componentId:** Reference to the component this story belongs to
+         - **variants:** Array of story variants, each with a `name` and `props` object
+         - **Props:** Create props based on the props in the component. The prop named "variant" is always a variant in the target schema of the design (references a component variant name).
+
+      4. **Save stories:**
+         Save the converted stories using the `composer.save_asset` tool:
+         ```
+         composer.save_asset({
+           asset_id: "design_data",
+           data: { stories: <converted_stories_data> },
+           project_path: "{{project_path}}",
+           pipeline: "design-extract",
+           options: {
+             merge: true,
+             validate: true
+           }
+         })
+         ```
+         The data should be an object where each key is a story ID and the value matches the story schema structure with `componentId` and `variants` array.
 
   summary:
     template: |
       ## Summary
 
-      1. Extract from {{source_tool}}-mcp
-      2. Process Tokens -> Validate -> Save
-      3. Process Components -> Validate -> Save
-      4. Process Stories -> Validate -> Save
+      1. Extract tokens from {{source_tool}}-mcp -> Convert -> Validate -> Save
+      2. Extract components from {{source_tool}}-mcp -> Convert -> Validate -> Save
+      3. Extract stories from {{source_tool}}-mcp -> Convert -> Validate -> Save
 
       Execute these steps sequentially now.

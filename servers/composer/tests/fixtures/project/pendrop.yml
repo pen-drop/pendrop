@@ -1,6 +1,17 @@
+assets:
+  schema_url:
+    path: "{{project_path}}/schema.json"
+    writeable: false
+    schema: null
+
 pipelines:
   design-extract:
     tasks: test-recipe
+    assets:
+      design_data:
+        path: "{{project_path}}/design-data.json"
+        writeable: true
+        schema: "{{project_path}}/schema.json"
     variables:
       step1_instructions: "Do step 1 task."
       step2_instructions: "Do step 2 task."

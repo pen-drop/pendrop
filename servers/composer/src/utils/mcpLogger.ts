@@ -188,8 +188,8 @@ async function logToFile(entry: McpLogEntry): Promise<void> {
   }
 
   try {
-    // Resolve log directory relative to project root (where pendrop.yml is located)
-    // Logs are stored in <project_root>/.pendrop/logs/log.json
+    // Resolve log directory relative to project path (where pendrop.yml is located)
+    // Logs are stored in <project_path>/.pendrop/logs/log.json
     const logDir = join(config.projectPath, '.pendrop', 'logs');
     await mkdir(logDir, { recursive: true });
     

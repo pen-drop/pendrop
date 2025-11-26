@@ -1,7 +1,0 @@
----
-version: "1.0"
-source: test-tool
-extraction_instructions: "Extracting stuff."
-step1_instructions: "Do step 1."
-naming:
-  tokens: "kebab-case"

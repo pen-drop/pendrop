@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import yaml from 'js-yaml';
+import type { ConfigSection } from '../types/config.js';
 
 export interface PipelineStep {
   id: string;
@@ -8,9 +9,8 @@ export interface PipelineStep {
   dependencies?: string[];
 }
 
-export interface Pipeline {
+export interface Pipeline extends ConfigSection {
   steps: Record<string, PipelineStep>;
-  schema: Record<string, unknown>;
   rawPipeline: Record<string, unknown>;
 }
 
@@ -22,10 +22,8 @@ export interface Pipeline {
 export async function loadPipeline(pipelineName: string, composerRoot: string): Promise<Pipeline> {
   const pipelineDir = join(composerRoot, 'composer/pipelines', pipelineName);
   const pipelinePath = join(pipelineDir, 'pipeline.yaml');
-  const schemaPath = join(pipelineDir, 'schema.json');
 
   let pipelineContent: string;
-  let schemaContent: string;
 
   try {
     pipelineContent = await readFile(pipelinePath, 'utf-8');
@@ -33,14 +31,7 @@ export async function loadPipeline(pipelineName: string, composerRoot: string): 
     throw new Error(`Failed to load pipeline from ${pipelinePath}: ${error}`);
   }
 
-  try {
-    schemaContent = await readFile(schemaPath, 'utf-8');
-  } catch (error) {
-    throw new Error(`Failed to load schema from ${schemaPath}: ${error}`);
-  }
-
   const rawPipeline = yaml.load(pipelineContent) as any;
-  const schema = JSON.parse(schemaContent);
 
   // Validate steps
   const steps: Record<string, PipelineStep> = {};
@@ -56,7 +47,8 @@ export async function loadPipeline(pipelineName: string, composerRoot: string): 
 
   return {
     steps,
-    schema,
+    assets: rawPipeline.assets || {},
+    variables: rawPipeline.variables || {},
     rawPipeline
   };
 }

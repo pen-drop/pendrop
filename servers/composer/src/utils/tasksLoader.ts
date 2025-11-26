@@ -1,10 +1,10 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import yaml from 'js-yaml';
+import type { ConfigSection } from '../types/config.js';
 
-export interface Tasks {
+export interface Tasks extends ConfigSection {
   pipeline: string;
-  variables: Record<string, unknown>;
   steps: Record<string, {
     template: string;
   }>;
@@ -36,6 +36,7 @@ export async function loadTasks(tasksName: string, composerRoot: string): Promis
   return {
     pipeline: rawTasks.pipeline,
     variables: rawTasks.variables || {},
+    assets: rawTasks.assets || {},
     steps: rawTasks.steps || {}
   };
 }

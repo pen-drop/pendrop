@@ -6,13 +6,13 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import yaml from 'js-yaml';
+import type { ConfigSection } from '../types/config.js';
 
-export interface PipelineConfig {
+export interface PipelineConfig extends ConfigSection {
   tasks: string;
-  variables?: Record<string, any>;
 }
 
-export interface PendropConfig {
+export interface PendropConfig extends ConfigSection {
   pipelines?: Record<string, PipelineConfig>; // Pipeline configuration
 }
 
