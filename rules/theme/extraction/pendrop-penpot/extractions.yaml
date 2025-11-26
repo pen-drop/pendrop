@@ -46,7 +46,7 @@ tokens_instructions: |
     design_url: "{{design_url}}"
   })
   ```
-  save tokens_data with type tokens
+  save tokens_data with type tokens including tokensLib
   
   
   ```
@@ -104,39 +104,18 @@ tokens_instructions: |
 components_instructions: |
   Extract component definitions:
 
-  Extract tokens from the the pendrop:penpot-mcp.get_object_tree.
-
   **Finding Components:**
-  - Look for components whicht starts with component:
+  - Use penpot-mcp.search_object to find components with the query "[Component]"
+  - Extract object tree with pendrop:penpot-mcp.get_object_tree.
   - Main components have meaningful names (Button, Card, Header, etc.)
 
   **For Each Component:**
-  - name: Component name (convert to kebab-case)
+  - Convert the component to defined structure in repository_root/schemas/pendrop.theme.json #/definitions/component
   - description: Purpose or usage
-  - category: "Atoms", "Molecules", or "Organisms" based on complexity
-  - props: Analyze structure to determine props
+  - props: Each variant has seperate prop variants. Add each of this variants as a prop. Ignore state props. 
+  - check #/definitions/component { repository_root/schemas/pendrop.theme.json } for the correct structure
+  - variants: Each variant has seperate prop variant in penpot. Add each of this variants as a variant subkey in the pendrop component. Ignore state variants. 
 
-  **Determining Props:**
-  - Text layers → string props (e.g., "label", "title")
-  - Variant layers → enum props with possible values
-  - States (hover, disabled) → boolean props
-  - Nested components → composition props
-
-  **Example:**
-  ```json
-  {
-    "button": {
-      "name": "Button",
-      "description": "Primary action button",
-      "category": "Atoms",
-      "props": {
-        "label": { "type": "string", "required": true },
-        "variant": { "type": "enum", "enum": ["primary", "secondary"] },
-        "disabled": { "type": "boolean", "default": false }
-      },
-      "tokens": ["color.primary", "spacing.md"]
-    }
-  }
   ```
 
 # Story generation instructions
