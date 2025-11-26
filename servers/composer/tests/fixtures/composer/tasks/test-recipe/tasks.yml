@@ -1,10 +1,14 @@
 ---
-version: "1.0"
 pipeline: test-pipeline
 
 variables:
   global_var: "Global"
   target_schema: "fake_schema"
+
+assets:
+  task_asset:
+    path: "{{project_path}}/task-asset.json"
+    writeable: false
 
 steps:
   header:

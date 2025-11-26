@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { composePipeline } from '../src/composerEngine.js';
 import { join } from 'path';
+import { writeFile, mkdir, rm } from 'fs/promises';
 
 // Mock getRepositoryRoot to point to fixtures
 vi.mock('../src/utils/paths.js', () => ({
@@ -8,11 +9,41 @@ vi.mock('../src/utils/paths.js', () => ({
 }));
 
 describe('Composer Engine', () => {
-  const projectPath = join(process.cwd(), 'tests/fixtures/project');
+  const projectPath = join(process.cwd(), 'tests/fixtures/composer-test-project');
+
+  beforeEach(async () => {
+    await mkdir(projectPath, { recursive: true });
+    
+    // Create test pendrop.yml
+    const pendropYml = `assets:
+  schema_url:
+    path: "{{project_path}}/schema.json"
+    writeable: false
+    schema: null
+
+pipelines:
+  design-extract:
+    tasks: test-recipe
+    assets:
+      design_data:
+        path: "{{project_path}}/design-data.json"
+        writeable: true
+        schema: "{{project_path}}/schema.json"
+    variables:
+      step1_instructions: "Do step 1 task."
+      step2_instructions: "Do step 2 task."
+      design_url: "http://example.com"
+`;
+    await writeFile(join(projectPath, 'pendrop.yml'), pendropYml);
+  });
+
+  afterEach(async () => {
+    await rm(projectPath, { recursive: true, force: true });
+  });
 
   it('should run all steps if no step specified', async () => {
     const result = await composePipeline({
-      pipeline: 'design-extract', // Configured in fixtures/project/pendrop.yml
+      pipeline: 'design-extract',
       project_path: projectPath
     });
 

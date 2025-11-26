@@ -19,7 +19,8 @@ describe('Loaders', () => {
       // Template should not be in pipeline loader anymore
       expect((pipeline.steps.step1 as any).template).toBeUndefined();
       expect(pipeline.steps.step1.dependencies).toContain('header');
-      expect(pipeline.schema).toBeDefined();
+      // Assets and variables are optional, may be undefined
+      // Schema is no longer loaded from file
     });
   });
 
