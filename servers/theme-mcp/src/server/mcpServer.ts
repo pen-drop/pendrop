@@ -10,21 +10,6 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
-import { loadConfig, type ThemeMcpConfig } from '../utils/config.js';
-import { loadAllConventions, type Convention } from '../utils/conventions.js';
-import {
-  extractDesign,
-  extractDesignTool,
-  type ExtractDesignParams,
-} from '../tools/extract.js';
-import {
-  generateComponent,
-  generateStory,
-  generateComponentTool,
-  generateStoryTool,
-  type GenerateComponentParams,
-  type GenerateStoryParams,
-} from '../tools/generate.js';
 import {
   saveDesignData,
   saveDesignDataTool,
@@ -32,22 +17,10 @@ import {
 } from '../tools/save.js';
 import { initLogger } from '../utils/mcpLogger.js';
 
-// Server state
-let config: ThemeMcpConfig;
-let conventions: {
-  conventions: Convention;
-  prompts: Convention;
-  story: Convention;
-};
-
 /**
  * Initialize server
  */
 async function initialize() {
-  // Load configuration
-  const configPath = process.env.THEME_MCP_CONFIG;
-  config = await loadConfig(configPath);
-  
   // Initialize MCP logger
   const logEnabled = process.env.THEME_MCP_LOG_ENABLED !== 'false';
   const logToConsole = process.env.THEME_MCP_LOG_CONSOLE !== 'false';
@@ -62,17 +35,7 @@ async function initialize() {
     // projectPath will be set per-request via setLoggerProjectPath()
   });
   
-  // Load conventions for the target
-  conventions = await loadAllConventions({
-    target: config.target,
-    rulesPath: config.rulesPath,
-    projectRules: config.projectRules,
-  });
-  
   console.error('Theme MCP Server initialized');
-  console.error(`Target: ${config.target}`);
-  console.error(`Rules path: ${config.rulesPath}`);
-  console.error(`Project rules: ${config.projectRules || 'none'}`);
   if (logEnabled) {
     console.error(`MCP logging: ${logToConsole ? 'console' : ''} ${logToFile ? 'file (.pendrop/logs/log.json relative to project root)' : ''} [${logLevel}]`);
   }
@@ -102,10 +65,7 @@ export async function startServer(): Promise<void> {
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
       tools: [
-        extractDesignTool,
         saveDesignDataTool,
-        generateComponentTool,
-        generateStoryTool,
       ],
     };
   });
@@ -116,53 +76,9 @@ export async function startServer(): Promise<void> {
 
     try {
       switch (name) {
-        case 'extract_design': {
-          // Map fileUrl to design_url for compatibility with external MCP wrappers
-
-          const result = await extractDesign(args as unknown as ExtractDesignParams);
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
         case 'save_design_data': {
           const result = await saveDesignData(
             args as unknown as SaveDesignDataParams
-          );
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
-        case 'generate_component': {
-          const result = await generateComponent(
-            args as unknown as GenerateComponentParams,
-            conventions
-          );
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(result, null, 2),
-              },
-            ],
-          };
-        }
-
-        case 'generate_story': {
-          const result = await generateStory(
-            args as unknown as GenerateStoryParams,
-            conventions
           );
           return {
             content: [

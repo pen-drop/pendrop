@@ -1,0 +1,15 @@
+---
+version: "1.0"
+description: "Test Pipeline"
+
+steps:
+  header:
+    description: "Header Step"
+  
+  step1:
+    description: "First Step"
+    dependencies: ["header"]
+
+  step2:
+    description: "Second Step"
+    dependencies: ["step1"]

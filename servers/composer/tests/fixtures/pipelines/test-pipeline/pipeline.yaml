@@ -1,0 +1,7 @@
+---
+version: "1.0"
+instructions: |
+  Global instructions.
+  {{tool_specific_extraction_instructions}}
+  Schema: {{target_schema}}
+  Step 1: {{step1_instructions}}
