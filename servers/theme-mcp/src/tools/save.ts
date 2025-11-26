@@ -46,7 +46,7 @@ export async function saveDesignData(
   }
 
   // Read existing file or initialize
-  let content: Record<string, any> = {};
+  let content: Record<string, unknown> = {};
   try {
     const fileContent = await readFile(outputPath, 'utf-8');
     content = JSON.parse(fileContent);

@@ -4,7 +4,6 @@
  */
 
 import { PendropValidator } from '../utils/validator.js';
-import { setLoggerProjectPath } from '../utils/mcpLogger.js';
 
 export interface ValidateDesignDataParams {
   data: unknown;

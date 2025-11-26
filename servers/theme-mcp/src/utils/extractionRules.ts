@@ -88,7 +88,7 @@ export interface ExtractionRules {
 export async function loadExtractionRules(
   extractionPackage: string,
   projectPath: string,
-  pendropConfig?: PendropConfig
+  _pendropConfig?: PendropConfig
 ): Promise<ExtractionRules> {
   let packagePath: string;
 
@@ -154,6 +154,7 @@ async function loadGlobalInstructions(): Promise<string> {
  * Load tool-specific extraction instructions
  * @deprecated Use loadExtractionRules and access extraction_instructions property instead
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function loadToolSpecificInstructions(
   extractionPackage: string,
   projectPath?: string,
@@ -215,7 +216,7 @@ export function replaceTemplateVariables(
 export async function loadExamples(
   extractionPackage: string,
   projectPath?: string,
-  pendropConfig?: PendropConfig
+  _pendropConfig?: PendropConfig
 ): Promise<string> {
   let packagePath: string;
 

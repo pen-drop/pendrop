@@ -40,7 +40,7 @@ export interface ExtractDesignResult {
 export async function extractDesign(
   params: ExtractDesignParams
 ): Promise<ExtractDesignResult> {
-  const { design_url, extraction_rules, project_path, options = {} } = params;
+  const { design_url, extraction_rules, project_path, options: _options = {} } = params;
   
   // Set project path for logger
   setLoggerProjectPath(project_path);

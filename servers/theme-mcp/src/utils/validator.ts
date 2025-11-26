@@ -17,11 +17,11 @@ export interface ValidationResult {
 }
 
 export class PendropValidator {
-  private ajv: any;
+  private ajv: Ajv;
   private schemas: Map<string, Schema>;
 
   constructor() {
-    this.ajv = new (Ajv as any)({ allErrors: true, verbose: true });
+    this.ajv = new Ajv({ allErrors: true, verbose: true });
     this.schemas = new Map();
   }
 
