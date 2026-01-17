@@ -7,11 +7,10 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { composePipeline } from "./composerEngine.js";
+import { runWorkflow } from "./composerEngine.js";
 import { initLogger } from "./utils/mcpLogger.js";
 import { loadMergedConfig } from "./utils/configLoader.js";
 import { extractAsset, saveAsset } from "./utils/assetManager.js";
-import { loadPendropConfig } from "./utils/projectConfig.js";
 
 const server = new Server(
   {
@@ -27,7 +26,7 @@ const server = new Server(
 
 // Initialize logger
 initLogger({
-  logToFile: false, // Default to false for now unless configured
+  logToFile: false,
   logToConsole: true
 });
 
@@ -35,32 +34,43 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: "compose_pipeline",
-        description: "Compose an AI instruction prompt from a pipeline configuration in pendrop.yml",
+        name: "compose_workflow",
+        description: "Compose an AI instruction prompt from a workflow configuration in pendrop.yml",
         inputSchema: {
           type: "object",
           properties: {
-            pipeline: {
+            workflow: {
               type: "string",
-              description: "Name of the pipeline as configured in pendrop.yml"
+              description: "Name of the workflow as configured in pendrop.yml"
+            },
+            task: {
+              anyOf: [
+                { type: "string" },
+                { type: "array", items: { type: "string" } }
+              ],
+              description: "Optional: Specific task ID(s) to run"
             },
             step: {
               anyOf: [
                 { type: "string" },
                 { type: "array", items: { type: "string" } }
               ],
-              description: "Optional: Specific step ID(s) to run (includes dependencies)"
+              description: "Optional: Filter tasks by step ID(s)"
             },
             project_path: {
               type: "string",
               description: "Path to the project root containing pendrop.yml"
+            },
+            pendrop_file: {
+              type: "string",
+              description: "Optional: Custom configuration filename (default: pendrop.yml)"
             },
             variables: {
               type: "object",
               description: "Additional variables for template substitution (overrides config)"
             }
           },
-          required: ["pipeline", "project_path"]
+          required: ["workflow", "project_path"]
         }
       },
       {
@@ -81,9 +91,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: "string",
               description: "Path to the project root containing pendrop.yml"
             },
-            pipeline: {
+            workflow: {
               type: "string",
-              description: "Name of the pipeline (required to resolve assets)"
+              description: "Name of the workflow (required to resolve assets)"
             },
             options: {
               type: "object",
@@ -95,7 +105,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               }
             }
           },
-          required: ["asset_id", "jsonpath", "project_path", "pipeline"]
+          required: ["asset_id", "jsonpath", "project_path", "workflow"]
         }
       },
       {
@@ -116,9 +126,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: "string",
               description: "Path to the project root containing pendrop.yml"
             },
-            pipeline: {
+            workflow: {
               type: "string",
-              description: "Name of the pipeline (required to resolve assets)"
+              description: "Name of the workflow (required to resolve assets)"
             },
             options: {
               type: "object",
@@ -138,7 +148,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               }
             }
           },
-          required: ["asset_id", "data", "project_path", "pipeline"]
+          required: ["asset_id", "data", "project_path", "workflow"]
         }
       }
     ]
@@ -148,11 +158,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
-  if (name === "compose_pipeline") {
+  if (name === "compose_workflow") {
     const schema = z.object({
-      pipeline: z.string(),
+      workflow: z.string(),
+      task: z.union([z.string(), z.array(z.string())]).optional(),
       step: z.union([z.string(), z.array(z.string())]).optional(),
       project_path: z.string(),
+      pendrop_file: z.string().optional(),
       variables: z.record(z.any()).optional()
     });
 
@@ -162,7 +174,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     try {
-      const result = await composePipeline(parsed.data);
+      const result = await runWorkflow({
+        workflow: parsed.data.workflow,
+        task: parsed.data.task,
+        step: parsed.data.step,
+        project_path: parsed.data.project_path,
+        pendrop_file: parsed.data.pendrop_file,
+        variables: parsed.data.variables
+      });
       return {
         content: [
           {
@@ -176,7 +195,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: "text",
-            text: `Error composing pipeline: ${error instanceof Error ? error.message : String(error)}`
+            text: `Error composing workflow: ${error instanceof Error ? error.message : String(error)}`
           }
         ],
         isError: true
@@ -189,7 +208,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       asset_id: z.string(),
       jsonpath: z.string(),
       project_path: z.string(),
-      pipeline: z.string(),
+      workflow: z.string(),
       options: z.object({
         minify: z.boolean().optional()
       }).optional()
@@ -201,27 +220,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     try {
-      // Load project config to get tasks package
-      const projectConfig = await loadPendropConfig(parsed.data.project_path);
-      const pipelineConfig = projectConfig.pipelines?.[parsed.data.pipeline];
-      if (!pipelineConfig) {
-        throw new Error(`Pipeline '${parsed.data.pipeline}' not found`);
-      }
-
-      // Load merged config
+      // Load merged config using new logic (no file lookup needed, just workflow name)
       const mergedConfig = await loadMergedConfig(
         parsed.data.project_path,
-        parsed.data.pipeline,
-        pipelineConfig.tasks
+        parsed.data.workflow
       );
 
-      // Add built-in variables for asset path resolution
+      // Add built-in variables
       const variablesWithBuiltIns = {
         ...mergedConfig.variables,
         project_path: parsed.data.project_path
       };
 
-      // Extract asset
       const result = await extractAsset(
         parsed.data.asset_id,
         parsed.data.jsonpath,
@@ -257,7 +267,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       asset_id: z.string(),
       data: z.record(z.any()),
       project_path: z.string(),
-      pipeline: z.string(),
+      workflow: z.string(),
       options: z.object({
         merge: z.boolean().optional(),
         validate: z.boolean().optional(),
@@ -271,27 +281,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     try {
-      // Load project config to get tasks package
-      const projectConfig = await loadPendropConfig(parsed.data.project_path);
-      const pipelineConfig = projectConfig.pipelines?.[parsed.data.pipeline];
-      if (!pipelineConfig) {
-        throw new Error(`Pipeline '${parsed.data.pipeline}' not found`);
-      }
-
-      // Load merged config
       const mergedConfig = await loadMergedConfig(
         parsed.data.project_path,
-        parsed.data.pipeline,
-        pipelineConfig.tasks
+        parsed.data.workflow
       );
 
-      // Add built-in variables for asset path resolution
       const variablesWithBuiltIns = {
         ...mergedConfig.variables,
         project_path: parsed.data.project_path
       };
 
-      // Save asset
       const result = await saveAsset(
         parsed.data.asset_id,
         parsed.data.data,

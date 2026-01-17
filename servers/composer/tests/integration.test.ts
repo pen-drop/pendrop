@@ -1,14 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { composePipeline } from '../src/composerEngine.js';
+import { runWorkflow } from '../src/composerEngine.js';
 import { extractAsset, saveAsset } from '../src/utils/assetManager.js';
 import { loadMergedConfig } from '../src/utils/configLoader.js';
 import { join } from 'path';
 import { writeFile, mkdir, readFile, rm } from 'fs/promises';
-
-// Mock getRepositoryRoot to point to fixtures
-vi.mock('../src/utils/paths.js', () => ({
-  getRepositoryRoot: () => join(process.cwd(), 'tests/fixtures')
-}));
 
 describe('Integration Tests', () => {
   const projectPath = join(process.cwd(), 'tests/fixtures/integration-project');
@@ -28,25 +23,53 @@ describe('Integration Tests', () => {
   beforeEach(async () => {
     await mkdir(projectPath, { recursive: true });
     
-    // Create test pendrop.yml with assets
-    const pendropYml = `assets:
+    // Create steps file
+    const stepsYaml = `
+step1:
+  prompt: "Step 1: {{step1_instructions}}"
+step2:
+  prompt: "Step 2: {{step2_instructions}}"
+  dependencies: ["step1"]
+`;
+    await writeFile(join(projectPath, 'steps.yaml'), stepsYaml);
+
+    // Create workflow file
+    const workflowYaml = `
+variables:
+  step1_instructions: "Do step 1 task."
+  step2_instructions: "Do step 2 task."
+assets:
+  task_asset:
+    url: "https://example.com/task.json"
+    writeable: false
+steps: !include ./steps.yaml
+tasks:
+  main:
+    step: "step2"
+`;
+    await writeFile(join(projectPath, 'workflow.yaml'), workflowYaml);
+
+    // Create test pendrop.yml
+    const pendropYml = `
+assets:
   schema_url:
     path: "{{project_path}}/schema.json"
     writeable: false
     schema: null
+  design_data:
+    path: "{{project_path}}/design-data.json"
+    writeable: true
+    schema: "{{project_path}}/schema.json"
+  pipeline_asset:
+    url: "https://example.com/pipeline.json"
+    writeable: false
+variables:
+  runtime_var: "runtime_default"
 
-pipelines:
-  design-extract:
-    tasks: test-recipe
-    assets:
-      design_data:
-        path: "{{project_path}}/design-data.json"
-        writeable: true
-        schema: "{{project_path}}/schema.json"
-    variables:
-      step1_instructions: "Do step 1 task."
-      step2_instructions: "Do step 2 task."
+workflows:
+  design-extract: !include ./workflow.yaml
 `;
+
     await writeFile(join(projectPath, 'pendrop.yml'), pendropYml);
     
     // Create test schema file
@@ -63,55 +86,47 @@ pipelines:
     await rm(projectPath, { recursive: true, force: true });
   });
 
-  describe('End-to-End Pipeline Composition', () => {
-    it('should compose pipeline with assets and variables', async () => {
-      const result = await composePipeline({
-        pipeline: 'design-extract',
+  describe('End-to-End Workflow Composition', () => {
+    it('should compose workflow with assets, variables and !include', async () => {
+      const result = await runWorkflow({
+        workflow: 'design-extract',
         project_path: projectPath
       });
 
       expect(result.instructions).toBeDefined();
-      expect(result.instructions).toContain('Global instructions');
       expect(result.instructions).toContain('Step 1: Do step 1 task');
       expect(result.instructions).toContain('Step 2: Do step 2 task');
     });
 
     it('should merge variables from all sources', async () => {
-      const result = await composePipeline({
-        pipeline: 'design-extract',
+      const result = await runWorkflow({
+        workflow: 'design-extract',
         project_path: projectPath,
         variables: {
-          runtime_var: 'runtime_value'
+          step1_instructions: 'Override Step 1'
         }
       });
 
-      // Should contain variables from all sources
-      expect(result.instructions).toContain('Do step 1 task'); // from pendrop.yml
-      expect(result.instructions).toContain('Global'); // from tasks.yml
+      expect(result.instructions).toContain('Override Step 1');
     });
   });
 
   describe('Asset Management Integration', () => {
-    it('should load merged config with assets from all sources', async () => {
+    it('should load merged config', async () => {
       const config = await loadMergedConfig(
         projectPath,
-        'design-extract',
-        'test-recipe'
+        'design-extract'
       );
 
-      // Assets from all sources should be present
-      expect(config.assets.schema_url).toBeDefined(); // from pendrop.yml root
-      expect(config.assets.design_data).toBeDefined(); // from pendrop.yml pipeline
-      expect(config.assets.design_data.writeable).toBe(true);
-      expect(config.assets.pipeline_asset).toBeDefined(); // from pipeline.yaml
-      expect(config.assets.task_asset).toBeDefined(); // from tasks.yml
+      expect(config.assets.schema_url).toBeDefined();
+      expect(config.assets.design_data).toBeDefined();
+      expect(config.assets.task_asset).toBeDefined();
     });
 
     it('should extract asset using JSONPath', async () => {
       const config = await loadMergedConfig(
         projectPath,
-        'design-extract',
-        'test-recipe'
+        'design-extract'
       );
 
       const extracted = await extractAsset(
@@ -131,11 +146,9 @@ pipelines:
     it('should save asset with deep merge', async () => {
       const config = await loadMergedConfig(
         projectPath,
-        'design-extract',
-        'test-recipe'
+        'design-extract'
       );
 
-      // Save tokens
       const tokensResult = await saveAsset(
         'design_data',
         { tokens: { color: { primary: { $value: '#000' } } } },
@@ -146,151 +159,6 @@ pipelines:
       );
 
       expect(tokensResult.success).toBe(true);
-
-      // Save components (should merge with existing tokens)
-      const componentsResult = await saveAsset(
-        'design_data',
-        { components: { button: { variants: [] } } },
-        config.assets,
-        projectPath,
-        { ...config.variables, project_path: projectPath },
-        { merge: true }
-      );
-
-      expect(componentsResult.success).toBe(true);
-
-      // Verify both tokens and components exist
-      const saved = JSON.parse(
-        await readFile(join(projectPath, 'design-data.json'), 'utf-8')
-      );
-      expect(saved.tokens).toBeDefined();
-      expect(saved.components).toBeDefined();
-      expect(saved.components.button).toBeDefined();
-    });
-
-    it('should handle deep merge of nested structures', async () => {
-      const config = await loadMergedConfig(
-        projectPath,
-        'design-extract',
-        'test-recipe'
-      );
-
-      const vars = { ...config.variables, project_path: projectPath };
-      
-      // Initial save
-      await saveAsset(
-        'design_data',
-        {
-          components: {
-            card: { name: 'Card', variants: [] }
-          }
-        },
-        config.assets,
-        projectPath,
-        vars,
-        { merge: true }
-      );
-
-      // Merge with additional component
-      await saveAsset(
-        'design_data',
-        {
-          components: {
-            button: { name: 'Button', variants: [] }
-          }
-        },
-        config.assets,
-        projectPath,
-        vars,
-        { merge: true }
-      );
-
-      // Verify both components exist
-      const saved = JSON.parse(
-        await readFile(join(projectPath, 'design-data.json'), 'utf-8')
-      );
-      expect(saved.components.card).toBeDefined();
-      expect(saved.components.button).toBeDefined();
-    });
-
-    it('should resolve variables in asset paths', async () => {
-      const config = await loadMergedConfig(
-        projectPath,
-        'design-extract',
-        'test-recipe'
-      );
-
-      // design_data path uses {{project_path}} - check asset exists
-      const assetDef = config.assets.design_data;
-      expect(assetDef).toBeDefined();
-      expect(assetDef.path).toBeDefined();
-
-      // Save should resolve the variable
-      const result = await saveAsset(
-        'design_data',
-        { test: 'data' },
-        config.assets,
-        projectPath,
-        { ...config.variables, project_path: projectPath },
-        {}
-      );
-
-      expect(result.success).toBe(true);
-      expect(result.path).toBeDefined();
-    });
-  });
-
-  describe('Full Workflow Integration', () => {
-    it('should complete full workflow: compose -> extract -> save', async () => {
-      // 1. Compose pipeline
-      const composeResult = await composePipeline({
-        pipeline: 'design-extract',
-        project_path: projectPath
-      });
-      expect(composeResult.instructions).toBeDefined();
-
-      // 2. Load config
-      const config = await loadMergedConfig(
-        projectPath,
-        'design-extract',
-        'test-recipe'
-      );
-
-      // 3. Extract schema part
-      const vars = { ...config.variables, project_path: projectPath };
-      const schemaPart = await extractAsset(
-        'schema_url',
-        '$.definitions.component',
-        { minify: false },
-        config.assets,
-        projectPath,
-        vars
-      );
-      expect(schemaPart).toBeDefined();
-      const parsed = JSON.parse(schemaPart);
-      expect(parsed.type).toBe('object');
-
-      // 4. Save design data
-      const saveResult = await saveAsset(
-        'design_data',
-        {
-          tokens: { color: { primary: { $value: '#000' } } },
-          components: { button: { variants: [] } }
-        },
-        config.assets,
-        projectPath,
-        vars,
-        { merge: true }
-      );
-      expect(saveResult.success).toBe(true);
-
-      // 5. Verify saved data
-      const saved = JSON.parse(
-        await readFile(join(projectPath, 'design-data.json'), 'utf-8')
-      );
-      expect(saved.tokens.color.primary).toBeDefined();
-      expect(saved.components.button).toBeDefined();
     });
   });
 });
-

@@ -1,0 +1,30 @@
+name: "Workflow Inheritance and Variable Expansion"
+files:
+  pendrop.yml: |
+    variables:
+      global_var: "global"
+      ref_var: "{{global_var}}_suffix"
+    
+    workflows:
+      test-flow:
+        source: "./workflow.yaml"
+        variables:
+          local_var: "overridden_local"
+          ref_local: "{{local_var}}_expanded"
+
+  workflow.yaml: |
+    variables:
+      local_var: "default_local"
+      base_var: "base"
+    
+    tasks:
+      task1:
+        prompt: "Vars: {{global_var}} {{local_var}} {{base_var}} {{ref_var}} {{ref_local}}"
+
+run:
+  workflow: "test-flow"
+
+expect:
+  instructions:
+    - "Vars: global overridden_local base global_suffix overridden_local_expanded"
+

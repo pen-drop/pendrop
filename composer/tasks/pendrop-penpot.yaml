@@ -1,6 +1,3 @@
----
-pipeline: pendrop-design-extract
-
 variables:
   source_tool: "penpot"
   extraction_rules: |
@@ -19,69 +16,25 @@ variables:
   examples: |
     No examples provided.
 
-steps:
-  init:
-    template: |
-      # Design System Extraction Instructions
+assets:
+  schema_url:
+    url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
+    writeable: false
 
-      You are extracting and transforming a {{source_tool}} design file to Pendrop's design system format.
+# Use !include tag for steps (placeholder strategy)
+steps: !include ../steps/pendrop-design/steps.yaml
 
-      Transform the raw data to `pendrop.theme.json` format following these rules:
-
-      ### Target Schema
-
-      To get the schema, use:
-      ```
-      composer.extract_asset({
-        asset_id: "schema_url",
-        jsonpath: "$",
-        project_path: "{{project_path}}",
-        pipeline: "design-extract"
-      })
-      ```
-
-      ### Extraction Rules
-
-      {{extraction_rules}}
-
-      ### Naming Conventions
-
-      - Tokens: {{naming_tokens}}
-      - Components: {{naming_components}}
-      - Props: {{naming_props}}
-
-      ### Examples
-
-      {{examples}}
-
-      **Use always:**
-
-      ```
-      composer.save_asset({
-        asset_id: "design_data",
-        data: <data>,
-        project_path: "{{project_path}}",
-        pipeline: "design-extract",
-        options: {
-          merge: true,
-          validate: true
-        }
-      })
-      ```
-      The asset_id "design_data" should be defined in pendrop.yml assets section.
-
+tasks:
   extract-source:
-    template: |
-      ## Step 1: Extract Source Data
-
+    description: "Extract Source Data"
+    step: extract-source
+    prompt: |
       {{tool_specific_extraction_instructions}}
 
   extract-tokens:
-    template: |
-      ## Step: Extract Tokens
-
-      Extract design tokens from the Penpot design file and save them in W3C DTCG format.
-
+    description: "Extract tokens only (with context)"
+    step: extract-tokens
+    prompt: |
       ### Instructions:
 
       1. **Load tokens from Penpot:**
@@ -113,11 +66,9 @@ steps:
          The data should include both tokens and tokensLib from Penpot, converted to the target schema format.
 
   extract-components:
-    template: |
-      ## Step: Extract Components
-
-      Extract component definitions from Penpot by searching for objects with `[component]` in their name, then converting them to the Pendrop component schema format.
-
+    description: "Extract components only (with context)"
+    step: extract-components
+    prompt: |
       ### Instructions:
 
       1. **Search for components:**
@@ -160,14 +111,12 @@ steps:
            }
          })
          ```
-         The data should be an object where each key is a component ID and the value matches the component schema structure. 
+         The data should be an object where each key is a component ID and the value matches the component schema structure.
 
   extract-stories:
-    template: |
-      ## Step: Extract Stories
-
-      Extract story definitions from Penpot by searching for objects with `[story]` in their name, then converting them to the Pendrop story schema format.
-
+    description: "Extract stories only (with context)"
+    step: extract-stories
+    prompt: |
       ### Instructions:
 
       1. **Search for stories:**
@@ -212,10 +161,10 @@ steps:
          ```
          The data should be an object where each key is a story ID and the value matches the story schema structure with `componentId` and `variants` array.
 
-  summary:
-    template: |
-      ## Summary
-
+  extract-design:
+    description: "Complete design extraction workflow"
+    step: summary
+    prompt: |
       1. Extract tokens from {{source_tool}}-mcp -> Convert -> Validate -> Save
       2. Extract components from {{source_tool}}-mcp -> Convert -> Validate -> Save
       3. Extract stories from {{source_tool}}-mcp -> Convert -> Validate -> Save

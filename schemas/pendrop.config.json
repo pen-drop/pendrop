@@ -4,77 +4,102 @@
   "title": "Pendrop Configuration Schema",
   "description": "Schema for pendrop.yml configuration file",
   "type": "object",
-  "properties": {
-    "project": {
+  "definitions": {
+    "step": {
       "type": "object",
-      "description": "Project configuration",
       "properties": {
-        "type": {
-          "type": "string",
-          "enum": ["drupal", "wordpress", "laravel"],
-          "description": "Target platform type (determines path conventions)"
+        "description": {
+          "type": "string"
         },
-        "name": {
-          "type": "string",
-          "description": "Project name"
-        },
-        "theme": {
-          "type": "string",
-          "description": "Theme name (used in path resolution)"
-        }
-      },
-      "required": ["type", "name", "theme"]
-    },
-    "design": {
-      "type": "object",
-      "description": "Design source configuration",
-      "properties": {
-        "url": {
-          "type": "string",
-          "description": "Single design source URL (Penpot, Figma, or local file)"
-        },
-        "urls": {
+        "dependencies": {
           "type": "array",
           "items": {
             "type": "string"
-          },
-          "description": "Multiple design source URLs"
+          }
+        },
+        "prompt": {
+          "type": "string"
         }
       },
-      "oneOf": [
-        {
-          "required": ["url"]
+      "additionalProperties": false
+    },
+    "task": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
         },
-        {
-          "required": ["urls"]
+        "step": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
         }
-      ]
+      },
+      "additionalProperties": false
+    },
+    "workflow": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Path to a base workflow file to inherit from"
+        },
+        "variables": {
+          "type": "object"
+        },
+        "assets": {
+          "type": "object"
+        },
+        "steps": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/definitions/step"
+            }
+          }
+        },
+        "tasks": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/definitions/task"
+            }
+          }
+        },
+        "rules": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "variables": {
+      "type": "object",
+      "description": "Global variables"
+    },
+    "assets": {
+      "type": "object",
+      "description": "Global assets"
+    },
+    "workflows": {
+      "type": "object",
+      "description": "Workflow definitions",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/workflow"
+        }
+      }
+    },
+    "design": {
+      "type": "object",
+      "description": "Design source configuration"
     },
     "rules": {
       "type": "object",
-      "description": "Custom rules configuration",
-      "properties": {
-        "custom_rules_path": {
-          "type": "string",
-          "description": "Path to custom rules directory (optional)"
-        },
-        "extraction": {
-          "type": "object",
-          "description": "Custom extraction packages per design tool",
-          "additionalProperties": {
-            "type": "string",
-            "description": "Path or package name for extraction rules (e.g., './custom/penpot-extraction' or '@company/penpot-extraction')"
-          }
-        },
-        "conventions": {
-          "type": "object",
-          "description": "Direct convention overrides (merged with target conventions)",
-          "additionalProperties": true
-        }
-      }
+      "description": "Custom rules configuration"
     }
   },
-  "required": ["project"],
   "additionalProperties": false
 }
-

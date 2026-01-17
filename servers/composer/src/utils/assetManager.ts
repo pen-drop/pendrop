@@ -4,9 +4,10 @@
  */
 
 import { readFile, writeFile, mkdir, stat } from 'fs/promises';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { JSONPath } from 'jsonpath-plus';
 import type { AssetDefinition, Assets, Variables } from '../types/config.js';
+import { resolver } from './resolver.js';
 
 // Simple in-memory cache
 const assetCache = new Map<string, { content: any; timestamp: number }>();
@@ -80,55 +81,37 @@ export async function loadAsset(
   // Check cache
   const cached = assetCache.get(cacheKey);
   if (cached) {
-    // Check if file was modified (for local files)
-    if (assetDef.path) {
-      try {
-        const stats = await stat(resolvedPath);
+    // If it's a URL, return cached (simple strategy)
+    if (resolvedPath.startsWith('http://') || resolvedPath.startsWith('https://')) {
+        return cached.content;
+    }
+
+    // If it's a local file, check mtime
+    try {
+        const absPath = resolve(projectPath, resolvedPath);
+        const stats = await stat(absPath);
         if (stats.mtimeMs <= cached.timestamp) {
-          return cached.content;
+            return cached.content;
         }
-      } catch {
-        // File doesn't exist or error, reload
-      }
-    } else {
-      // For URLs, use cached version
-      return cached.content;
+    } catch {
+        // If stat fails (file not found?), we might want to let resolver handle it or assume stale
     }
   }
 
-  // Load asset
+  // Load asset using Resolver
+  // Context path is projectPath/pendrop.yml (dummy) to allow relative paths from project root
+  const contextPath = join(projectPath, 'pendrop.yml');
+  const result = await resolver.resolve(resolvedPath, contextPath);
+  
   let content: any;
-  if (assetDef.url) {
-    // Fetch from URL (only HTTP/HTTPS, not file://)
-    if (resolvedPath.startsWith('http://') || resolvedPath.startsWith('https://')) {
-      const response = await fetch(resolvedPath);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch asset from ${resolvedPath}: ${response.statusText}`);
-      }
-      content = await response.json();
-    } else {
-      // Local file path passed as URL
-      const fullPath = resolvedPath.startsWith('/')
-        ? resolvedPath
-        : join(projectPath, resolvedPath);
-      const fileContent = await readFile(fullPath, 'utf-8');
-      content = JSON.parse(fileContent);
-    }
-  } else if (assetDef.path) {
-    // Read from file
-    const fullPath = resolvedPath.startsWith('/') 
-      ? resolvedPath 
-      : join(projectPath, resolvedPath);
-    const fileContent = await readFile(fullPath, 'utf-8');
-    content = JSON.parse(fileContent);
-  } else {
-    throw new Error('Asset definition must have either url or path');
+  try {
+      content = typeof result.content === 'string' ? JSON.parse(result.content) : result.content;
+  } catch {
+      throw new Error(`Failed to parse asset '${assetId}' (resolved: ${result.path}) as JSON`);
   }
 
   // Cache it
-  const timestamp = assetDef.path 
-    ? (await stat(resolvedPath.startsWith('/') ? resolvedPath : join(projectPath, resolvedPath))).mtimeMs
-    : Date.now();
+  const timestamp = Date.now(); 
   assetCache.set(cacheKey, { content, timestamp });
 
   return content;
@@ -200,6 +183,8 @@ export async function saveAsset(
   }
 
   const resolvedPath = resolveAssetPath(assetDef, variables);
+  
+  // For saving, we strictly assume local file path relative to project
   const fullPath = resolvedPath.startsWith('/')
     ? resolvedPath
     : join(projectPath, resolvedPath);
@@ -251,4 +236,3 @@ export async function saveAsset(
     message: `Asset '${assetId}' saved successfully`
   };
 }
-

@@ -1,0 +1,86 @@
+init:
+  description: "Initialization and Global Context"
+  prompt: |
+    # Design System Extraction Instructions
+
+    You are extracting and transforming a {{source_tool}} design file to Pendrop's design system format.
+
+    Transform the raw data to `pendrop.theme.json` format following these rules:
+
+    ### Target Schema
+
+    To get the schema, use:
+    ```
+    composer.extract_asset({
+      asset_id: "schema_url",
+      jsonpath: "$",
+      project_path: "{{project_path}}",
+      pipeline: "design-extract"
+    })
+    ```
+
+    ### Extraction Rules
+
+    {{extraction_rules}}
+
+    ### Naming Conventions
+
+    - Tokens: {{naming_tokens}}
+    - Components: {{naming_components}}
+    - Props: {{naming_props}}
+
+    ### Examples
+
+    {{examples}}
+
+    **Use always:**
+
+    ```
+    composer.save_asset({
+      asset_id: "design_data",
+      data: <data>,
+      project_path: "{{project_path}}",
+      pipeline: "design-extract",
+      options: {
+        merge: true,
+        validate: true
+      }
+    })
+    ```
+    The asset_id "design_data" should be defined in pendrop.yml assets section.
+
+extract-source:
+  description: "Extract Source Data"
+  dependencies: ["init"]
+  prompt: |
+    ## Step 1: Extract Source Data
+
+extract-tokens:
+  description: "Extract design tokens from Design Tool and convert to schema format"
+  dependencies: ["extract-source"]
+  prompt: |
+    ## Step: Extract Tokens
+
+    Extract design tokens from the Penpot design file and save them in W3C DTCG format.
+
+extract-components:
+  description: "Extract components from Design Tool and convert to schema format"
+  dependencies: ["extract-tokens"]
+  prompt: |
+    ## Step: Extract Components
+
+    Extract component definitions from Penpot by searching for objects with `[component]` in their name, then converting them to the Pendrop component schema format.
+
+extract-stories:
+  description: "Extract stories from Design Tool and convert to schema format"
+  dependencies: ["extract-components"]
+  prompt: |
+    ## Step: Extract Stories
+
+    Extract story definitions from Penpot by searching for objects with `[story]` in their name, then converting them to the Pendrop story schema format.
+
+summary:
+  description: "Execution Summary"
+  dependencies: ["extract-stories"]
+  prompt: |
+    ## Summary

@@ -1,16 +1,15 @@
 # Pendrop Composer MCP Server
 
-MCP server for composing AI instruction prompts from pipeline configurations defined in `pendrop.yml`. The composer loads pipeline definitions, task templates, and variables to generate comprehensive instructions for AI workflows.
+MCP server for composing AI instruction prompts from workflow configurations. The composer loads workflow definitions and variables to generate comprehensive instructions for AI workflows.
 
 ## Overview
 
-The Composer MCP server acts as a **prompt generator** that transforms declarative pipeline configurations into detailed AI instructions. It reads:
+The Composer MCP server acts as a **prompt generator** that transforms declarative workflow configurations into detailed AI instructions. It reads:
 
-1. **Pipeline configurations** from `pendrop.yml` in your project
-2. **Task packages** from `composer/tasks/` (containing step templates and variables)
-3. **Pipeline definitions** from `composer/pipelines/` (containing step structure and schemas)
+1. **Project configuration** from `pendrop.yml`
+2. **Workflow definitions** (YAML files defining steps, tasks, assets, and variables)
 
-And combines them into a single instruction prompt that guides the AI through the complete workflow.
+It combines them into a single instruction prompt that guides the AI through the complete workflow.
 
 ## Core Paradigm
 
@@ -18,44 +17,7 @@ And combines them into a single instruction prompt that guides the AI through th
 
 The AI reads the composed instructions and executes the workflow by calling appropriate MCP tools based on those instructions.
 
-## Architecture
-
-```
-User/AI
-  ↓
-composer.compose_pipeline(pipeline, project_path)
-  ↓ (loads pendrop.yml)
-  ↓ (loads tasks from composer/tasks/)
-  ↓ (loads pipeline from composer/pipelines/)
-  ↓
-Returns INSTRUCTIONS:
-  "# Step: Initialization and Global Context
-  
-   You are extracting and transforming a penpot design file...
-   
-   # Step: Extract Source Data
-   
-   Use penpot-mcp.get_object_tree to extract...
-   
-   # Step: Transform Tokens
-   
-   Extract design tokens in W3C DTCG format..."
-  ↓
-AI executes instructions:
-  → Calls extraction MCPs (penpot-mcp, figma-mcp, etc.)
-  → Transforms data using AI
-  → Extracts schemas using composer.extract_asset
-  → Saves with composer.save_asset
-```
-
 ## Installation & Build
-
-### Prerequisites
-
-- Node.js 20.x or higher
-- npm
-
-### Build
 
 ```bash
 cd servers/composer
@@ -64,370 +26,147 @@ npm run build
 ```
 
 The built server will be available at `dist/index.js`.
-
-## Environment Variables
-
-### `PENDROP_REPO_ROOT`
-
-Override the repository root directory detection. Set this to the absolute path of the Pendrop repository root if the auto-detection fails (e.g., when running the MCP server from a different working directory).
-
-**Example:**
-```bash
-export PENDROP_REPO_ROOT=/home/cw/projects/pendrop
-```
-
-If not set, the server will automatically detect the repository root by traversing up from the current working directory until it finds both `composer/` and `servers/` directories.
+The CLI tool is available at `dist/cli.js`.
 
 ## Configuration
 
-### pendrop.yml Structure
+The configuration is centered around `pendrop.yml` in your project root. It supports modular workflows using `!include` and workflow inheritance.
 
-Create a `pendrop.yml` file in your project root:
+### Example 1: Basic Configuration
 
+`pendrop.yml`:
 ```yaml
-# Pipeline configuration
-pipelines:
+workflows:
   design-extract:
-    tasks: pendrop-penpot
-    variables:
-      design_url: https://penpot.keytec.de/#/workspace?team-id=...&file-id=...
-      # Add any other variables needed by your pipeline
+    steps:
+      init:
+        description: "Initialization"
+        prompt: "You are an AI assistant..."
+    tasks:
+      main:
+        description: "Main Task"
+        step: init
+        prompt: "Analyze the design."
 ```
 
-**Pipeline Configuration:**
-- `pipelines`: Object mapping pipeline names to their configurations
-  - `tasks`: Name of the task package (e.g., `pendrop-penpot`) - must exist in `composer/tasks/`
-  - `assets`: Asset definitions (URLs or paths with variable support)
-  - `variables`: Key-value pairs of variables to substitute in templates
+### Example 2: Modular Workflow with Includes
 
-**Assets:**
-Assets can be defined at root level, pipeline level, in `pipeline.yaml`, or in `tasks.yml`. Assets support:
-- `url`: HTTP/HTTPS URL to fetch from
-- `path`: Local file path (supports `{{variables}}`)
-- `writeable`: Whether the asset can be written to
-- `schema`: Optional schema URL for validation
+You can split your configuration into multiple files using the `!include` tag.
 
-**Variable Substitution:**
-Variables use `{{variable_name}}` syntax in task templates. The composer automatically substitutes:
-- Variables from `pendrop.yml` (root and pipeline level)
-- Variables from `pipeline.yaml`
-- Variables from task package defaults
-- Runtime variables (passed when calling the tool)
-- Built-in variables: `project_path`
+`pendrop.yml`:
+```yaml
+# Include workflow definition from external file
+workflows:
+  design-extract: !include ./workflows/design-extract.yaml
+```
 
-**Variable and Asset Priority (highest to lowest):**
-1. Runtime variables (passed to `compose_pipeline`)
-2. Root assets/variables (from `pendrop.yml` root)
-3. Pipeline assets/variables (from `pendrop.yml` pipeline)
-4. Pipeline YAML assets/variables (from `composer/pipelines/<name>/pipeline.yaml`)
-5. Task assets/variables (from `composer/tasks/<package>/tasks.yml`)
+`workflows/design-extract.yaml`:
+```yaml
+variables:
+  source_tool: penpot
+
+# Include steps from shared library
+steps: !include ../steps/common-steps.yaml
+
+tasks:
+  extract-tokens:
+    step: extract-tokens
+    prompt: |
+      ### Instructions
+      Extract tokens from API...
+```
+
+### Example 3: Workflow Inheritance & Overrides
+
+You can extend a base workflow and override variables or assets using the `source` property.
+
+`pendrop.yml`:
+```yaml
+variables:
+  global_key: "my-api-key"
+
+workflows:
+  design-extract:
+    source: "./workflows/base-workflow.yaml"
+    variables:
+      # Override variable from base workflow
+      target_format: "json"
+      # Reference other variables
+      output_path: "./output/{{target_format}}"
+```
+
+## Path Resolution
+
+Paths used in `!include`, `source`, and asset definitions are resolved as follows:
+
+1. **URL**: Starts with `http://` or `https://`.
+2. **Package**: Starts with `npm://<package-name>/path/to/file`.
+3. **Absolute**: Starts with `/`.
+4. **Relative**: Starts with `./` or `../`.
+   - Relative paths are resolved relative to the **file containing the reference**.
 
 ## Usage
 
-### With MCP Client Tool
+### CLI Tool
 
-The Pendrop project includes an MCP client tool for testing MCP servers.
+You can use the standalone CLI to run workflows directly:
 
-**Build the client:**
 ```bash
-npm run build --prefix tools/mcp-client
+# Run the default workflow (all tasks)
+node dist/cli.js run /path/to/project design-extract
+
+# Run a specific task within the workflow
+node dist/cli.js run /path/to/project design-extract extract-tokens
+
+# Filter by step
+node dist/cli.js run /path/to/project design-extract --step init
+
+# Use custom configuration file
+node dist/cli.js run /path/to/project design-extract --config custom-pendrop.yml
+
+# Override variables at runtime
+node dist/cli.js run /path/to/project design-extract -v source_tool=figma
 ```
 
-**List available tools:**
-```bash
-npm run mcp:test -- --server composer
-```
+### MCP Tools
 
-**Compose a pipeline:**
-```bash
-npm run mcp:test -- --server composer compose_pipeline \
-  --pipeline "design-extract" \
-  --project_path "/path/to/your/project"
-```
+The server exposes the following tools:
 
-**Compose specific steps:**
-```bash
-npm run mcp:test -- --server composer compose_pipeline \
-  --pipeline "design-extract" \
-  --project_path "/path/to/your/project" \
-  --step "transform-tokens"
-```
-
-**With runtime variables:**
-```bash
-npm run mcp:test -- --server composer compose_pipeline \
-  --pipeline "design-extract" \
-  --project_path "/path/to/your/project" \
-  --variables '{"custom_var": "value"}'
-```
-
-### With Cursor/Other MCP Clients
-
-Add the composer server to your MCP client configuration.
-
-**Location:** Cursor Settings → Features → Model Context Protocol
-
-Or edit: `~/.cursor/mcp.json` (Linux/Mac) or `%APPDATA%\Cursor\mcp.json` (Windows)
+#### `compose_workflow`
+Generates the AI instructions for a workflow.
 
 ```json
 {
-  "mcpServers": {
-    "composer": {
-      "command": "node",
-      "args": ["/absolute/path/to/pendrop/servers/composer/dist/index.js"]
-    }
-  }
+  "workflow": "design-extract",
+  "project_path": "/path/to/project",
+  "pendrop_file": "custom-pendrop.yml", // Optional: Custom config file
+  "task": "extract-tokens", // Optional: Run specific task
+  "step": "init", // Optional: Filter by step
+  "variables": { "source_tool": "figma" } // Optional: Overrides
 }
 ```
 
-**Note:** Use absolute paths for the server executable.
+#### `extract_asset`
+Extracts data from a defined asset using JSONPath.
 
-After adding the server, restart Cursor to load the new MCP server.
-
-## Tool Reference
-
-### `compose_pipeline`
-
-Composes an AI instruction prompt from a pipeline configuration in `pendrop.yml`.
-
-**Parameters:**
-- `pipeline` (string, required): Name of the pipeline as configured in `pendrop.yml`
-- `project_path` (string, required): Path to the project root containing `pendrop.yml`
-- `step` (string | string[], optional): Specific step ID(s) to run (includes dependencies). If not provided, all steps are included.
-- `variables` (object, optional): Additional variables for template substitution (overrides config)
-
-**Returns:**
 ```json
 {
-  "content": [
-    {
-      "type": "text",
-      "text": "# Step: Initialization and Global Context\n\nYou are extracting...\n\n# Step: Extract Source Data\n\n..."
-    }
-  ]
+  "asset_id": "schema_url",
+  "jsonpath": "$.definitions.component",
+  "project_path": "/path/to/project",
+  "workflow": "design-extract"
 }
 ```
 
-**How it works:**
-1. Loads `pendrop.yml` from `project_path`
-2. Resolves the task package from the pipeline configuration
-3. Loads task templates from `composer/tasks/<package>/tasks.yml`
-4. Loads pipeline definition from `composer/pipelines/<pipeline-name>/pipeline.yaml`
-5. Resolves step dependencies (if specific steps requested)
-6. Merges variables (runtime > pipeline > task defaults)
-7. Substitutes variables in templates using `{{variable_name}}` syntax
-8. Assembles final instructions with step headers and templates
+#### `save_asset`
+Saves data to a writeable asset, with support for deep merging.
 
-**Step Dependencies:**
-Steps can declare dependencies. If you request a specific step, all its dependencies are automatically included. Steps are executed in dependency order.
-
-**Example:**
-```yaml
-# pipeline.yaml
-steps:
-  init:
-    description: "Initialization"
-  extract:
-    description: "Extract data"
-    dependencies: ["init"]
-  transform:
-    description: "Transform data"
-    dependencies: ["extract"]
+```json
+{
+  "asset_id": "design_data",
+  "data": { ... },
+  "project_path": "/path/to/project",
+  "workflow": "design-extract",
+  "options": { "merge": true }
+}
 ```
-
-If you request `transform`, the composer will include `init` → `extract` → `transform` in that order.
-
-## Examples
-
-### Basic Pipeline Composition
-
-**pendrop.yml:**
-```yaml
-pipelines:
-  design-extract:
-    tasks: pendrop-penpot
-    variables:
-      design_url: https://penpot.keytec.de/#/workspace?team-id=...&file-id=...
-```
-
-**Call:**
-```bash
-npm run mcp:test -- --server composer compose_pipeline \
-  --pipeline "design-extract" \
-  --project_path "/home/user/my-project"
-```
-
-**Result:** Full instruction prompt with all steps from the pipeline.
-
-### Running Specific Steps
-
-**Call:**
-```bash
-npm run mcp:test -- --server composer compose_pipeline \
-  --pipeline "design-extract" \
-  --project_path "/home/user/my-project" \
-  --step "transform-tokens"
-```
-
-**Result:** Instruction prompt with only `init` and `transform-tokens` steps (dependencies included).
-
-### Overriding Variables
-
-**Call:**
-```bash
-npm run mcp:test -- --server composer compose_pipeline \
-  --pipeline "design-extract" \
-  --project_path "/home/user/my-project" \
-  --variables '{"design_url": "https://different-url.com"}'
-```
-
-**Result:** Instruction prompt with `design_url` overridden to the new value.
-
-### Multiple Steps
-
-**Call:**
-```bash
-npm run mcp:test -- --server composer compose_pipeline \
-  --pipeline "design-extract" \
-  --project_path "/home/user/my-project" \
-  --step '["transform-tokens", "transform-components"]'
-```
-
-**Result:** Instruction prompt with both steps and their dependencies.
-
-## Pipeline Structure
-
-### Task Packages (`composer/tasks/<package>/tasks.yml`)
-
-Task packages define:
-- **Assets**: Optional asset definitions
-- **Variables**: Default variables for the pipeline
-- **Steps**: Step templates with `{{variable}}` placeholders
-- **Pipeline reference**: Which pipeline definition to use
-
-**Example:**
-```yaml
-pipeline: pendrop-design-extract
-
-variables:
-  source_tool: "penpot"
-  extraction_rules: |
-    - Objects named "token" are likely tokens
-    - Look for naming patterns
-
-assets: {}
-
-steps:
-  init:
-    template: |
-      You are extracting a {{source_tool}} design file...
-  extract-source:
-    template: |
-      Use {{source_tool}}-mcp.get_object_tree...
-```
-
-### Pipeline Definitions (`composer/pipelines/<name>/pipeline.yaml`)
-
-Pipeline definitions define:
-- **Steps**: Step structure with descriptions and dependencies
-- **Assets**: Optional asset definitions (URLs or paths)
-- **Variables**: Optional variables
-
-**Example:**
-```yaml
-variables: {}
-
-assets:
-  schema_url:
-    url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
-    writeable: false
-
-steps:
-  init:
-    description: "Initialization and Global Context"
-  extract-source:
-    description: "Extract Source Data"
-    dependencies: ["init"]
-  extract-tokens:
-    description: "Extract design tokens from Design Tool and convert to schema format"
-    dependencies: ["extract-source"]
-```
-
-### Asset Management
-
-Assets can be defined in `pendrop.yml`, `pipeline.yaml`, or `tasks.yml`. Assets support variable substitution in paths using `{{variable}}` syntax.
-
-**Example asset definitions:**
-```yaml
-assets:
-  schema_url:
-    url: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
-    writeable: false
-    schema: null
-  design_data:
-    path: "{{project_path}}/.pendrop/dist/pendrop.data.ds.json"
-    writeable: true
-    schema: "https://raw.githubusercontent.com/pen-drop/pendrop/1.x/schemas/pendrop.theme.json"
-```
-
-**Available Tools:**
-
-- `extract_asset`: Extract parts from assets using JSONPath
-  ```javascript
-  composer.extract_asset({
-    asset_id: "schema_url",
-    jsonpath: "$.definitions.component",
-    project_path: "/path/to/project",
-    pipeline: "design-extract",
-    options: { minify: true }
-  })
-  ```
-
-- `save_asset`: Save data to writeable assets with deep merge
-  ```javascript
-  composer.save_asset({
-    asset_id: "design_data",
-    data: { components: {...} },
-    project_path: "/path/to/project",
-    pipeline: "design-extract",
-    options: {
-      merge: true,      // Deep merge with existing data
-      validate: true,   // Validate against schema if provided
-      dryrun: false     // Only validate, don't save
-    }
-  })
-  ```
-
-## Troubleshooting
-
-**Pipeline not found:**
-- Ensure `pendrop.yml` exists in `project_path`
-- Check that the pipeline name matches exactly (case-sensitive)
-- Verify the pipeline is defined under `pipelines:` in `pendrop.yml`
-
-**Task package not found:**
-- Ensure the task package exists in `composer/tasks/<package>/`
-- Verify the `tasks:` field in `pendrop.yml` matches the package name
-- Check that `tasks.yml` exists in the task package directory
-
-**Pipeline definition not found:**
-- Ensure the pipeline definition exists in `composer/pipelines/<name>/`
-- Verify the `pipeline:` field in `tasks.yml` matches the pipeline name
-- Check that `pipeline.yaml` exists in the pipeline directory
-
-**Step not found:**
-- Verify the step ID exists in the pipeline definition
-- Check step dependencies are correctly defined
-- Ensure step templates exist in `tasks.yml` if the step requires a template
-
-**Variable not substituted:**
-- Check variable name matches exactly (case-sensitive)
-- Verify variable is defined in one of: runtime, pipeline config, or task defaults
-- Ensure `{{variable_name}}` syntax is correct in templates
-
-## Related Documentation
-
-- [MCP Integration Guide](../../docs/MCP_INTEGRATION.md) - General MCP setup
-- [Penpot MCP Server](../penpot-mcp/README.md) - Penpot integration
-- [MCP Client Tool](../../tools/mcp-client/README.md) - Testing MCP servers
-

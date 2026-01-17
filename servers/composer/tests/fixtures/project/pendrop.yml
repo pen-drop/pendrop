@@ -4,7 +4,7 @@ assets:
     writeable: false
     schema: null
 
-pipelines:
+workflows:
   design-extract:
     tasks: test-recipe
     assets:
